@@ -1,35 +1,42 @@
 package logic;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
-public class ServerResponseBackToClient<T> implements Serializable{
-	private boolean result;
-	private ArrayList<T> resultSet = new ArrayList<T>();
-	private int arrayListSize;
+import utils.enums.ServerResponseEnum;
 
-	public boolean isResult() {
-		return result;
+public class ServerResponseBackToClient implements Serializable{
+	private ServerResponseEnum response;
+	private Object message;
+	private String msg;
+	
+	public ServerResponseBackToClient(ServerResponseEnum response,Object message,String msg) {
+		this.response=response;
+		this.message=message;
+		this.msg=msg;
 	}
 
-	public void setResult(boolean result) {
-		this.result = result;
+	public ServerResponseEnum getRensponse() {
+		return response;
+	}
+
+	public void setRensponse(ServerResponseEnum response) {
+		this.response = response;
 	}
 
 
-	public ArrayList<T> getResultSet() {
-		return resultSet;
+	public Object getMessage() {
+		return message;
 	}
 
-	public void setResultSet(ArrayList<T> resultSet) {
-		this.resultSet = resultSet;
+	public void setMessage(Object message) {
+		this.message = message;
 	}
 
-	public int getArrayListSize() {
-		return arrayListSize;
+	public String getMsg() {
+		return msg;
 	}
 
-	public void setArrayListSize(int arrayListSize) {
-		this.arrayListSize = arrayListSize;
+	public void setMsg(String msg) {
+		this.msg = msg;
 	}
 }

@@ -5,7 +5,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
-import client.ClientMainController;
+import client.ClientApplication;
+import client.ClientMainControl;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -96,24 +97,26 @@ public class CommonLandingPageController implements Initializable {
 		String message="";
 		connect_to_server_vbox.setVisible(false);
 		options_vbox.setVisible(true);
-//		boolean isValidIp=ValidationRules.isValidIp(server_ip_fld.getText());
-//		boolean isValidPort=ValidationRules.isValidPort(server_port_fld.getText());
-//		if(!isValidIp||!isValidPort) {
-//			message = (!isValidIp)? message + "Server IP isn't valid\n":message;
-//			message= (!isValidPort)? message + "Server Port isn't valid\n":message;
-//			showPopupMessage(0, "Error", "Fields Validation Error", message);
-//			return;
-//		}
-//		
-//		boolean isConnected = GoNatureClient.connectClientToServer(server_ip_fld.getText(),
-//				server_port_fld.getText(),this);
-//		if(!isConnected) {
-//			showPopupMessage(0, "Error", "Connect To Server", "Failed to connect the server");
-//			return;
-//		}
-//		showPopupMessage(0,"Success","Connected!","Connected Success!");
-//		connect_to_server_vbox.setVisible(false);
-//		options_vbox.setVisible(true);
+		boolean isValidIp=ValidationRules.isValidIp(server_ip_fld.getText());
+		boolean isValidPort=ValidationRules.isValidPort(server_port_fld.getText());
+		if(!isValidIp||!isValidPort) {
+			message = (!isValidIp)? message + "Server IP isn't valid\n":message;
+			message= (!isValidPort)? message + "Server Port isn't valid\n":message;
+			AlertPopUp alert = new AlertPopUp(AlertType.ERROR, "Error", "Fields Validation Error", message);
+			alert.showAndWait();
+			return;
+		}
+		
+		ClientApplication.client = new ClientMainControl(server_ip_fld.getText(), Integer.parseInt(server_port_fld.getText()));
+		if(ClientApplication.client==null) {
+			AlertPopUp alert = new AlertPopUp(AlertType.ERROR, "Error", "Connect To Server", "Failed to connect the server");
+			alert.showAndWait();
+			return;
+		}
+		AlertPopUp alert = new AlertPopUp(AlertType.INFORMATION,"Success","Connect To Server","Connected Success!");
+		alert.showAndWait();
+		connect_to_server_vbox.setVisible(false);
+		options_vbox.setVisible(true);
 
 	}
 	

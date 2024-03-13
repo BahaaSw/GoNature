@@ -9,7 +9,8 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class ClientApplication extends Application {
-
+	public static ClientMainControl client;
+	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		try {

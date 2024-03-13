@@ -7,8 +7,8 @@ import javafx.stage.Stage;
 
 public class AlertPopUp extends Alert {
 
-	public AlertPopUp(AlertType arg0,String title, String header, String content) {
-		super(arg0);
+	public AlertPopUp(AlertType type,String title, String header, String content) {
+		super(type);
 		this.setTitle(title);
 		this.setHeaderText(header);
 		this.setContentText(content);

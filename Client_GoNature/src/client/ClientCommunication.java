@@ -3,11 +3,13 @@ package client;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import logic.ClientRequestDataContainer;
 import logic.ClientRequestFromServer;
 import logic.ServerResponseBackToClient;
 import ocsf.AbstractClient;
 import ocsf.ChatIF;
 import utils.enums.ClientRequest;
+import utils.enums.ServerResponseEnum;
 
 public class ClientCommunication extends AbstractClient {
 	// Instance variables **********************************************
@@ -19,9 +21,9 @@ public class ClientCommunication extends AbstractClient {
 
 	
 	ChatIF clientUI;
+//	private Object ServerResponseHandler;
 	public static boolean awaitResponse = false;
 	public static ServerResponseBackToClient responseFromServer;
-	public static ArrayList<ClientRequest> requestsWaitingForApproval=new ArrayList<>();
 	
 	public ClientCommunication(String host, int port, ChatIF clientUI) throws IOException{
 		super(host, port); // Call the superclass constructor
@@ -36,44 +38,36 @@ public class ClientCommunication extends AbstractClient {
 	 */
 	public void handleMessageFromServer(Object msg) {
 		awaitResponse = false;
-		if (msg instanceof ServerResponseBackToClient) {
-			ServerResponseBackToClient response = (ServerResponseBackToClient) msg;
-			responseFromServer = response;	
+		ServerResponseBackToClient data = (ServerResponseBackToClient)msg;
+		ServerResponseEnum response=data.getRensponse();
+		
+		switch(response) {
+		case Login:
+			return;
+		case Password_Incorrect:
+			return;
+		case User_Already_Connected:
+			return;
+		case User_Does_Not_Exists:
+			return;
+		case Server_Closed:
+			return;
+		case Server_Disconnected:
+			try {
+				closeConnection();
+				ClientApplication.client=null;
+				System.exit(0);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			return;
 		}
 		
-		else if (msg instanceof String) {
-			String serverMsg = (String) msg;
-			if (serverMsg.equals("Finished")) {
-				//System.out.println("Finished handle client request");
-			}
-			if (serverMsg.equals("Server closing")) {
-			}
-				
-		}
 	}
 	
-	public void handleMessageFromClientUI(String message) {
-		try {
-			openConnection();// in order to send more than one message
-			awaitResponse = true;
-
-			sendToServer(message);
-			// wait for response
-			while (awaitResponse) {
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-			clientUI.display("Could not send message to server: Terminating client." + e);
-			quit();
-		}
-	}
-	
-	public void handleMessageFromClientUI(ClientRequestFromServer<?> message) {
+	public void handleMessageFromClientUI(ClientRequestDataContainer message) {
 		try {
 			openConnection();// in order to send more than one message
 			awaitResponse = true;

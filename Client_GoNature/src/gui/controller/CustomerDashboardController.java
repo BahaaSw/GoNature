@@ -11,6 +11,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
+import utils.CurrentDate;
 
 public class CustomerDashboardController implements Initializable{
 	@FXML
@@ -45,7 +46,7 @@ public class CustomerDashboardController implements Initializable{
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-
+		login_date.setText(CurrentDate.getCurrentDate("'Today' yyyy-MM-dd"));
 	}
 	
 
