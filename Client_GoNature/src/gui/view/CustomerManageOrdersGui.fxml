@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="740.0" prefWidth="850.0" styleClass="manage_orders" stylesheets="@manageOrderStyles.css" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+   <children>
+      <HBox prefHeight="60.0" prefWidth="200.0" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="30.0">
+         <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Hello, " />
+            <Text fx:id="fullname_text" strokeType="OUTSIDE" strokeWidth="0.0" text="Gal" />
+         </children>
+      </HBox>
+      <Label fx:id="date_lbl" layoutX="10.0" layoutY="10.0" styleClass="date_lbl" text="Today 2024-06-03" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="27.0" />
+      <VBox layoutY="148.0" prefHeight="593.0" prefWidth="820.0" AnchorPane.leftAnchor="16.0" AnchorPane.topAnchor="135.0">
+         <children>
+            <TableView prefHeight="500.0" prefWidth="820.0">
+              <columns>
+                <TableColumn prefWidth="75.0" text="Order ID" />
+                <TableColumn prefWidth="120.0" text="Park" />
+                  <TableColumn prefWidth="165.0" text="Visit Date" />
+                  <TableColumn prefWidth="135.0" text="Visit Type" />
+                  <TableColumn prefWidth="147.0" text="Amount of Visitors" />
+                  <TableColumn prefWidth="177.0" text="Status" />
+              </columns>
+            </TableView>
+            <Button mnemonicParsing="false" text="Save">
+               <graphic>
+                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../utils/resources/saveIcon.png" />
+                     </image>
+                  </ImageView>
+               </graphic></Button>
+         </children>
+      </VBox>
+      <Text fill="#2864a6" layoutX="313.0" layoutY="103.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Manage Orders">
+         <font>
+            <Font size="33.0" />
+         </font>
+      </Text>
+      <Separator layoutX="19.0" layoutY="127.0" prefHeight="2.0" prefWidth="820.0" />
+   </children>
+</AnchorPane>

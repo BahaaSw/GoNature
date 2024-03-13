@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="740.0" prefWidth="850.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+   <children>
+      <Label fx:id="date_lbl" layoutX="10.0" layoutY="10.0" styleClass="date_lbl" text="Today 2024-06-03" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="27.0" />
+      <HBox prefHeight="100.0" prefWidth="200.0" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="20.0">
+         <children>
+            <Label text="Hello, " />
+            <Label text="Gal" />
+         </children>
+      </HBox>
+      <Text layoutX="341.0" layoutY="97.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Enter Park" AnchorPane.leftAnchor="341.0" AnchorPane.topAnchor="55.994140625">
+         <font>
+            <Font size="38.0" />
+         </font>
+      </Text>
+      <Separator layoutX="326.0" layoutY="119.0" prefHeight="3.0" prefWidth="509.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" />
+      <HBox layoutX="30.0" layoutY="145.0" prefHeight="73.0" prefWidth="810.0" style="-fx-alignment: center; -fx-spacing: 30;">
+         <children>
+            <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../utils/resources/ticketIcon.png" />
+               </image>
+            </ImageView>
+            <TextField promptText="Enter Ticket ID" />
+         </children>
+      </HBox>
+      <Button layoutX="400.0" layoutY="227.0" mnemonicParsing="false" text="Enter Park">
+         <graphic>
+            <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../utils/resources/enterParkIcon.png" />
+               </image>
+            </ImageView>
+         </graphic></Button>
+      <Separator layoutX="163.0" layoutY="369.0" prefHeight="3.0" prefWidth="509.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" />
+      <GridPane layoutX="20.0" layoutY="425.0" AnchorPane.bottomAnchor="285.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Label text="Agamon Ha-Hula" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+            <Label text="Carmel Forest" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+            <Label text="Mount Hermon" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+         </children>
+      </GridPane>
+      <HBox layoutX="1.0" layoutY="475.0" prefHeight="216.0" prefWidth="850.0" style="-fx-alignment: center;" AnchorPane.bottomAnchor="49.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="-1.0">
+         <children>
+            <ImageView fitHeight="400.0" fitWidth="280.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../utils/resources/parks/AgamonHaHula.jpg" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="400.0" fitWidth="280.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../utils/resources/parks/Carmel.jpg" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="400.0" fitWidth="280.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../utils/resources/parks/Hermon.jpg" />
+               </image>
+            </ImageView>
+         </children>
+      </HBox>
+   </children>
+</AnchorPane>

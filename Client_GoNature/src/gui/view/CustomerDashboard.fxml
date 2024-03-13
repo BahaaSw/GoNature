@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="740.0" prefWidth="850.0" styleClass="dashbaord" stylesheets="@visitorDashboardStyles.css" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+   <children>
+      <ImageView fitHeight="35.0" fitWidth="40.0" layoutX="14.0" layoutY="26.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../utils/resources/customerIcon.png" />
+         </image>
+      </ImageView>
+      <Text fx:id="user_name" layoutX="69.0" layoutY="51.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="user_name" text="Hi, Gal" AnchorPane.leftAnchor="69.0" AnchorPane.topAnchor="27.599998474121094" />
+      <Label fx:id="login_date" styleClass="date_lbl" text="Today 2024-06-03" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="27.0" />
+      <Text layoutX="699.0" layoutY="102.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section_title" text="Account Type" AnchorPane.rightAnchor="59.14960479736328" AnchorPane.topAnchor="89.40000057220459" />
+      <Text layoutX="821.0" layoutY="116.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section_title" text="My Dashboard" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="90.0" />
+      <HBox layoutX="20.0" layoutY="125.0" prefHeight="180.0" prefWidth="620.0" styleClass="accounts_view" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="120.0">
+         <children>
+            <AnchorPane prefHeight="150.0" prefWidth="295.0" stylesheets="@visitorDashboardStyles.css">
+               <children>
+                  <Label fx:id="checking_bal" layoutX="14.0" layoutY="14.0" styleClass="account_balance" text="Most Visited Park" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="14.0" />
+                  <Label fx:id="checking_acc_num" layoutX="91.0" layoutY="69.0" styleClass="account_number" text="Mount Hermon" AnchorPane.bottomAnchor="69.0" AnchorPane.leftAnchor="91.0" />
+                  <ImageView fitHeight="35.0" fitWidth="40.0" layoutX="129.0" layoutY="98.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../utils/resources/parkIcon.png" />
+                     </image>
+                  </ImageView>
+                  <Line endX="144.0" layoutX="132.0" layoutY="143.0" startX="-116.0" stroke="WHITE" strokeWidth="5.0" />
+               </children>
+               <styleClass>
+                  <String fx:value="account" />
+                  <String fx:value="account_gradient_left" />
+               </styleClass>
+            </AnchorPane>
+            <AnchorPane prefHeight="150.0" prefWidth="295.0">
+               <children>
+                  <ImageView fitHeight="35.0" fitWidth="40.0" layoutX="14.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../utils/resources/notificationIcon.png" />
+                     </image>
+                  </ImageView>
+                  <Label fx:id="savings_bal" layoutX="69.0" layoutY="11.0" styleClass="account_balance" text="Notifications" AnchorPane.leftAnchor="69.0" AnchorPane.topAnchor="11.0" />
+                  <Label fx:id="savings_acc_num" layoutX="118.0" layoutY="80.0" styleClass="account_number" text="None" AnchorPane.bottomAnchor="58.0" AnchorPane.leftAnchor="118.0" />
+                  <Line endX="144.0" layoutX="133.0" layoutY="122.0" startX="-116.0" stroke="WHITE" strokeWidth="5.0" AnchorPane.topAnchor="119.5" />
+               </children>
+               <styleClass>
+                  <String fx:value="account" />
+                  <String fx:value="account_gradient_right" />
+               </styleClass>
+            </AnchorPane>
+         </children>
+      </HBox>
+      <VBox layoutX="640.0" layoutY="120.0" prefHeight="180.0" prefWidth="203.0" styleClass="type_view" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="120.0">
+         <children>
+            <VBox prefHeight="200.0" prefWidth="100.0" styleClass="acc_type_container">
+               <children>
+                  <Text fx:id="acc_type_text" strokeType="OUTSIDE" strokeWidth="0.0" text="Guide">
+                     <font>
+                        <Font size="26.0" />
+                     </font></Text>
+                  <ImageView fitHeight="49.0" fitWidth="59.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../utils/resources/guideIcon.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </VBox>
+         </children>
+      </VBox>
+      <Text layoutX="24.0" layoutY="356.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="section_title" text="Latest Orders" AnchorPane.leftAnchor="24.0" AnchorPane.topAnchor="343.4000005722046" />
+      <TableView prefHeight="340.0" prefWidth="0.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="20.0">
+        <columns>
+          <TableColumn prefWidth="83.0" text="Order ID" />
+          <TableColumn prefWidth="181.0" text="Park" />
+            <TableColumn prefWidth="129.0" text="Visit Date" />
+            <TableColumn prefWidth="136.0" text="Visit Type" />
+            <TableColumn prefWidth="117.0" text="Amount Of Visitors" />
+            <TableColumn prefWidth="169.0" text="Status" />
+        </columns>
+      </TableView>
+   </children>
+</AnchorPane>
