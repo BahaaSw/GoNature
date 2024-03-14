@@ -11,6 +11,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import logic.SceneLoaderHelper;
+import logic.User;
 import utils.AlertPopUp;
 
 public class ParkEmployeeScreenController implements Initializable,IScreenController {
@@ -26,8 +27,12 @@ public class ParkEmployeeScreenController implements Initializable,IScreenContro
 	
 	private Stage stage;
 	private Stage mainScreenStage;
-	
+	private User user;
 	private SceneLoaderHelper GuiHelper= new SceneLoaderHelper();
+	
+	public ParkEmployeeScreenController(User user) {
+		this.user=user;
+	}
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -35,13 +40,13 @@ public class ParkEmployeeScreenController implements Initializable,IScreenContro
 	}
 	
 	public void onDashboardClicked() {
-		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController("/gui/view/ParkEmployeeDashboard.fxml", ControllerType.Park_Employee_Dashboard_Controller);
+		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController("/gui/view/ParkEmployeeDashboard.fxml",ControllerType.Park_Employee_Dashboard_Controller,user);
 		screen.setCenter(dashboard);
 	}
 	
 	
 	public void onProfileClicked() {
-		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController("/gui/view/ClientProfile.fxml", ControllerType.Common_Profile_Controller);
+		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController("/gui/view/ClientProfile.fxml",ControllerType.Common_Profile_Controller,user);
 		screen.setCenter(dashboard);
 	}
 	

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import client.ClientApplication;
+import client.ClientCommunication;
 import client.ClientMainControl;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -25,9 +26,14 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import logic.ClientRequestDataContainer;
+import logic.ServerResponseBackToClient;
+import logic.User;
 import utils.AlertPopUp;
 import utils.CurrentWindow;
 import utils.ValidationRules;
+import utils.enums.ClientRequest;
+import utils.enums.ServerResponseEnum;
 
 public class CommonLandingPageController implements Initializable {
 	/* FXML Controls*/
@@ -121,91 +127,104 @@ public class CommonLandingPageController implements Initializable {
 	}
 	
 	public void onLoginAppClicked() {
-//		AlertPopUp alert = new AlertPopUp(AlertType.INFORMATION,"LOGIN","Login Clicked","Test");
-//		alert.showAndWait();
-		try {
+		String message="";
+		AlertPopUp alert;
+		ArrayList<String> fields = new ArrayList<String>();
+		//TODO: Add ID To GUI!!!!!!
+		fields.add("1");
+		fields.add(login_username_fld.getText());
+		fields.add(login_password_fld.getText());
+		
+		boolean areFieldsEmpty = ValidationRules.areFieldsEmpty(fields);
+		boolean isValidUsername=ValidationRules.isValidUsername(fields.get(1));
+		boolean isValidPassword=ValidationRules.isValidPassword(fields.get(2));
+		
+		if(areFieldsEmpty) {
+			message="All Fields Must be Filled!";
+			alert = new AlertPopUp(AlertType.WARNING, "Warning", "Validation Error", message);
+			alert.showAndWait();
+			return;
+		}
+		
+		User requestedUser = new User(fields.get(0),fields.get(1),fields.get(2));
+		ClientRequestDataContainer requestMessage = new ClientRequestDataContainer(ClientRequest.Login, requestedUser, "");
+		ClientApplication.client.accept(requestMessage);
+		ServerResponseBackToClient response = ClientCommunication.responseFromServer;
+		switch(response.getRensponse()) {
+		case Password_Incorrect:
+			alert = new AlertPopUp(AlertType.WARNING, "Warning", "Password Incorrect", "");
+			alert.showAndWait();
+			return;
+		case User_Already_Connected:
+			alert = new AlertPopUp(AlertType.WARNING, "Warning", "User Already Connected!", "");
+			alert.showAndWait();
+			return;
+		case Request_Failed:
+			alert = new AlertPopUp(AlertType.ERROR, "Server Got Error", "Application Will Close", "");
+			alert.showAndWait();
 			Stage currentWindow = (Stage) icon.getScene().getWindow();
+			currentWindow.close();
+			System.exit(0);
+			return;	
+		}
+		
+		switchMainScreenAccordingToUserLogin((User)response.getMessage());
+			
+		
+	}
+	
+	private void switchMainScreenAccordingToUserLogin(User user) {
+		try {
+			CurrentWindow.setCurrentWindow((Stage) icon.getScene().getWindow());
 			String username = login_username_fld.getText();
 			IScreenController controller;
 			FXMLLoader loader;
-			switch(username) {
-			case "":
-			case "visitor":
+			switch(user.getUserType()) {
+			case Visitor:
+			case Guide:
 				loader = new FXMLLoader(getClass().getResource("/gui/view/CustomerScreen.fxml"));
-				controller = new CustomerScreenController();
+				controller = new CustomerScreenController(user);
 				break;
-			case "department":
+			case Department_Manager:
 				loader = new FXMLLoader(getClass().getResource("/gui/view/DepartmentManagerScreen.fxml"));
-				controller = new DepartmentManagerScreenController();
+				controller = new DepartmentManagerScreenController(user);
 				break;
-			case "park":
+			case Park_Manager:
 				loader = new FXMLLoader(getClass().getResource("/gui/view/ParkManagerScreen.fxml"));
-				controller = new ParkManagerScreenController();
+				controller = new ParkManagerScreenController(user);
 				break;
-			case "service":
+			case Service_Employee:
 				loader = new FXMLLoader(getClass().getResource("/gui/view/ServiceEmployeeScreen.fxml"));
-				controller = new ServiceEmployeeScreenController();
+				controller = new ServiceEmployeeScreenController(user);
 				break;
-			case "employee":
+			case Park_Employee:
 				loader = new FXMLLoader(getClass().getResource("/gui/view/ParkEmployeeScreen.fxml"));
-				controller = new ParkEmployeeScreenController();
+				controller = new ParkEmployeeScreenController(user);
 				break;
 			default:
 				loader = new FXMLLoader(getClass().getResource("/gui/view/ServiceEmployeeScreen.fxml"));
-				controller=new ServiceEmployeeScreenController();
+				controller=new ServiceEmployeeScreenController(user);
 				break;
 			}
-
+	
 			loader.setController(controller);
 			loader.load();
 			Parent p = loader.getRoot();
-			Stage newStage = new Stage();
-
+	
 			/* Block parent stage until child stage closes */
-			newStage.initModality(Modality.WINDOW_MODAL);
-			newStage.initOwner(currentWindow);
-
-			newStage.setTitle("GoNature - Client Screen");
-			newStage.setScene(new Scene(p));
-			newStage.setResizable(false);
-			newStage.show();
+	//		newStage.initModality(Modality.WINDOW_MODAL);
+	//		newStage.initOwner(currentWindow);
+	
+			CurrentWindow.getCurrentWindow().setTitle("GoNature - Client Screen");
+			CurrentWindow.getCurrentWindow().setScene(new Scene(p));
+			CurrentWindow.getCurrentWindow().setResizable(false);
+			CurrentWindow.getCurrentWindow().show();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-		
-//		GoNatureClient.loginClientToApp(new User(login_username_fld.getText(),login_password_fld.getText()));
 	}
-//	
-//	public void openApplicationAccordingToUser(User userInformation) {
-//		Stage currentWindow = CurrentWindow.getCurrentWindow();
-//		UserTypeEnum userType =userInformation.getUserType();
-//		switch(userType) {
-//			case DepartmentManager:
-//				ViewFactory.getInstance().showClientWindow(UserTypeEnum.DepartmentManager);
-//				return;
-//			case Visitor:
-//				ViewFactory.getInstance().showClientWindow(UserTypeEnum.Visitor);
-//				return;
-//			case Guide:
-//				ViewFactory.getInstance().showClientWindow(UserTypeEnum.Guide);
-//				return;
-//			case ServiceEmployee:
-//				ViewFactory.getInstance().showClientWindow(UserTypeEnum.ServiceEmployee);
-//				return;
-//			case ParkEmployee:
-//				ViewFactory.getInstance().showClientWindow(UserTypeEnum.ParkEmployee);
-//				return;
-//			case ParkManager:
-//				ViewFactory.getInstance().showClientWindow(UserTypeEnum.ParkManager);
-//				return;
-//		}
-//		
-//		
-//		
-//	}
+		
 	
 	public void onSignupAppClicked() {
 		AlertPopUp alert = new AlertPopUp(AlertType.INFORMATION,"SIGNUP","SIGNUP Clicked","Test");

@@ -11,6 +11,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import logic.SceneLoaderHelper;
+import logic.User;
 import utils.AlertPopUp;
 
 public class CustomerScreenController implements Initializable,IScreenController {
@@ -31,10 +32,13 @@ public class CustomerScreenController implements Initializable,IScreenController
 	
 	private Stage stage;
 	private Stage mainScreenStage;
-	
+	private User user;
 	private SceneLoaderHelper GuiHelper= new SceneLoaderHelper();
 
-	public CustomerScreenController() {}
+	public CustomerScreenController(User user) 
+	{
+		this.user=user;
+	}
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -42,27 +46,27 @@ public class CustomerScreenController implements Initializable,IScreenController
 	}
 		
 	public void onDashboardClicked() {
-		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController("/gui/view/CustomerDashboard.fxml", ControllerType.Customer_Dashboard_Controller);
+		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController("/gui/view/CustomerDashboard.fxml", ControllerType.Customer_Dashboard_Controller,user);
 		screen.setCenter(dashboard);
 	}
 	
 	public void onMakeOrderClicked() {
-		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController("/gui/view/CustomerMakeOrderGui.fxml", ControllerType.Customer_MakeOrder_Controller);
+		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController("/gui/view/CustomerMakeOrderGui.fxml", ControllerType.Customer_MakeOrder_Controller,user);
 		screen.setCenter(dashboard);
 	}
 	
 	public void onManageOrdersClicked() {
-		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController("/gui/view/CustomerManageOrdersGui.fxml", ControllerType.Customer_ManageOrders_Controller);
+		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController("/gui/view/CustomerManageOrdersGui.fxml", ControllerType.Customer_ManageOrders_Controller,user);
 		screen.setCenter(dashboard);
 	}
 	
 	public void onEnterParkClicked() {
-		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController("/gui/view/CustomerEnterParkGui.fxml", ControllerType.Customer_EnterPark_Controller);
+		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController("/gui/view/CustomerEnterParkGui.fxml", ControllerType.Customer_EnterPark_Controller,user);
 		screen.setCenter(dashboard);
 	}
 	
 	public void onProfileClicked() {
-		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController("/gui/view/ClientProfile.fxml", ControllerType.Common_Profile_Controller);
+		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController("/gui/view/ClientProfile.fxml", ControllerType.Common_Profile_Controller,user);
 		screen.setCenter(dashboard);
 	}
 	

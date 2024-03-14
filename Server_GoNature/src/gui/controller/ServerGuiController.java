@@ -1,5 +1,7 @@
 package gui.controller;
 
+import java.util.ArrayList;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -11,6 +13,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import jdbc.DBConnectionDetails;
 import logic.ClientConnection;
+import logic.User;
 import ocsf.ConnectionToClient;
 import server.GoNatureServer;
 
@@ -55,6 +58,8 @@ public class ServerGuiController {
 	private TableColumn<ClientConnection,String> hostColumn;
 	@FXML
 	private TableColumn<ClientConnection,String> statusColumn;
+	
+	private ArrayList<User> connectedUsers=new ArrayList<User>();
 	
 	// Observable collection in order to bind it to the table view.
 	private final ObservableList<ClientConnection> connectedClientsList = FXCollections.observableArrayList();
@@ -178,5 +183,9 @@ public class ServerGuiController {
 		dbNameField.setDisable(flag);
 		dbUsernameField.setDisable(flag);
 		dbPasswordField.setDisable(flag);
+	}
+	
+	public ArrayList<User> getConnectedUsers(){
+		return connectedUsers;
 	}
 }

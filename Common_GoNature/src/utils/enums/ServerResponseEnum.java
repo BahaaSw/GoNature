@@ -1,12 +1,12 @@
 package utils.enums;
 
 public enum ServerResponseEnum {
-	Login,
+	User_Connected_Successfully,
 	User_Does_Not_Exists,
 	User_Already_Connected,
 	Password_Incorrect,
 	
-	
+	Request_Failed,
 	Server_Closed,
 	Server_Disconnected,
 	

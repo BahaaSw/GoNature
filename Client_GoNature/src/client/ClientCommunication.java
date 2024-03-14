@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import logic.ClientRequestDataContainer;
-import logic.ClientRequestFromServer;
 import logic.ServerResponseBackToClient;
 import ocsf.AbstractClient;
 import ocsf.ChatIF;
@@ -38,33 +37,7 @@ public class ClientCommunication extends AbstractClient {
 	 */
 	public void handleMessageFromServer(Object msg) {
 		awaitResponse = false;
-		ServerResponseBackToClient data = (ServerResponseBackToClient)msg;
-		ServerResponseEnum response=data.getRensponse();
-		
-		switch(response) {
-		case Login:
-			return;
-		case Password_Incorrect:
-			return;
-		case User_Already_Connected:
-			return;
-		case User_Does_Not_Exists:
-			return;
-		case Server_Closed:
-			return;
-		case Server_Disconnected:
-			try {
-				closeConnection();
-				ClientApplication.client=null;
-				System.exit(0);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			return;
-		}
-		
+		responseFromServer= (ServerResponseBackToClient)msg;	
 	}
 	
 	public void handleMessageFromClientUI(ClientRequestDataContainer message) {

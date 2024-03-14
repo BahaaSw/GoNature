@@ -1,6 +1,6 @@
 package utils.enums;
 
-public enum OrderType {
+public enum OrderTypeEnum {
 	Solo,
 	Family,
 	Group,
