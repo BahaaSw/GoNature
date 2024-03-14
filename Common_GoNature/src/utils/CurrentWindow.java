@@ -4,13 +4,18 @@ import javafx.stage.Stage;
 
 public class CurrentWindow {
 	private static Stage currentWindow;
+	private static Object lock= new Object();
 	
 	public static void setCurrentWindow(Stage stage) {
-		currentWindow=stage;
+		synchronized(lock){
+			currentWindow=stage;
+		}
 	}
 	
 	public static Stage getCurrentWindow() {
-		return currentWindow;
+		synchronized(lock) {
+			return currentWindow;
+		}
 	}
 
 }

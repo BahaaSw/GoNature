@@ -1,6 +1,6 @@
 package utils.enums;
 
-public enum ParkName {
+public enum ParkNameEnum {
 	
 	Agamon_HaHula ("Agamon Hahula"),
 	Hermon_Mountain ("Hermon Mountain"),
@@ -8,7 +8,7 @@ public enum ParkName {
 	
 	private String name;
 	
-	private ParkName(String name) {
+	private ParkNameEnum(String name) {
 		this.name=name;
 	}
 	

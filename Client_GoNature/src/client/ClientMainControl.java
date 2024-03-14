@@ -3,7 +3,6 @@ package client;
 import java.io.IOException;
 
 import logic.ClientRequestDataContainer;
-import logic.ClientRequestFromServer;
 import ocsf.ChatIF;
 
 public class ClientMainControl implements ChatIF {

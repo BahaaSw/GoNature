@@ -1,6 +1,6 @@
 package utils.enums;
 
-public enum UserType {
+public enum UserTypeEnum {
 	Occasional_Visitor ("Occasional Visitor"),
 	Visitor ("Visitor"),
 	Guide ("Guide"),
@@ -10,7 +10,7 @@ public enum UserType {
 	Service_Employee ("Service Employee");
 	
 	private String name;
-	private UserType(String name) {
+	private UserTypeEnum(String name) {
 		this.name=name;
 	}
 	
@@ -18,5 +18,6 @@ public enum UserType {
 	public String toString() {
 		return name;
 	}
+	
 
 }

@@ -26,7 +26,7 @@ public class SceneLoaderHelper {
 	private VBox leftMenuScreen;
 	
 	//UserType type
-	public AnchorPane loadRightScreenToBorderPaneWithController(String screenUrl,ControllerType controllerType) {
+	public AnchorPane loadRightScreenToBorderPaneWithController(String screenUrl,ControllerType controllerType,User user) {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource(screenUrl));
 		switch(controllerType) {
 		
@@ -37,7 +37,7 @@ public class SceneLoaderHelper {
 			}
 				
 			case Common_Profile_Controller:{
-				CommonProfileController controller= new CommonProfileController();
+				CommonProfileController controller= new CommonProfileController(user);
 				loader.setController(controller);
 				controller.setIsEmployee(true);
 				break;

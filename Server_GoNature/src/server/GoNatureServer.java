@@ -12,6 +12,7 @@ import jdbc.DBConnectionDetails;
 import jdbc.QueryControl;
 import logic.ClientRequestDataContainer;
 import logic.ServerResponseBackToClient;
+import logic.User;
 import jdbc.DBReturnOptions;
 import jdbc.MySqlConnection;
 import ocsf.AbstractServer;
@@ -67,9 +68,9 @@ public class GoNatureServer extends AbstractServer {
 		ClientRequestDataContainer data = (ClientRequestDataContainer)msg;
 		ClientRequest request = data.getRequest();
 		switch(request) {
-//		case Login:
-//			handleClientLoginToApplication((User)data.getMessage(),client,clientIp);
-//			return;
+		case Login:
+			handleClientLoginToApplication(data.getData(),client,clientIp);
+			return;
 //		case Logout:
 //			handleUserLogoutFromApplication((User)data.getMessage(),client,clientIp);
 //			return;
@@ -124,41 +125,45 @@ public class GoNatureServer extends AbstractServer {
 //		}
 //	}
 //	
-//	private void handleClientLoginToApplication(User user, ConnectionToClient client, String clientIp) {
-//		User currentUser = (User)user;
-//		serverController.printToLogConsole(String.format("User : '%s' with IP : '%s' : Request Login to Application", user.getUsername(),clientIp));
-//		// try to search user in database.
-//		DBReturnOptions dbReturn = QueryControl.searchForUser(dbConn, currentUser,serverController);
-//		
-//		try {
-//			ServerActionsEnum action;
-//			switch(dbReturn) {
-//				case UserNotExists:
-//					action=ServerActionsEnum.LoginUserDoesNotExists;
-//					break;
-//				case PasswordIncorrect:
-//					action=ServerActionsEnum.PasswordIncorrect;
-//					break;
-//				case UserAlreadyLoggedIn:
-//					action=ServerActionsEnum.UserAlreadyConnected;
-//					break;
-//				case Success:
-//					action = ServerActionsEnum.LoginUserExists;
-//					QueryControl.changeIsConnectedFlagForUser(dbConn, currentUser, true, serverController);
-//					break;
-//				case ExceptionWasThrown:
-//					throw new IOException();
-//				default:
-//					action=ServerActionsEnum.LoginUserFailed;
-//					break;
-//			}
-//
-//			client.sendToClient(new ServerDataContainer(action, currentUser));
-//		}catch(IOException ex) {
-//			serverController.printToLogConsole("Error while sending update message to client");
-//			return;
-//		}
-//	}
+	private void handleClientLoginToApplication(Object data, ConnectionToClient client, String clientIp) {
+		// try to search user in database.
+		User currentUser = (User)data;
+		serverController.printToLogConsole(String.format("User : '%s' with IP : '%s' : Request Login to Application", currentUser.getUsername(),clientIp));
+		DBReturnOptions dbReturn = QueryControl.searchForUser(currentUser,serverController);
+		ServerResponseEnum response;
+		
+		try {
+			switch(dbReturn) {
+				case User_Not_Exists:
+					response=ServerResponseEnum.User_Does_Not_Exists;
+					break;
+				case Password_Incorrect:
+					response=ServerResponseEnum.Password_Incorrect;
+					break;
+				case User_Does_Exists:
+					for(User user: serverController.getConnectedUsers()) {
+						if(currentUser.equals(user)) {
+							response=ServerResponseEnum.User_Already_Connected;
+							break;
+						}
+					}
+					response=ServerResponseEnum.User_Connected_Successfully;
+					serverController.getConnectedUsers().add(currentUser);
+					break;
+				case Success:
+					response=ServerResponseEnum.User_Connected_Successfully;
+					break;
+				default:
+					response=ServerResponseEnum.Request_Failed;
+					break;
+			}
+
+			client.sendToClient(new ServerResponseBackToClient(response, currentUser,""));
+		}catch(IOException ex) {
+			serverController.printToLogConsole("Error while sending update message to client");
+			return;
+		}
+	}
 	
 //	private void handleClientSignupRequest(User user, ConnectionToClient client, String clientIp) {
 ////		User currentUser = (User)user;

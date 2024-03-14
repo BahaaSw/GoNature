@@ -11,6 +11,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import logic.SceneLoaderHelper;
+import logic.User;
 import utils.AlertPopUp;
 
 public class DepartmentManagerScreenController implements Initializable,IScreenController {
@@ -28,10 +29,13 @@ public class DepartmentManagerScreenController implements Initializable,IScreenC
 	
 	private Stage stage;
 	private Stage mainScreenStage;
-	
+	private User user;
 	private SceneLoaderHelper GuiHelper= new SceneLoaderHelper();
 	
-	public DepartmentManagerScreenController() {}
+	public DepartmentManagerScreenController(User user) 
+	{
+		this.user=user;
+	}
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -39,17 +43,17 @@ public class DepartmentManagerScreenController implements Initializable,IScreenC
 	}
 	
 	public void onDashboardClicked() {
-		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController("/gui/view/DepartmentManagerDashboard.fxml", ControllerType.Department_Manager_Dashboard_Controller);
+		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController("/gui/view/DepartmentManagerDashboard.fxml", ControllerType.Department_Manager_Dashboard_Controller,user);
 		screen.setCenter(dashboard);
 	}
 	
 	public void onViewReportsClicked() {
-		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController("/gui/view/DepartmentManagerViewReports.fxml", ControllerType.Department_Manager_ViewReports_Controller);
+		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController("/gui/view/DepartmentManagerViewReports.fxml", ControllerType.Department_Manager_ViewReports_Controller,user);
 		screen.setCenter(dashboard);
 	}
 	
 	public void onProfileClicked() {
-		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController("/gui/view/ClientProfile.fxml", ControllerType.Common_Profile_Controller);
+		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController("/gui/view/ClientProfile.fxml", ControllerType.Common_Profile_Controller,user);
 		screen.setCenter(dashboard);
 	}
 	

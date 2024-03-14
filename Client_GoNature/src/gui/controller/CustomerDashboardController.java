@@ -49,6 +49,4 @@ public class CustomerDashboardController implements Initializable{
 		login_date.setText(CurrentDate.getCurrentDate("'Today' yyyy-MM-dd"));
 	}
 	
-
-	
 }

@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import logic.User;
 import utils.CurrentDate;
 
 public class CommonProfileController implements Initializable {
@@ -32,13 +33,22 @@ public class CommonProfileController implements Initializable {
 	public TextField email_txt;
 	
 	private boolean isEmployee=false;
+	private User user;
 	
-	public CommonProfileController() {
-		
+	public CommonProfileController(User user) {
+		this.user=user;
 	}
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		date_lbl.setText(CurrentDate.getCurrentDate("'Today' yyyy-MM-dd"));
+		fname_txt.setText(user.getFirstName());
+		lname_txt.setText(user.getLastName());;
+		username_txt.setText(user.getUsername());;
+		password_txt.setText(user.getPassword());;
+		account_type_txt.setText(user.getUserType().toString());;
+//		related_park_txt.setText(user.getFirstName());;
+		phone_number_txt.setText(user.getPhoneNumber());;
+		email_txt.setText(user.getEmailAddress());;
 	}
 	
 	public void setIsEmployee(boolean flag) {
