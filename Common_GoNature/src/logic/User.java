@@ -14,7 +14,7 @@ public class User implements Serializable{
 	private String phoneNumber;
 	private String emailAddress;
 	private UserTypeEnum userType;
-	private ParkNameEnum relatedPark;
+	private ParkNameEnum relatedPark=null;
 	
 	public User(String userId,String username,String password,String firstName,
 			String lastName,String phoneNumber,String emailAddress) {
@@ -105,8 +105,10 @@ public class User implements Serializable{
 		this.relatedPark=relatedPark;
 	}
 	
-	
-	
+	@Override
+	public boolean equals(Object obj) {
+		return this.username.equals(((User)obj).username);
+	}
 	
 	
 	

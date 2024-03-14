@@ -9,6 +9,7 @@ import java.sql.Statement;
 
 import gui.controller.ServerGuiController;
 import logic.User;
+import utils.enums.ParkNameEnum;
 import utils.enums.UserTypeEnum;
 
 
@@ -70,11 +71,39 @@ public class QueryControl {
 //		}
 //	}
 //	
+	public static DBReturnOptions updateUserInDB(User user, ServerGuiController serverController) {
+		try {
+			Connection con = MySqlConnection.getInstance().getConnection();
+			PreparedStatement stmt =con.prepareStatement("UPDATE accounts SET password = ?, Email = ?, phone = ?, acctype = ? WHERE username = ?");
+			stmt.setString(1, user.getPassword());
+			stmt.setString(2, user.getEmailAddress());
+			stmt.setString(3, user.getPhoneNumber());
+			stmt.setString(4, user.getUserType().name());
+			stmt.setString(5, user.getUsername());
+			
+			int rs = stmt.executeUpdate();
+			
+			if(rs==0) {
+				return DBReturnOptions.User_Does_Exists;
+			}
+			
+			return DBReturnOptions.Success;
+		}catch(SQLException ex) {
+			serverController.printToLogConsole("Query for search for user failed");
+			return DBReturnOptions.Exception_Was_Thrown;
+		}
+		// any other exception occurred
+		catch(Exception e) {
+			serverController.printToLogConsole(e.getMessage());
+			return DBReturnOptions.Exception_Was_Thrown;
+		}
+	}
+	
 	public static DBReturnOptions searchForUser(User user,ServerGuiController serverController) {
 
 	try {
 		Connection con = MySqlConnection.getInstance().getConnection();
-		PreparedStatement stmt = con.prepareStatement("SELECT * FROM accounts WHERE username = ?");
+		PreparedStatement stmt = con.prepareStatement("SELECT * FROM users WHERE username = ?");
 		// create the requested query
 		stmt.setString(1, user.getUsername());
 		ResultSet rs = stmt.executeQuery();
@@ -84,7 +113,7 @@ public class QueryControl {
 			return DBReturnOptions.User_Not_Exists;
 		}
 		
-		if(!user.getPassword().equals(rs.getString(2))) {
+		if(!user.getPassword().equals(rs.getString(3))) {
 			return DBReturnOptions.Password_Incorrect;
 		}
 		
@@ -96,14 +125,20 @@ public class QueryControl {
 //		else
 //			user.setAsLoggedOut();
 		
-		user.setPassword(rs.getString(2));
-		user.setEmailAddress(rs.getString(3));
-		user.setPhoneNumber(rs.getString(4));
-		user.setFirstName("Gal");
-		user.setLastName("Bitton");
+		user.setUserId(rs.getString(1));
+		user.setPassword(rs.getString(3));
+		user.setFirstName(rs.getString(4));
+		user.setLastName(rs.getString(5));
+		String userType = rs.getString(6);
+		String parkName = rs.getString(7);
+		user.setEmailAddress(rs.getString(8));
+		user.setPhoneNumber(rs.getString(9));
+
 		// update user type
-		UserTypeEnum type = UserTypeEnum.valueOf(rs.getString(5));
+		UserTypeEnum type = UserTypeEnum.fromString(userType);
+		ParkNameEnum park = ParkNameEnum.fromString(parkName);
 		user.setUserType(type);
+		user.setRelatedPark(park);
 		// create new Order instance and initialize it with relevant data.
 		
 		return DBReturnOptions.Success;

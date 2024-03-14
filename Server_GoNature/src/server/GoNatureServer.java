@@ -10,6 +10,8 @@ import java.util.Enumeration;
 import gui.controller.ServerGuiController;
 import jdbc.DBConnectionDetails;
 import jdbc.QueryControl;
+import jdbc.QueryType;
+import logic.ClientConnection;
 import logic.ClientRequestDataContainer;
 import logic.ServerResponseBackToClient;
 import logic.User;
@@ -74,6 +76,9 @@ public class GoNatureServer extends AbstractServer {
 		case Logout:
 			handleUserLogoutFromApplication(data.getData(),client,clientIp);
 			return;
+		case Update_User_Details:
+			handleUpdateUserDetails(data.getData(),client,clientIp);
+			return;
 //		case SignUpNewUser:
 //			handleClientSignupRequest((User)data.getMessage(),client,clientIp);
 //			return;
@@ -97,6 +102,20 @@ public class GoNatureServer extends AbstractServer {
 
 	}
 	
+	private void handleUpdateUserDetails(Object user, ConnectionToClient client, String clientIp) {
+		try {
+			User currentUser = (User)user;
+			serverController.printToLogConsole(String.format("User : '%s' with IP : '%s' : Request Update Details", currentUser.getUsername(),clientIp));
+			DBReturnOptions DBResponse = QueryControl.updateUserInDB(currentUser,serverController);
+			// TODO: if success
+			serverController.printToLogConsole(String.format("User : '%s' with IP : '%s' : Details Updated Successfully", currentUser.getUsername(),clientIp));
+			client.sendToClient(new ServerResponseBackToClient(ServerResponseEnum.Details_Updated_Succesfully,currentUser,""));
+		}catch(IOException ex) {
+			serverController.printToLogConsole("Error while sending update message to client");
+			return;
+		}
+	}
+	
 	private void handleUserLogoutFromApplication(Object user, ConnectionToClient client, String clientIp) {
 		try {
 			User currentUser = (User)user;
@@ -115,7 +134,7 @@ public class GoNatureServer extends AbstractServer {
 		User currentUser = (User)data;
 		serverController.printToLogConsole(String.format("User : '%s' with IP : '%s' : Request Login to Application", currentUser.getUsername(),clientIp));
 		DBReturnOptions dbReturn = QueryControl.searchForUser(currentUser,serverController);
-		ServerResponseEnum response;
+		ServerResponseEnum response = null;
 		
 		try {
 			switch(dbReturn) {
@@ -126,14 +145,20 @@ public class GoNatureServer extends AbstractServer {
 					response=ServerResponseEnum.Password_Incorrect;
 					break;
 				case Success:
+					boolean isConnected=false;
 					for(User user: serverController.getConnectedUsers()) {
 						if(currentUser.equals(user)) {
 							response=ServerResponseEnum.User_Already_Connected;
+							serverController.printToLogConsole(String.format("User : '%s' with IP : '%s' : Already Connected", currentUser.getUsername(),clientIp));
+							isConnected=true;
 							break;
 						}
 					}
+					if(isConnected)
+						break;
 					response=ServerResponseEnum.User_Connected_Successfully;
 					serverController.getConnectedUsers().add(currentUser);
+					serverController.addToConnected(client,currentUser.getUsername());
 					serverController.printToLogConsole(String.format("User : '%s' with IP : '%s' : Login Successfully", currentUser.getUsername(),clientIp));
 					break;
 				default:
@@ -299,19 +324,12 @@ public class GoNatureServer extends AbstractServer {
 	@Override
 	protected void clientConnected(ConnectionToClient client) {
 		InetAddress details = client.getInetAddress();
-//		for(ClientConnection cl : serverController.getClientsList()) {
-//			if(details.getHostAddress().equals(cl.getHostIp())) {
-//				try {
-//					client.sendToClient(new ServerRes(ServerActionsEnum.ForceDisconnect,""));
-//				} catch (IOException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//				return;
-//			}
-//		}
+		for(ClientConnection cl : serverController.getClientsList()) {
+			if(details.getHostAddress().equals(cl.getHostIp())) {
+				return;
+			}
+		}
 		serverController.printToLogConsole("Client "+details.getHostName()+" with IP:"+details.getHostAddress()+ " Connected");
-		serverController.addToConnected(client);
 	}
 	
 	/**
