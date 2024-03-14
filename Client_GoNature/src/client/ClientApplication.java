@@ -1,6 +1,7 @@
 package client;
 
 import gui.controller.CommonLandingPageController;
+import gui.controller.IScreenController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,12 +11,13 @@ import javafx.stage.Stage;
 
 public class ClientApplication extends Application {
 	public static ClientMainControl client;
-	
+	public static IScreenController runningController;
+	public static CommonLandingPageController landingPageController;
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/view/LandingPage.fxml"));
-			CommonLandingPageController landingPageController = new CommonLandingPageController();
+			landingPageController = new CommonLandingPageController();
 			loader.setController(landingPageController);
 			landingPageController.setStage(primaryStage);
 			loader.load();
@@ -30,7 +32,6 @@ public class ClientApplication extends Application {
 			e.printStackTrace();
 		}
 	}
-	
 	
 	public static void main(String[] args) {
 		launch(args);

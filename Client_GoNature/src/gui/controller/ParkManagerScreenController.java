@@ -55,6 +55,12 @@ public class ParkManagerScreenController implements Initializable,IScreenControl
 		alert.showAndWait();
 	}
 	
+	@Override
+	public void onServerCrashed() {
+		// TODO Auto-generated method stub
+		
+	}
+	
 	private Stage getStage() {
 		return stage;
 	}

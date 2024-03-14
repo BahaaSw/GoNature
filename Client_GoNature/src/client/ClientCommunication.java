@@ -3,6 +3,7 @@ package client;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javafx.application.Platform;
 import logic.ClientRequestDataContainer;
 import logic.ServerResponseBackToClient;
 import ocsf.AbstractClient;
@@ -38,6 +39,9 @@ public class ClientCommunication extends AbstractClient {
 	public void handleMessageFromServer(Object msg) {
 		awaitResponse = false;
 		responseFromServer= (ServerResponseBackToClient)msg;	
+		if(responseFromServer.getRensponse()==ServerResponseEnum.Server_Disconnected)
+			Platform.runLater(()->ClientApplication.runningController.onServerCrashed());
+		
 	}
 	
 	public void handleMessageFromClientUI(ClientRequestDataContainer message) {
