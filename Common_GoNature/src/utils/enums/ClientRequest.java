@@ -20,4 +20,6 @@ public enum ClientRequest {
 	
 	Login,Logout,SignUpNewUser,
 	UpdateOrder,SearchOrder,DisconnectFromServer,
+	Update_User_Details,
+	
 }

@@ -10,6 +10,7 @@ import java.util.Enumeration;
 import gui.controller.ServerGuiController;
 import jdbc.DBConnectionDetails;
 import jdbc.QueryControl;
+import jdbc.QueryType;
 import logic.ClientRequestDataContainer;
 import logic.ServerResponseBackToClient;
 import logic.User;
@@ -74,6 +75,9 @@ public class GoNatureServer extends AbstractServer {
 		case Logout:
 			handleUserLogoutFromApplication(data.getData(),client,clientIp);
 			return;
+		case Update_User_Details:
+			handleUpdateUserDetails(data.getData(),client,clientIp);
+			return;
 //		case SignUpNewUser:
 //			handleClientSignupRequest((User)data.getMessage(),client,clientIp);
 //			return;
@@ -95,6 +99,20 @@ public class GoNatureServer extends AbstractServer {
 			return;
 		}
 
+	}
+	
+	private void handleUpdateUserDetails(Object user, ConnectionToClient client, String clientIp) {
+		try {
+			User currentUser = (User)user;
+			serverController.printToLogConsole(String.format("User : '%s' with IP : '%s' : Request Update Details", currentUser.getUsername(),clientIp));
+			DBReturnOptions DBResponse = QueryControl.updateUserInDB(currentUser,serverController);
+			// TODO: if success
+			serverController.printToLogConsole(String.format("User : '%s' with IP : '%s' : Details Updated Successfully", currentUser.getUsername(),clientIp));
+			client.sendToClient(new ServerResponseBackToClient(ServerResponseEnum.Details_Updated_Succesfully,currentUser,""));
+		}catch(IOException ex) {
+			serverController.printToLogConsole("Error while sending update message to client");
+			return;
+		}
 	}
 	
 	private void handleUserLogoutFromApplication(Object user, ConnectionToClient client, String clientIp) {

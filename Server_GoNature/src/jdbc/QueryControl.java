@@ -70,6 +70,34 @@ public class QueryControl {
 //		}
 //	}
 //	
+	public static DBReturnOptions updateUserInDB(User user, ServerGuiController serverController) {
+		try {
+			Connection con = MySqlConnection.getInstance().getConnection();
+			PreparedStatement stmt =con.prepareStatement("UPDATE accounts SET password = ?, Email = ?, phone = ?, acctype = ? WHERE username = ?");
+			stmt.setString(1, user.getPassword());
+			stmt.setString(2, user.getEmailAddress());
+			stmt.setString(3, user.getPhoneNumber());
+			stmt.setString(4, user.getUserType().name());
+			stmt.setString(5, user.getUsername());
+			
+			int rs = stmt.executeUpdate();
+			
+			if(rs==0) {
+				return DBReturnOptions.User_Does_Exists;
+			}
+			
+			return DBReturnOptions.Success;
+		}catch(SQLException ex) {
+			serverController.printToLogConsole("Query for search for user failed");
+			return DBReturnOptions.Exception_Was_Thrown;
+		}
+		// any other exception occurred
+		catch(Exception e) {
+			serverController.printToLogConsole(e.getMessage());
+			return DBReturnOptions.Exception_Was_Thrown;
+		}
+	}
+	
 	public static DBReturnOptions searchForUser(User user,ServerGuiController serverController) {
 
 	try {
