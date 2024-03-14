@@ -33,7 +33,7 @@ public class ServerGuiView extends Application {
 		primaryStage.setScene(scene);
 		primaryStage.setResizable(false);
 		// disconnect before closing waiting to run on main javaFX thread.
-//		primaryStage.setOnCloseRequest(e -> Platform.runLater(()->GoNatureServer.stopServer()));
+		primaryStage.setOnCloseRequest(e -> Platform.runLater(()->GoNatureServer.stopServer()));
 		primaryStage.setTitle("GoNature - Parks&Vacations - Server Side");
 		primaryStage.show();
 		

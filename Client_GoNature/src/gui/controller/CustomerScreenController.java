@@ -1,8 +1,12 @@
 package gui.controller;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import client.ClientApplication;
+import client.ClientCommunication;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -10,9 +14,13 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import logic.ClientRequestDataContainer;
 import logic.SceneLoaderHelper;
+import logic.ServerResponseBackToClient;
 import logic.User;
 import utils.AlertPopUp;
+import utils.CurrentWindow;
+import utils.enums.ClientRequest;
 
 public class CustomerScreenController implements Initializable,IScreenController {
 	@FXML
@@ -71,8 +79,25 @@ public class CustomerScreenController implements Initializable,IScreenController
 	}
 	
 	public void onLogoutClicked() {
-		AlertPopUp alert = new AlertPopUp(AlertType.INFORMATION,"Logout","Logout Clicked","Test");
+		ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Logout, user,"");
+		ClientApplication.client.accept(request);
+		ServerResponseBackToClient response = ClientCommunication.responseFromServer;
+		AlertPopUp alert = new AlertPopUp(AlertType.INFORMATION,"Logout","User Requested Logout","Cya soon");
 		alert.showAndWait();
+		GuiHelper.setScreenAfterLogout();
+		
+	}
+	
+	public void onServerCrashed() {
+		AlertPopUp alert = new AlertPopUp(AlertType.ERROR,"FATAL ERROR","Server is Down","Server Crashed - The application will be closed.");
+		alert.showAndWait();
+		try {
+			ClientApplication.client.getClient().closeConnection();
+			Platform.runLater(()->CurrentWindow.getCurrentWindow().close());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	private Stage getStage() {

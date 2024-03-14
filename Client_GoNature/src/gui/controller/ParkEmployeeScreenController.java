@@ -55,6 +55,12 @@ public class ParkEmployeeScreenController implements Initializable,IScreenContro
 		alert.showAndWait();
 	}
 	
+	@Override
+	public void onServerCrashed() {
+		// TODO Auto-generated method stub
+		
+	}
+	
 	private Stage getStage() {
 		return stage;
 	}
@@ -66,4 +72,6 @@ public class ParkEmployeeScreenController implements Initializable,IScreenContro
 	public void setMainScreenStage(Stage stage) {
 		this.mainScreenStage = stage;
 	}
+
+
 }

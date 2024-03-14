@@ -5,6 +5,7 @@ public enum ServerResponseEnum {
 	User_Does_Not_Exists,
 	User_Already_Connected,
 	Password_Incorrect,
+	User_Logout_Successfully,
 	
 	Request_Failed,
 	Server_Closed,

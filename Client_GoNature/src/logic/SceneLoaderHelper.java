@@ -2,6 +2,7 @@ package logic;
 
 import java.io.IOException;
 
+import client.ClientApplication;
 import gui.controller.CommonLandingPageController;
 import gui.controller.CommonProfileController;
 import gui.controller.ControllerType;
@@ -14,9 +15,13 @@ import gui.controller.DepartmentManagerViewReportsController;
 import gui.controller.ParkEmployeeDashboardController;
 import gui.controller.ParkManagerDashboardController;
 import gui.controller.ServiceEmployeeDashboardController;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import utils.CurrentWindow;
 
 public class SceneLoaderHelper {
 	
@@ -111,6 +116,28 @@ public class SceneLoaderHelper {
 		}
 
 		return centerScreen;
+	}
+	
+	public void setScreenAfterLogout() {
+
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/view/LandingPage.fxml"));
+			loader.setController(ClientApplication.landingPageController);
+			Scene scene = new Scene(loader.load());
+			Stage currentWindow = CurrentWindow.getCurrentWindow();
+			currentWindow.setScene(scene);
+			currentWindow.setTitle("GoNature Client - Landing Page");
+	//		primaryStage.getIcons().add(new Image(GoNatureFinals.APP_ICON));
+			currentWindow.setResizable(false);
+			currentWindow.show();
+			CurrentWindow.setCurrentWindow(currentWindow);
+			Platform.runLater(()->ClientApplication.landingPageController.setScreenAfterLogout());
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 	public void setEmployee(boolean isEmployee) {

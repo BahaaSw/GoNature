@@ -101,8 +101,6 @@ public class CommonLandingPageController implements Initializable {
 	
 	public void onConnectToServerClicked() {
 		String message="";
-		connect_to_server_vbox.setVisible(false);
-		options_vbox.setVisible(true);
 		boolean isValidIp=ValidationRules.isValidIp(server_ip_fld.getText());
 		boolean isValidPort=ValidationRules.isValidPort(server_port_fld.getText());
 		if(!isValidIp||!isValidPort) {
@@ -114,7 +112,7 @@ public class CommonLandingPageController implements Initializable {
 		}
 		
 		ClientApplication.client = new ClientMainControl(server_ip_fld.getText(), Integer.parseInt(server_port_fld.getText()));
-		if(ClientApplication.client==null) {
+		if(ClientApplication.client.getClient()==null) {
 			AlertPopUp alert = new AlertPopUp(AlertType.ERROR, "Error", "Connect To Server", "Failed to connect the server");
 			alert.showAndWait();
 			return;
@@ -151,21 +149,21 @@ public class CommonLandingPageController implements Initializable {
 		ClientApplication.client.accept(requestMessage);
 		ServerResponseBackToClient response = ClientCommunication.responseFromServer;
 		switch(response.getRensponse()) {
-		case Password_Incorrect:
-			alert = new AlertPopUp(AlertType.WARNING, "Warning", "Password Incorrect", "");
-			alert.showAndWait();
-			return;
-		case User_Already_Connected:
-			alert = new AlertPopUp(AlertType.WARNING, "Warning", "User Already Connected!", "");
-			alert.showAndWait();
-			return;
-		case Request_Failed:
-			alert = new AlertPopUp(AlertType.ERROR, "Server Got Error", "Application Will Close", "");
-			alert.showAndWait();
-			Stage currentWindow = (Stage) icon.getScene().getWindow();
-			currentWindow.close();
-			System.exit(0);
-			return;	
+			case Password_Incorrect:
+				alert = new AlertPopUp(AlertType.WARNING, "Warning", "Password Incorrect", "");
+				alert.showAndWait();
+				return;
+			case User_Already_Connected:
+				alert = new AlertPopUp(AlertType.WARNING, "Warning", "User Already Connected!", "");
+				alert.showAndWait();
+				return;
+			case Request_Failed:
+				alert = new AlertPopUp(AlertType.ERROR, "Server Got Error", "Application Will Close", "");
+				alert.showAndWait();
+				Stage currentWindow = (Stage) icon.getScene().getWindow();
+				currentWindow.close();
+				System.exit(0);
+				return;	
 		}
 		
 		switchMainScreenAccordingToUserLogin((User)response.getMessage());
@@ -206,7 +204,7 @@ public class CommonLandingPageController implements Initializable {
 				controller=new ServiceEmployeeScreenController(user);
 				break;
 			}
-	
+			
 			loader.setController(controller);
 			loader.load();
 			Parent p = loader.getRoot();
@@ -218,7 +216,9 @@ public class CommonLandingPageController implements Initializable {
 			CurrentWindow.getCurrentWindow().setTitle("GoNature - Client Screen");
 			CurrentWindow.getCurrentWindow().setScene(new Scene(p));
 			CurrentWindow.getCurrentWindow().setResizable(false);
+			ClientApplication.runningController=controller;
 			CurrentWindow.getCurrentWindow().show();
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
