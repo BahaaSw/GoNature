@@ -11,6 +11,7 @@ import gui.controller.ServerGuiController;
 import jdbc.DBConnectionDetails;
 import jdbc.QueryControl;
 import jdbc.QueryType;
+import logic.ClientConnection;
 import logic.ClientRequestDataContainer;
 import logic.ServerResponseBackToClient;
 import logic.User;
@@ -133,7 +134,7 @@ public class GoNatureServer extends AbstractServer {
 		User currentUser = (User)data;
 		serverController.printToLogConsole(String.format("User : '%s' with IP : '%s' : Request Login to Application", currentUser.getUsername(),clientIp));
 		DBReturnOptions dbReturn = QueryControl.searchForUser(currentUser,serverController);
-		ServerResponseEnum response;
+		ServerResponseEnum response = null;
 		
 		try {
 			switch(dbReturn) {
@@ -144,14 +145,20 @@ public class GoNatureServer extends AbstractServer {
 					response=ServerResponseEnum.Password_Incorrect;
 					break;
 				case Success:
+					boolean isConnected=false;
 					for(User user: serverController.getConnectedUsers()) {
 						if(currentUser.equals(user)) {
 							response=ServerResponseEnum.User_Already_Connected;
+							serverController.printToLogConsole(String.format("User : '%s' with IP : '%s' : Already Connected", currentUser.getUsername(),clientIp));
+							isConnected=true;
 							break;
 						}
 					}
+					if(isConnected)
+						break;
 					response=ServerResponseEnum.User_Connected_Successfully;
 					serverController.getConnectedUsers().add(currentUser);
+					serverController.addToConnected(client,currentUser.getUsername());
 					serverController.printToLogConsole(String.format("User : '%s' with IP : '%s' : Login Successfully", currentUser.getUsername(),clientIp));
 					break;
 				default:
@@ -317,19 +324,12 @@ public class GoNatureServer extends AbstractServer {
 	@Override
 	protected void clientConnected(ConnectionToClient client) {
 		InetAddress details = client.getInetAddress();
-//		for(ClientConnection cl : serverController.getClientsList()) {
-//			if(details.getHostAddress().equals(cl.getHostIp())) {
-//				try {
-//					client.sendToClient(new ServerRes(ServerActionsEnum.ForceDisconnect,""));
-//				} catch (IOException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//				return;
-//			}
-//		}
+		for(ClientConnection cl : serverController.getClientsList()) {
+			if(details.getHostAddress().equals(cl.getHostIp())) {
+				return;
+			}
+		}
 		serverController.printToLogConsole("Client "+details.getHostName()+" with IP:"+details.getHostAddress()+ " Connected");
-		serverController.addToConnected(client);
 	}
 	
 	/**

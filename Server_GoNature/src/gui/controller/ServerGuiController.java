@@ -137,8 +137,8 @@ public class ServerGuiController {
 	 * This method add specific client to the connected clients table view in the gui screen.
 	 * @param client- The ConnectionToClient instance which include the details of the client.
 	 */
-	public void addToConnected(ConnectionToClient client) {
-		connectedClientsList.add(new ClientConnection(client.getInetAddress().getHostAddress(), client.getInetAddress().getHostName(),"Waiting For Login"));
+	public void addToConnected(ConnectionToClient client,String username) {
+		connectedClientsList.add(new ClientConnection(client.getInetAddress().getHostAddress(), client.getInetAddress().getHostName(),username));
 	}
 	
 	/**
@@ -188,4 +188,5 @@ public class ServerGuiController {
 	public ArrayList<User> getConnectedUsers(){
 		return connectedUsers;
 	}
+	
 }

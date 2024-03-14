@@ -56,7 +56,7 @@ public class CommonProfileController implements Initializable {
 		username_txt.setText(user.getUsername());;
 		password_txt.setText(user.getPassword());;
 		account_type_txt.setText(user.getUserType().toString());;
-//		related_park_txt.setText(user.getFirstName());;
+		related_park_txt.setText(user.getRelatedPark().name());;
 		phone_number_txt.setText(user.getPhoneNumber());;
 		email_txt.setText(user.getEmailAddress());;
 	}
