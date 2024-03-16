@@ -1,5 +1,6 @@
 package logic;
 
+import utils.enums.UserStatus;
 import utils.enums.UserTypeEnum;
 
 public class Guide extends User implements ICustomer {
@@ -13,6 +14,12 @@ public class Guide extends User implements ICustomer {
 			String lastName,String phoneNumber,String emailAddress) {
 		super(userId,username,password,firstName,lastName,phoneNumber,emailAddress);
 		userType=UserTypeEnum.Guide;
+	}
+	
+	public Guide(String username,String password) {
+		super(username,password);
+		userType=UserTypeEnum.Guide;
+		userStatus=UserStatus.Approved;
 	}
 
 	@Override

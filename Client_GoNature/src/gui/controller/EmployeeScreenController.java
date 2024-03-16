@@ -6,17 +6,21 @@ import java.util.ResourceBundle;
 
 import client.ClientApplication;
 import client.ClientCommunication;
+import gui.view.ApplicationViewType;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.control.Button;
 import logic.ClientRequestDataContainer;
 import logic.Employee;
+import logic.EntitiesContainer;
 import logic.ExternalUser;
 import logic.Guide;
+import logic.Park;
 import logic.SceneLoaderHelper;
 import logic.ServerResponseBackToClient;
 import logic.User;
@@ -24,6 +28,7 @@ import logic.Visitor;
 import utils.AlertPopUp;
 import utils.CurrentWindow;
 import utils.enums.ClientRequest;
+import utils.enums.ParkNameEnum;
 import utils.enums.UserTypeEnum;
 
 public class EmployeeScreenController implements Initializable,IScreenController {
@@ -66,6 +71,7 @@ public class EmployeeScreenController implements Initializable,IScreenController
 	public void initialize(URL location, ResourceBundle resources) {
 		// TODO: hide buttons according to employee type
 		initializeScreenAccordingToEmployeeType();
+		onHomeClicked();
 	}
 	
 	private void initializeScreenAccordingToEmployeeType() {
@@ -77,7 +83,7 @@ public class EmployeeScreenController implements Initializable,IScreenController
 				parkEntranceButton.setManaged(false);
 				parkSettingsButton.setVisible(false);
 				parkSettingsButton.setManaged(false);
-				return;
+				break;
 			case Park_Employee:
 				addNewGuideButton.setVisible(false);
 				addNewGuideButton.setManaged(false);
@@ -89,7 +95,7 @@ public class EmployeeScreenController implements Initializable,IScreenController
 				parkSettingsButton.setManaged(false);
 				requestsButton.setVisible(false);
 				requestsButton.setManaged(false);
-				return;
+				break;
 			case Park_Manager:
 				addNewGuideButton.setVisible(false);
 				addNewGuideButton.setManaged(false);
@@ -99,7 +105,7 @@ public class EmployeeScreenController implements Initializable,IScreenController
 				viewReportsButton.setManaged(false);
 				requestsButton.setVisible(false);
 				requestsButton.setManaged(false);
-				return;
+				break;
 			case Service_Employee:
 				parkEntranceButton.setVisible(false);
 				parkEntranceButton.setManaged(false);
@@ -113,8 +119,10 @@ public class EmployeeScreenController implements Initializable,IScreenController
 				requestsButton.setManaged(false);
 				parkSpotsButton.setVisible(false);
 				parkSpotsButton.setManaged(false);
-				return;
+				break;
 		}
+		userIdLabel.setText(employee.getUserId());
+		employeeTypeLabel.setText(employee.getEmployeeType().toString());
 	}
 	
 	
@@ -138,36 +146,54 @@ public class EmployeeScreenController implements Initializable,IScreenController
 		}
 	}
 	
-	private void onHomeClicked() {
-		
+	public void onHomeClicked() {
+		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/EmployeeHomepageScreen.fxml",
+				ApplicationViewType.EmployeeHomepageScreen,new EntitiesContainer(employee));
+		screen.setCenter(dashboard);
 	}
 	
-	private void onAddNewGuideClicked() {
-
+	public void onAddNewGuideClicked() {
+		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/ManageGuidesScreen.fxml",
+				ApplicationViewType.ManageGuidesScreen,null);
+		screen.setCenter(dashboard);
 	}
 	
-	private void onParkEntranceClicked() {
-		
+	public void onParkEntranceClicked() {
+		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/ParkEntranceScreen.fxml",
+				ApplicationViewType.ParkEntranceScreen,new EntitiesContainer(employee));
+		screen.setCenter(dashboard);
 	}
 	
-	private void onCreateReportsClicked() {
-		
+	public void onCreateReportsClicked() {
+		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/CreateReportsScreen.fxml",
+				ApplicationViewType.CreateReportsScreen,new EntitiesContainer(employee));
+		screen.setCenter(dashboard);
 	}
 	
-	private void onViewReportsClicked() {
-		
+	public void onViewReportsClicked() {
+		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/ViewReportsScreen.fxml",
+				ApplicationViewType.ViewReportsScreen,new EntitiesContainer(employee));
+		screen.setCenter(dashboard);
 	}
 	
-	private void onParkSettingsClicked() {
-		
+	public void onParkSettingsClicked() {
+		Park park = new Park(1,ParkNameEnum.Banias,100,50,4,20);
+		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/ParkSettingsScreen.fxml",
+				ApplicationViewType.ParkSettingsScreen,new EntitiesContainer(park,employee));
+		screen.setCenter(dashboard);
 	}
 	
-	private void onRequestsClicked() {
-		
+	public void onRequestsClicked() {
+		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/RequestTableScreen.fxml",
+				ApplicationViewType.RequestTableScreen,new EntitiesContainer(employee));
+		screen.setCenter(dashboard);
 	}
 	
-	private void onParkSpotsClicked() {
-		
+	public void onParkSpotsClicked() {
+		Park park = new Park(1,ParkNameEnum.Banias,100,50,4,20);
+		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/ParkAvailableSpotsScreen.fxml",
+				ApplicationViewType.ParkAvailableSpotsScreen,new EntitiesContainer(employee,park));
+		screen.setCenter(dashboard);
 	}
 
 }

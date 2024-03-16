@@ -11,9 +11,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import logic.Guide;
+import utils.AlertPopUp;
 import utils.CurrentDateAndTime;
 import utils.enums.ParkNameEnum;
 
@@ -89,11 +91,15 @@ public class AddNewGuideScreenController implements Initializable{
 	public void onDenyClicked(){
 		//TODO: Communicate with database to update the guide as approved
 		//TODO: open load home screen to center
+		AlertPopUp alert = new AlertPopUp(AlertType.INFORMATION,"Test","Test","Test");
+		alert.showAndWait();
 	}
 	
 	public void onApproveClicked() {
 		//TODO: Communicate with the database to delete the guide from table.
 		//TODO: open load home screen to center
+		AlertPopUp alert = new AlertPopUp(AlertType.INFORMATION,"Test","Test","Test");
+		alert.showAndWait();
 	}
 	
 }

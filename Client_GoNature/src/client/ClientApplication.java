@@ -19,6 +19,7 @@ public class ClientApplication extends Application {
 			landingPageController = new LandingPageScreenController();
 			loader.setController(landingPageController);
 			landingPageController.setStage(primaryStage);
+			runningController=landingPageController;
 			loader.load();
 			Parent p = loader.getRoot();
 			primaryStage.setTitle("GoNature Client - Landing Page");

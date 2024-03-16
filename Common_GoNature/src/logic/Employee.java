@@ -2,6 +2,7 @@ package logic;
 
 import utils.enums.EmployeeTypeEnum;
 import utils.enums.ParkNameEnum;
+import utils.enums.UserStatus;
 import utils.enums.UserTypeEnum;
 
 public class Employee extends User {
@@ -19,7 +20,14 @@ public class Employee extends User {
 		super(userId,username,password,firstName,lastName,phoneNumber,emailAddress);
 		this.relatedPark=relatedPark;
 		this.employeeType=employeeType;
+		userStatus=userStatus.Approved;
 	}
+	
+	public Employee(String username,String password) {
+		super(username,password);
+		userStatus=UserStatus.Approved;
+	}
+	
 	
 	public Employee() {
 		super(UserTypeEnum.Employee);

@@ -17,6 +17,15 @@ public class Park {
 		this.parkId=parkId;
 	}
 	
+	public Park(int parkId, ParkNameEnum parkName,int currentMaxCapacity,int currentInPark,int currentEstimatedStayTime,int currentEstimatedReservedSpots) {
+		this.parkId=parkId;
+		this.parkName=parkName;
+		this.currentMaxCapacity=currentMaxCapacity;
+		this.currentInPark=currentInPark;
+		this.currentEstimatedStayTime=currentEstimatedStayTime;
+		this.currentEstimatedReservedSpots=currentEstimatedReservedSpots;
+	}
+	
 	public Park(int parkId,ParkNameEnum parkName) {
 		this.parkId=parkId;
 		this.parkName=parkName;
