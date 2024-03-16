@@ -30,33 +30,6 @@ import utils.enums.UserTypeEnum;
  */
 public class QueryControl {
 	
-	/**
-	 * This method is trying to connect to mySQL database, using jdbc driver.
-	 * This method is being called from server, and return it's connection.
-	 * @param db - class which contains the required information for database (hostname,username,password)
-	 * @return if connected successfully -> return the new Connection.
-	 * 		   else -> return null.
-	 */
-//	public static Connection connectToMySqlDB(DBConnectionDetails db) {
-//		try {
-//			Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
-//			System.out.println("Driver definition succeed");
-//		}catch (Exception ex) {
-//			System.out.println("Driver definition failed");
-//		}
-//		
-//		try {
-//			String url = "jdbc:mysql://127.0.0.1/"+db.getName()+"?serverTimezone=IST";
-//			Connection conn = DriverManager.getConnection(url,db.getUsername(),db.getPassword());
-//			return conn;
-//		}catch(SQLException ex) {
-//			System.out.println("SQLException: "+ex.getMessage());
-//			System.out.println("SQLState: "+ex.getSQLState());
-//			System.out.println("VendorError: "+ex.getErrorCode());
-//			return null;
-//		}
-//	}
-//
 //	public static Object runQuery(Connection conn,QueryType action) {
 //		
 //		switch(action) {
@@ -99,60 +72,60 @@ public class QueryControl {
 		}
 	}
 	
-	public static DBReturnOptions searchForUser(User user,ServerGuiController serverController) {
-
-	try {
-		Connection con = MySqlConnection.getInstance().getConnection();
-		PreparedStatement stmt = con.prepareStatement("SELECT * FROM users WHERE username = ?");
-		// create the requested query
-		stmt.setString(1, user.getUsername());
-		ResultSet rs = stmt.executeQuery();
-		
-		// if the query run successfully, but returned as empty table.
-		if(!rs.next()) {
-			return DBReturnOptions.User_Not_Exists;
-		}
-		
-		if(!user.getPassword().equals(rs.getString(3))) {
-			return DBReturnOptions.Password_Incorrect;
-		}
-		
-//		int isConnected= rs.getInt(6);
-//		if(isConnected==1) {
-//			user.setAsLoggedIn();
-//			return DBReturnOptions.UserAlreadyLoggedIn;
+//	public static DBReturnOptions searchForUser(User user,ServerGuiController serverController) {
+//
+//	try {
+//		Connection con = MySqlConnection.getInstance().getConnection();
+//		PreparedStatement stmt = con.prepareStatement("SELECT * FROM users WHERE username = ?");
+//		// create the requested query
+//		stmt.setString(1, user.getUsername());
+//		ResultSet rs = stmt.executeQuery();
+//		
+//		// if the query run successfully, but returned as empty table.
+//		if(!rs.next()) {
+//			return DBReturnOptions.User_Not_Exists;
 //		}
-//		else
-//			user.setAsLoggedOut();
-		
-		user.setUserId(rs.getString(1));
-		user.setPassword(rs.getString(3));
-		user.setFirstName(rs.getString(4));
-		user.setLastName(rs.getString(5));
-		String userType = rs.getString(6);
-		String parkName = rs.getString(7);
-		user.setEmailAddress(rs.getString(8));
-		user.setPhoneNumber(rs.getString(9));
-
-		// update user type
-		UserTypeEnum type = UserTypeEnum.fromString(userType);
-		ParkNameEnum park = ParkNameEnum.fromString(parkName);
-		user.setUserType(type);
-		user.setRelatedPark(park);
-		// create new Order instance and initialize it with relevant data.
-		
-		return DBReturnOptions.Success;
-		
-	}catch(SQLException ex) {
-		serverController.printToLogConsole("Query for search for user failed");
-		return DBReturnOptions.Exception_Was_Thrown;
-	}
-	// any other exception occurred
-	catch(Exception e) {
-		serverController.printToLogConsole(e.getMessage());
-		return DBReturnOptions.Exception_Was_Thrown;
-	}
-}
+//		
+//		if(!user.getPassword().equals(rs.getString(3))) {
+//			return DBReturnOptions.Password_Incorrect;
+//		}
+//		
+////		int isConnected= rs.getInt(6);
+////		if(isConnected==1) {
+////			user.setAsLoggedIn();
+////			return DBReturnOptions.UserAlreadyLoggedIn;
+////		}
+////		else
+////			user.setAsLoggedOut();
+//		
+//		user.setUserId(rs.getString(1));
+//		user.setPassword(rs.getString(3));
+//		user.setFirstName(rs.getString(4));
+//		user.setLastName(rs.getString(5));
+//		String userType = rs.getString(6);
+//		String parkName = rs.getString(7);
+//		user.setEmailAddress(rs.getString(8));
+//		user.setPhoneNumber(rs.getString(9));
+//
+//		// update user type
+//		UserTypeEnum type = UserTypeEnum.fromString(userType);
+//		ParkNameEnum park = ParkNameEnum.fromString(parkName);
+//		user.setUserType(type);
+//		user.setRelatedPark(park);
+//		// create new Order instance and initialize it with relevant data.
+//		
+//		return DBReturnOptions.Success;
+//		
+//	}catch(SQLException ex) {
+//		serverController.printToLogConsole("Query for search for user failed");
+//		return DBReturnOptions.Exception_Was_Thrown;
+//	}
+//	// any other exception occurred
+//	catch(Exception e) {
+//		serverController.printToLogConsole(e.getMessage());
+//		return DBReturnOptions.Exception_Was_Thrown;
+//	}
+//}
 //
 //	public static DBReturnOptions changeIsConnectedFlagForUser(Connection conn, User user, boolean isConnected,ServerGuiController serverController) {
 //		try {

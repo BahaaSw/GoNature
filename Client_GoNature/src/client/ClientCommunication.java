@@ -9,7 +9,7 @@ import logic.ServerResponseBackToClient;
 import ocsf.AbstractClient;
 import ocsf.ChatIF;
 import utils.enums.ClientRequest;
-import utils.enums.ServerResponseEnum;
+import utils.enums.ServerResponse;
 
 public class ClientCommunication extends AbstractClient {
 	// Instance variables **********************************************
@@ -39,7 +39,7 @@ public class ClientCommunication extends AbstractClient {
 	public void handleMessageFromServer(Object msg) {
 		awaitResponse = false;
 		responseFromServer= (ServerResponseBackToClient)msg;	
-		if(responseFromServer.getRensponse()==ServerResponseEnum.Server_Disconnected)
+		if(responseFromServer.getRensponse()==ServerResponse.Server_Disconnected)
 			Platform.runLater(()->ClientApplication.runningController.onServerCrashed());
 		
 	}

@@ -4,13 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum UserTypeEnum {
-	Occasional_Visitor ("Occasional Visitor"),
+	ExternalUser ("External User"),
+	Employee ("Employee"),
 	Visitor ("Visitor"),
-	Guide ("Guide"),
-	Department_Manager ("Department Manager"),
-	Park_Manager ("Park Manager"),
-	Park_Employee ("Park Employee"),
-	Service_Employee ("Service Employee");
+	Guide ("Guide");
 
 	private static final Map<String, UserTypeEnum> enumMap = new HashMap<>();
 

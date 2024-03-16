@@ -48,13 +48,18 @@ public class ValidationRules {
 	}
 	
 	public static boolean isValidPassword(String password) {
-		String passwordPattern = "\\d{8,}";
+		String passwordPattern = "\\d{6,}";
 		return Pattern.matches(password, passwordPattern);
 	}
 	
 	public static boolean isValidUsername(String username) {
 		String usernamePattern="^[a-zA-Z0-9]+$";
 		return Pattern.matches(username, usernamePattern);
+	}
+	
+	public static boolean isValidId(String id) {
+		String idPattern="^[1-9]\\d{8}$";
+		return Pattern.matches(id, idPattern);
 	}
 	
 	

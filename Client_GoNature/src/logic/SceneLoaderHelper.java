@@ -3,107 +3,134 @@ package logic;
 import java.io.IOException;
 
 import client.ClientApplication;
-import gui.controller.CommonLandingPageController;
-import gui.controller.CommonProfileController;
-import gui.controller.ControllerType;
-import gui.controller.CustomerDashboardController;
-import gui.controller.CustomerEnterParkController;
-import gui.controller.CustomerMakeOrderController;
-import gui.controller.CustomerManageOrdersController;
-import gui.controller.DepartmentManagerDashboardController;
-import gui.controller.DepartmentManagerViewReportsController;
-import gui.controller.ParkEmployeeDashboardController;
-import gui.controller.ParkManagerDashboardController;
-import gui.controller.ServiceEmployeeDashboardController;
+import gui.controller.AddNewGuideScreenController;
+import gui.controller.ConfirmMessageScreenController;
+import gui.controller.CreateReportsScreenController;
+import gui.controller.CustomerHomepageScreenController;
+import gui.controller.EmployeeHomepageScreenController;
+import gui.controller.FinishOrderScreenController;
+import gui.controller.HandleOrderScreenController;
+import gui.controller.IdenticationScreenController;
+import gui.controller.MakeOrderScreenController;
+import gui.controller.ManageGuidesScreenController;
+import gui.controller.ParkAvailableSpotsScreenController;
+import gui.controller.ParkEntranceScreenController;
+import gui.controller.ParkSettingsScreenController;
+import gui.controller.PaymentReceiptScreenController;
+import gui.controller.RequestTableScreenController;
+import gui.controller.ViewReportsScreenController;
+import gui.view.ApplicationViewType;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import utils.CurrentWindow;
 
 public class SceneLoaderHelper {
 	
-	private boolean isEmployee=false;
-	private boolean isGuide=false;
 	private AnchorPane centerScreen;
-	private VBox leftMenuScreen;
 	
 	//UserType type
-	public AnchorPane loadRightScreenToBorderPaneWithController(String screenUrl,ControllerType controllerType,User user) {
+	public AnchorPane loadRightScreenToBorderPaneWithController(BorderPane screen, String screenUrl,ApplicationViewType viewToLoad,EntitiesContainer data) {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource(screenUrl));
-		switch(controllerType) {
+		switch(viewToLoad) {
 		
-			case Common_LandingPage_Controller:{
-				CommonLandingPageController controller = new CommonLandingPageController();
+			case AddNewGuideScreen:{
+				AddNewGuideScreenController controller = new AddNewGuideScreenController(screen,data.getEntity1());
 				loader.setController(controller);
 				break;
 			}
 				
-			case Common_Profile_Controller:{
-				CommonProfileController controller= new CommonProfileController(user);
-				loader.setController(controller);
-				controller.setIsEmployee(true);
-				break;
-			}
-			
-			// Customer (Visitor/Guide) Controllers
-			case Customer_Dashboard_Controller:{
-				CustomerDashboardController controller = new CustomerDashboardController();
+			case ConfirmMessageScreen:{
+				ConfirmMessageScreenController controller= new ConfirmMessageScreenController(screen,data.getEntity1());
 				loader.setController(controller);
 				break;
 			}
 			
-			case Customer_EnterPark_Controller:{
-				CustomerEnterParkController controller = new CustomerEnterParkController();
+			case CreateReportsScreen:{
+				CreateReportsScreenController controller = new CreateReportsScreenController(data.getEntity1());
 				loader.setController(controller);
 				break;
 			}
-			case Customer_MakeOrder_Controller:{
-				CustomerMakeOrderController controller = new CustomerMakeOrderController();
+			
+			case CustomerHomgepageScreen:{
+				CustomerHomepageScreenController controller = new CustomerHomepageScreenController();
+				loader.setController(controller);
+				break;
+			}
+			case EmployeeHomepageScreen:{
+				EmployeeHomepageScreenController controller = new EmployeeHomepageScreenController();
 				loader.setController(controller);
 				break;
 			}
 
-			case Customer_ManageOrders_Controller:{
-				CustomerManageOrdersController controller = new CustomerManageOrdersController();
+			case FinishOrderScreen:{
+				FinishOrderScreenController controller = new FinishOrderScreenController(screen,data.getEntity1());
 				loader.setController(controller);
 				break;
 			}
 			
-			// Department Manager Controllers
-			case Department_Manager_Dashboard_Controller:{
-				DepartmentManagerDashboardController controller = new DepartmentManagerDashboardController();
+			case HandleOrderScreen:{
+				HandleOrderScreenController controller = new HandleOrderScreenController(screen,data.getEntity1(),data.getCustomerInterface());
 				loader.setController(controller);
 				break;
 			}
-			case Department_Manager_ViewReports_Controller:{
-				DepartmentManagerViewReportsController controller = new DepartmentManagerViewReportsController();
-				loader.setController(controller);
-				break;
-			}
-			
-			// Park Manager Controllers
-			case Park_Manager_Dashboard_Controller:{
-				ParkManagerDashboardController controller = new ParkManagerDashboardController();
+			case IdenticationScreen:{
+				IdenticationScreenController controller = new IdenticationScreenController(screen,data.getEntity1());
 				loader.setController(controller);
 				break;
 			}
 			
-			// Park Employee Controllers
-			case Park_Employee_Dashboard_Controller:{
-				ParkEmployeeDashboardController controller = new ParkEmployeeDashboardController();
+			case MakeOrderScreen:{
+				MakeOrderScreenController controller = new MakeOrderScreenController(screen,data.getEntity1());
 				loader.setController(controller);
 				break;
 			}
 			
-			//Service Employee Controllers
-			case Service_Employee_Dashboard_Controller:{
-				ServiceEmployeeDashboardController controller = new ServiceEmployeeDashboardController();
+			case ManageGuidesScreen:{
+				ManageGuidesScreenController controller = new ManageGuidesScreenController();
 				loader.setController(controller);
 				break;
 			}
+			
+			case ParkAvailableSpotsScreen:{
+				ParkAvailableSpotsScreenController controller = new ParkAvailableSpotsScreenController(data.getEntity1(),data.getEntity2());
+				loader.setController(controller);
+				break;
+			}
+			
+			case ParkEntranceScreen:{
+				ParkEntranceScreenController controller = new ParkEntranceScreenController();
+				loader.setController(controller);
+				break;
+			}
+			
+			case ParkSettingsScreen:{
+				ParkSettingsScreenController controller = new ParkSettingsScreenController(data.getEntity1(),data.getEntity2());
+				loader.setController(controller);
+				break;
+			}
+			
+			case PaymentReceiptScreen:{
+				PaymentReceiptScreenController controller = new PaymentReceiptScreenController(data.getEntity1(),data.getEntity2(),data.getEntity3());
+				loader.setController(controller);
+				break;
+			}
+			
+			case RequestTableScreen:{
+				RequestTableScreenController controller = new RequestTableScreenController();
+				loader.setController(controller);
+				break;
+			}
+			
+			case ViewReportsScreen:{
+				ViewReportsScreenController controller = new ViewReportsScreenController();
+				loader.setController(controller);
+				break;
+			}
+			
 			default:
 				return null;
 			}
@@ -117,8 +144,9 @@ public class SceneLoaderHelper {
 
 		return centerScreen;
 	}
+
 	
-	public void setScreenAfterLogout() {
+	public void setScreenAfterLogoutOrBack() {
 
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/view/LandingPage.fxml"));
@@ -138,14 +166,6 @@ public class SceneLoaderHelper {
 			e.printStackTrace();
 		}
 		
-	}
-	
-	public void setEmployee(boolean isEmployee) {
-		this.isEmployee = isEmployee;
-	}
-	
-	public void setGuide(boolean isGuide) {
-		this.isGuide=isGuide;
 	}
 	
 }

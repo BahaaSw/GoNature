@@ -10,7 +10,13 @@ public class MySqlConnection {
 	private Connection connection = null;
 	private static MySqlConnection instance = null;
 	private static DBConnectionDetails dbDetails;
-	
+/*
+ * 	 * This method is trying to connect to mySQL database, using jdbc driver.
+	 * This method is being called from server, and return it's connection.
+	 * @param db - class which contains the required information for database (hostname,username,password)
+	 * @return if connected successfully -> return the new Connection.
+	 * 		   else -> return null.
+	 */
 	/**
 	 * private constructor
 	 * 

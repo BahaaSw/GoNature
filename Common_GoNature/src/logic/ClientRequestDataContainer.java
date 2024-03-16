@@ -8,13 +8,13 @@ public class ClientRequestDataContainer implements Serializable{
 
 	private ClientRequest request;
 	private Object data;
-	private String input;
 	
-	public ClientRequestDataContainer(ClientRequest request,Object data, String input) {
+	public ClientRequestDataContainer(ClientRequest request,Object data) {
 		this.request=request;
 		this.data=data;
-		this.input=input;
 	}
+	
+	public ClientRequestDataContainer() {}
 	
 	public void setRequest(ClientRequest request) {
 		this.request=request;
@@ -30,16 +30,5 @@ public class ClientRequestDataContainer implements Serializable{
 	public Object getData() {
 		return data;
 	}
-	
-	public String getInput() {
-		return input;
-	}
-	
-	public void setInput(String input) {
-		this.input=input;
-	}
-	
-	
-	
 	
 }

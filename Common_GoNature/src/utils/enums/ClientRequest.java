@@ -1,25 +1,59 @@
 package utils.enums;
 
 public enum ClientRequest {
-//	IS_CONNECTED, TRAVELER_LOGIN_ID, INSERT_TO_LOGGEDIN, SUBSCRIBER_LOGIN_SUBID, GET_PARK_BY_ID, GET_SUBSCRIBER,
-//	GET_ALL_PARKS, GET_MAX_DISCOUNT, GET_PARK_BY_NAME, GET_ORDERS_BETWEEN_DATES, ADD_ORDER, IS_TRAVELER_SUBSCRIBER,
-//	ADD_TRAVELER, GET_RECENT_ORDER, MEMBER_LOGIN, LOGOUT, SEND_MSG_TO_TRAVELER, GET_ALL_ORDER_FOR_ID,
-//	GET_ALL_ORDERS, CHANGE_ORDER_STATUS_BY_ID, GET_ORDERS_THAT_MATCH_AFTER_ORDER_CANCEL, INSERT_TO_SUBSCRIBER,
-//	DELETE_TRAVELER, INSERT_TO_CREDITCARD, MANAGER_REQUEST, GET_MESSAGES_BY_ID, VIEW_MANAGER_REQUEST, SEND_EMAIL,
-//	GET_EMPLOYEE, GET_EMPLOYEE_PASSWORD, SEND_EMAIL_WITH_EMAIL, ADD_VISIT, UPDATE_CURRENT_VISITORS_ID,
-//	ADD_CASUAL_ORDER, GET_ALL_ORDERS_FOR_PARK, GET_ALL_ORDERS_FOR_PARK_WITH_TRAVLER, CONFIRM_REQUEST,
-//	CHANGE_PARK_PARAMETERS, CHECK_IF_PARK_FULL_AT_DATE, DELETE_REPORT, INSERT_REPORT, COUNT_ENTER_SOLO_VISITORS,
-//	COUNT_ENTER_SUBS_VISITORS, COUNT_ENTER_GROUP_VISITORS, COUNT_VISIT_SOLO_VISITORS, COUNT_VISIT_SUBS_VISITORS,
-//	COUNT_VISIT_GROUP_VISITORS, GET_REPORTS, GET_CANCELS, VIEW_MANAGER_DISCOUNT, CONFIRM_DISCOUNT, MANAGER_REPORT,
-//	ADD_REPORT_TO_DB, INSERT_TO_FULL_PARK_DATE, CHECK_WAITING_LIST, GET_SIMULATOR_TRAVELERS_IDS,
-//	GET_RELEVANT_ORDER_EXIT, GET_RELEVANT_ORDER_ENTRANCE, UPDATE_EXIT_TIME_SIMULATOR, GET_PENDING_AFTER_DATE_PASSED,
-//	CHANGE_ORDER_NUMBER_OF_VISITORS_BY_ID, CHANGE_ORDER_PRICE_BY_ID, GET_SOLOS_ORDERS, GET_SUBSCRIBERS_ORDERS,
-//	GET_GROUPS_ORDERS, SEND_SMS, COUNT_ENTER_SUBS_VISITORS_WITH_DAYS, COUNT_ENTER_SOLOS_VISITORS_WITH_DAYS,
-//	COUNT_ENTER_GROUPS_VISITORS_WITH_DAYS, COUNT_VISIT_SOLOS_VISITORS_WITH_DAYS,
-//	COUNT_VISIT_SUBS_VISITORS_WITH_DAYS, COUNT_VISIT_GROUPS_VISITORS_WITH_DAYS,
 	
-	Login,Logout,SignUpNewUser,
-	UpdateOrder,SearchOrder,DisconnectFromServer,
-	Update_User_Details,
+	Login_As_Guide, // After select guide in landing page, and clicked login
+	Login_As_Visitor, // After select visitor in landing page, and clicked login
+	Login_As_Employee, // After select employee in landing page, and clicked login
+	Logout, // Common for all clients, after clicked logout.
+	
+	Insert_New_Order_As_WaitNotification, // After customer clicked make order, add order status as wait notification
+	
+	Update_Order_Status_WaitNotification, // After order created successfully.
+	Update_Order_Status_SentNotification, // After sent notification to client to confirm the order.
+	Update_Order_Status_Confirmed, // After the client confirmed the order, after notification was sent.
+	Update_Order_Status_Canceled, // After the client cancel the order
+	Update_Order_Status_InWaitingList, // After the client entered waiting list
+	Update_Order_Status_AvailableSpot, // After a spot was released from waiting list
+	Update_Order_Status_In_Park, // After the client entered park (by park entrance of park employee)
+	Update_Order_Status_Done, // After the client leaves park (by park entrance of park employee or passed estimated visit time)
+	Update_Order_Status_Time_Passed, // After the datetime of order passed, and client didn't enter park.
+	
+//	Search_Time_Passed_Orders,
+	Search_Order_For_Enter_Park, // After the park employee click enter park or new visit (occasional visit), check if order exists.
+	Calculate_Order_Price_After_Discount, // After the park employee click enter park for relevant order.
+	
+	Search_For_Relevant_Order, // After customer search order to manage, return such order (except canceled, done, in park, time passed).
+	
+	Add_Occasional_Visit_As_In_Park, // After park employee add new occasional visit by clicking new visit 
+	
+	Import_Available_Dates_Week_Ahead, // After the customer select available dates in finish order controller
+	Add_New_Order_To_Waiting_List, // After the customer select enter waiting list and click confirm on finish order controller,
+	
+	Import_Guide_Details, // After Service Employee search for guide id,
+	Update_Guide_As_Approved, // After Service Employee click on Add
+	Update_Guide_As_Denied, // After Service Employee click on Cancel
+	
+	Import_Park_Spots_Data, // After Park Employee / Park Manager click on Park Spots, Or Department Manager select park
+	Import_All_Parks, // TODO: Don't implement yet, wait till we need it
+	
+	Make_New_Park_Capacity_Request, // After Park Manager make request
+	Make_New_Park_Reserved_Entries_Request, // After Park Manager make request
+	Make_New_Park_Estimated_Visit_Time_Request, // After Park Manager make request
+	Update_Park_Capacity_Request_Approved, // After department manager approve request.
+	Update_Park_Capacity_Request_Denied, // After department manager deny request.
+	Update_Park_Reserved_Entries_Request_Approved, // After department manager approve request.
+	Update_Park_Reserved_Entries_Request_Denied, // After department manager deny request.
+	Update_Park_Estimated_Visit_Time_Request_Approved, // After department manager approve request.
+	Update_Park_Estimated_Visit_Time_Request_Denied, // After department manager deny request.
+	
+	Create_Visits_Report, // After department manager generate visits report
+	Import_Visits_Report, // After department manager request view visits report
+	Create_Cancellations_Report, // After department manager generate cancellations report
+	Import_Cancellations_Report,// After department manager request view cancellations report
+	Create_Total_Visitors_Report, // After park manager generate total visitors report
+	Import_Total_Visitors_Report,// After park manager request view visitors report
+	Create_Usage_Report, // After park manager generate usage reports.
+	Import_Usage_Report,// After park manager request view usage reports.
 	
 }
