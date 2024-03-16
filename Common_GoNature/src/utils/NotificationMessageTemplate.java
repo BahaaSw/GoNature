@@ -1,5 +1,7 @@
 package utils;
 
+import utils.enums.ParkNameEnum;
+
 public class NotificationMessageTemplate {
 	
 	public static String orderConfirmMessage(String orderId,String park,String date, String time,
@@ -20,17 +22,27 @@ public class NotificationMessageTemplate {
 
 		return sb.toString();
 	}
+	
+	public static String paymentReceiptMessage(ParkNameEnum parkName,String firstName,String lastName,double totalPrice,int estimatedTimeVisit) {
+		StringBuilder sb= new StringBuilder();
+		sb.append(String.format("Welcome To %s\n",parkName.toString()));
+		sb.append(String.format("Dear, %s %s",firstName,lastName));
+		sb.append(String.format("Your order total price (after discount) is: %f\n\n",totalPrice));
+		sb.append("Pay at entrance.\n");
+		sb.append(String.format("NOTE: Visit time duration is %d hours long.\n\n",estimatedTimeVisit));
+		sb.append("Best Regards,\n");
+		sb.append("GoNature Group 9 !");
+		return sb.toString();
+	}
 
-	public static String enterWaitingListMessage(String park, String date, String time, 
-			String amoutOfVisitors,String totalPrice) {
+	public static String enterWaitingListMessage(String park, String dateAndTime ,String amoutOfVisitors) {
 		StringBuilder sb= new StringBuilder();
 		sb.append("Enter waiting list\n");
 		sb.append("You are now in the waiting list\n");
 		sb.append("We will send you an email if someone will cancel their visit\n");
 		sb.append("Your order information:\n");
 		sb.append(String.format("Park: %s.\n", park));
-		sb.append(String.format("Visit Date: %s.\n", date));
-		sb.append(String.format("Visit Time: %s.\n", time));
+		sb.append(String.format("Visit Date and Time: %s.\n", dateAndTime));
 		sb.append(String.format("Visitors: %s.\n", amoutOfVisitors));
 		sb.append("Thank you!\n");
 		sb.append("GoNature Group 9 !");

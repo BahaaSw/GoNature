@@ -1,31 +1,30 @@
 package gui.controller;
 
 public enum ControllerType {
-	// Common Controllers
-	Common_LandingPage_Controller,
-	Common_Profile_Controller,
+	// Common Client Controller
+	Landing_Page_Screen_Controller,
 	
-	// Customer (Visitor/Guide) Controllers
-	Customer_Dashboard_Controller,
-	Customer_EnterPark_Controller,
-	Customer_MakeOrder_Controller,
-	Customer_ManageOrders_Controller,
+	//Customer Controllers
 	Customer_Screen_Controller,
+	Customer_Homgepage_Screen_Controller,
+	Identication_Screen_Controller,
+	Finish_Order_Screen_Controller,
+	Handle_Order_Screen_Controller,
+	Make_Order_Screen_Controller,
+	Confirm_Message_Screen_Controller,
 	
-	// Department Manager Controllers
-	Department_Manager_Dashboard_Controller,
-	Department_Manager_ViewReports_Controller,
-	Department_Manager_Screen_Controller,
+	// Employee Controllers
+	Employee_Homepage_Screen_Controller,
+	Employee_Screen_Controller,
+	Park_Available_Spots_Screen_Controller,
+	Park_Entrance_Screen_Controller,
+	Payment_Receipt_Screen_Controller,
 	
-	// Park Manager Controllers
-	Park_Manager_Dashboard_Controller,
-	Park_Manager_Screen_Controller,
+	Manage_Guides_Screen_Controller,
+	Add_New_Guide_Screen_Controller,
 	
-	// Park Employee Controllers
-	Park_Employee_Dashboard_Controller,
-	Park_Employee_Screen_Controller,
-	
-	//Service Employee Controllers
-	Service_Employee_Dashboard_Controller,
-	Service_Employee_Screen_Controller,
+	Park_Settings_Screen_Controller,
+	Create_Reports_Screen_Controller,
+	Request_Table_Screen_Controller,
+	View_Reports_Screen_Controller,
 }

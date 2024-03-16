@@ -13,14 +13,19 @@ import jdbc.QueryControl;
 import jdbc.QueryType;
 import logic.ClientConnection;
 import logic.ClientRequestDataContainer;
+import logic.Employee;
+import logic.Guide;
 import logic.ServerResponseBackToClient;
 import logic.User;
+import logic.Visitor;
 import jdbc.DBReturnOptions;
 import jdbc.MySqlConnection;
 import ocsf.AbstractServer;
 import ocsf.ConnectionToClient;
 import utils.enums.ClientRequest;
-import utils.enums.ServerResponseEnum;
+import utils.enums.EmployeeTypeEnum;
+import utils.enums.ParkNameEnum;
+import utils.enums.ServerResponse;
 
 
 
@@ -70,14 +75,40 @@ public class GoNatureServer extends AbstractServer {
 		ClientRequestDataContainer data = (ClientRequestDataContainer)msg;
 		ClientRequest request = data.getRequest();
 		switch(request) {
-		case Login:
-			handleClientLoginToApplication(data.getData(),client,clientIp);
+		case Login_As_Employee:
+//			handleClientLoginToApplication(data.getData(),client,clientIp);
+			Employee employee = new Employee(ParkNameEnum.Banias,EmployeeTypeEnum.Department_Manager,"1","department","123456","gal","bitton","1234567890","gal@example.com");
+			try {
+				client.sendToClient(new ServerResponseBackToClient(ServerResponse.Employee_Connected_Successfully, employee));
+				return;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		case Login_As_Guide:
+//			handleClientLoginToApplication(data.getData(),client,clientIp);
+			Guide guide = new Guide("1","guide","123456","gal","bitton","1234567890","gal@example.com");
+			try {
+				client.sendToClient(new ServerResponseBackToClient(ServerResponse.Guide_Connected_Successfully, guide));
+				return;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return;
+		case Login_As_Visitor:
+//			handleClientLoginToApplication(data.getData(),client,clientIp);
+			Visitor visitor = new Visitor("123456","gal","bitton","1234567890","gal@example.com");
+			try {
+				client.sendToClient(new ServerResponseBackToClient(ServerResponse.Visitor_Connected_Successfully, visitor));
+				return;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			return;
 		case Logout:
 			handleUserLogoutFromApplication(data.getData(),client,clientIp);
-			return;
-		case Update_User_Details:
-			handleUpdateUserDetails(data.getData(),client,clientIp);
 			return;
 //		case SignUpNewUser:
 //			handleClientSignupRequest((User)data.getMessage(),client,clientIp);
@@ -102,181 +133,85 @@ public class GoNatureServer extends AbstractServer {
 
 	}
 	
-	private void handleUpdateUserDetails(Object user, ConnectionToClient client, String clientIp) {
-		try {
-			User currentUser = (User)user;
-			serverController.printToLogConsole(String.format("User : '%s' with IP : '%s' : Request Update Details", currentUser.getUsername(),clientIp));
-			DBReturnOptions DBResponse = QueryControl.updateUserInDB(currentUser,serverController);
-			// TODO: if success
-			serverController.printToLogConsole(String.format("User : '%s' with IP : '%s' : Details Updated Successfully", currentUser.getUsername(),clientIp));
-			client.sendToClient(new ServerResponseBackToClient(ServerResponseEnum.Details_Updated_Succesfully,currentUser,""));
-		}catch(IOException ex) {
-			serverController.printToLogConsole("Error while sending update message to client");
-			return;
-		}
-	}
-	
 	private void handleUserLogoutFromApplication(Object user, ConnectionToClient client, String clientIp) {
 		try {
 			User currentUser = (User)user;
 			serverController.printToLogConsole(String.format("User : '%s' with IP : '%s' : Request Logout from Application", currentUser.getUsername(),clientIp));
 			serverController.getConnectedUsers().remove(user);
 			serverController.printToLogConsole(String.format("User : '%s' with IP : '%s' : Logged Out Successfully", currentUser.getUsername(),clientIp));
-			client.sendToClient(new ServerResponseBackToClient(ServerResponseEnum.User_Logout_Successfully, null,""));
+			client.sendToClient(new ServerResponseBackToClient(ServerResponse.User_Logout_Successfully, null));
 		}catch(IOException ex) {
 			serverController.printToLogConsole("Error while sending update message to client");
 			return;
 		}
 	}
 	
-	private void handleClientLoginToApplication(Object data, ConnectionToClient client, String clientIp) {
-		// try to search user in database.
-		User currentUser = (User)data;
-		serverController.printToLogConsole(String.format("User : '%s' with IP : '%s' : Request Login to Application", currentUser.getUsername(),clientIp));
-		DBReturnOptions dbReturn = QueryControl.searchForUser(currentUser,serverController);
-		ServerResponseEnum response = null;
-		
-		try {
-			switch(dbReturn) {
-				case User_Not_Exists:
-					response=ServerResponseEnum.User_Does_Not_Exists;
-					break;
-				case Password_Incorrect:
-					response=ServerResponseEnum.Password_Incorrect;
-					break;
-				case Success:
-					boolean isConnected=false;
-					for(User user: serverController.getConnectedUsers()) {
-						if(currentUser.equals(user)) {
-							response=ServerResponseEnum.User_Already_Connected;
-							serverController.printToLogConsole(String.format("User : '%s' with IP : '%s' : Already Connected", currentUser.getUsername(),clientIp));
-							isConnected=true;
-							break;
-						}
-					}
-					if(isConnected)
-						break;
-					response=ServerResponseEnum.User_Connected_Successfully;
-					serverController.getConnectedUsers().add(currentUser);
-					serverController.addToConnected(client,currentUser.getUsername());
-					serverController.printToLogConsole(String.format("User : '%s' with IP : '%s' : Login Successfully", currentUser.getUsername(),clientIp));
-					break;
-				default:
-					response=ServerResponseEnum.Request_Failed;
-					break;
-			}
-
-			client.sendToClient(new ServerResponseBackToClient(response, currentUser,""));
-		}catch(IOException ex) {
-			serverController.printToLogConsole("Error while sending update message to client");
-			return;
-		}
-	}
-	
-//	private void handleClientSignupRequest(User user, ConnectionToClient client, String clientIp) {
-////		User currentUser = (User)user;
-////		serverController.printToLogConsole(String.format("Client with IP : %s : Requested Signup New Account",clientIp));
-////		boolean isExists = DBController.searchForUser(dbConn, currentUser, serverController);
-//	}
-//	
-//	/**
-//	 * This method handle a specific String message from client
-//	 * for now relevant only for message when client disconnecting the server.
-//	 * @param msg - The string message the client sent to the server.
-//	 * @param client -  The ConnectionToClient instance which include the details of the client in order to be able send him back answer.
-//	 */
-//	private void handleDisconnectMsgFromClient(ConnectionToClient client) {
-//			clientDisconnected(client);
-//			return;
-//		}	
-//	/**
-//	 * This method handle a specific Integer msg from client.
-//	 * for now relevant only for searching Order in database by it's order ID (Integer).
-//	 * @param msg - The Integer message the client sent to the server.
-//	 * @param client - The ConnectionToClient instance which include the details of the client in order to be able send him back answer.
-//	 * @param clientIp - The client IP.
-//	 */
-//	private void handleOrderSearchFromClient(Integer msg, ConnectionToClient client, String clientIp) {
-//		server.serverController.printToLogConsole(String.format("Requested recieved from client %s to search for order id %s.",clientIp,msg.toString()));
-//		// search for the order in database.
-//		Order returnOrder = QueryControl.searchOrder(dbConn,msg,server.serverController);
-//		// order found.
-//		if(returnOrder!=null) {
-//			respondOrderSearchToClient(returnOrder,client);
-//			return;
-//		}
+//	private void handleClientLoginToApplication(Object data, ConnectionToClient client, String clientIp) {
+//		// try to search user in database.
+//		User currentUser = (User)data;
+//		serverController.printToLogConsole(String.format("User : '%s' with IP : '%s' : Request Login to Application", currentUser.getUsername(),clientIp));
+////		DBReturnOptions dbReturn = QueryControl.searchForUser(currentUser,serverController);
+//		ServerResponse response = null;
 //		
 //		try {
-//			//notify the client that the order wasn't found.
-//			client.sendToClient("Order not found");
-//			//write to log
-//			serverController.printToLogConsole("Order with id - "+msg+" was not found!");
-//		}catch(IOException ex) {
-//			serverController.printToLogConsole("Error while sending order not found to client");
-//		}
-//	}
-//	
-//	/**
-//	 * The method called only if the order was found in database.
-//	 * It sends the client the requested Order entity.
-//	 * @param returnOrder - The requested Order.
-//	 * @param client -  The ConnectionToClient instance which include the details of the client in order to be able send him back answer.
-//	 */
-//	private void respondOrderSearchToClient(Order returnOrder,ConnectionToClient client) {
-//		try {
-//			serverController.printToLogConsole(String.format("Order with id %s was found and sent to client",returnOrder.getOrderNumber().toString()));
-//			// try to send the client the requested order.
-//			client.sendToClient(new ServerDataContainer(ServerActionsEnum.SearchOrderFound,returnOrder));
-//		}catch(IOException ex) {
-//			serverController.printToLogConsole("Error while sending order to client");
-//		}
-//	}
-//	
-//	/**
-//	 * This method handle specific "Order" message from client.
-//	 * for now, this method is relevant only for updating old order in database.
-//	 * In the main project, this method should handle multiple actions on Order instance.
-//	 * @param order - The new order instance.
-//	 * @param client - The ConnectionToClient instance which include the details of the client in order to be able send him back answer.
-//	 * @param clientIp - The client's IP.
-//	 */
-//	private void handleOrderUpdateFromClient(Order order, ConnectionToClient client, String clientIp) {
-//		Order newOrder = (Order)order;
-//		serverController.printToLogConsole(String.format("Request received from client %s to update details of order with id %s", clientIp,newOrder.getOrderNumber().toString()));
-//		// try to update the old order in database.
-//		boolean isUpdated = QueryControl.updateOrder(dbConn, newOrder.getOrderNumber(),newOrder.getParkName(),newOrder.getTelephoneNumber(),serverController);
-//		// assume the order didn't update.
-//		String message = "Order not updated";
-//		
-//		if(isUpdated) {
-//			message="Order updated";
-//			serverController.printToLogConsole(String.format("Order (%s) details were updated in database",newOrder.getOrderNumber().toString()));
-//		}
-//		else
-//			serverController.printToLogConsole(String.format("Order (%s) details failed to update in database",newOrder.getOrderNumber().toString()));
-//		
-//		try {
-//			// send the client the answer (updated or not updated)
-//			ServerActionsEnum action = isUpdated ? ServerActionsEnum.UpdateOrderSuccessfully  : ServerActionsEnum.UpdateOrderFailed;
-//			client.sendToClient(new ServerDataContainer(action, ""));
+//			switch(dbReturn) {
+//				case User_Not_Exists:
+//					response=ServerResponse.User_Does_Not_Found;
+//					break;
+//				case Password_Incorrect:
+//					response=ServerResponse.Password_Incorrect;
+//					break;
+//				case Success:
+//					boolean isConnected=false;
+//					for(User user: serverController.getConnectedUsers()) {
+//						if(currentUser.equals(user)) {
+//							response=ServerResponse.User_Already_Connected;
+//							serverController.printToLogConsole(String.format("User : '%s' with IP : '%s' : Already Connected", currentUser.getUsername(),clientIp));
+//							isConnected=true;
+//							break;
+//						}
+//					}
+//					if(isConnected)
+//						break;
+//					response=ServerResponse.User_Connected_Successfully;
+//					serverController.getConnectedUsers().add(currentUser);
+//					serverController.addToConnected(client,currentUser.getUsername());
+//					serverController.printToLogConsole(String.format("User : '%s' with IP : '%s' : Login Successfully", currentUser.getUsername(),clientIp));
+//					break;
+//			}
+//
+//			client.sendToClient(new ServerResponseBackToClient(response, currentUser,""));
 //		}catch(IOException ex) {
 //			serverController.printToLogConsole("Error while sending update message to client");
+//			return;
 //		}
 //	}
-//	
-//	/**
-//	 * This method write to log screen the server has been started.
-//	 */
+	
+	
+	/**
+	 * This method handle a specific String message from client
+	 * for now relevant only for message when client disconnecting the server.
+	 * @param msg - The string message the client sent to the server.
+	 * @param client -  The ConnectionToClient instance which include the details of the client in order to be able send him back answer.
+	 */
+	private void handleDisconnectMsgFromClient(ConnectionToClient client) {
+			clientDisconnected(client);
+			return;
+		}	
+	
+	/**
+	 * This method write to log screen the server has been started.
+	 */
 	@Override
 	protected void serverStarted() {
 		serverController.printToLogConsole(String.format("Server listening for connnections on address %s:%s",getServerIpAddress(),getPort()));
 	}
-//	
-//	/**
-//	 * The method enumerate through the network interface eliminate local host and virtual machines to 
-//	 * return the right IP;
-//	 * @return a String containing the correct IP
-//	 */
+	
+	/**
+	 * The method enumerate through the network interface eliminate local host and virtual machines to 
+	 * return the right IP;
+	 * @return a String containing the correct IP
+	 */
 	private String getServerIpAddress() {
 		String ip;
 		try {
@@ -299,13 +234,13 @@ public class GoNatureServer extends AbstractServer {
 		}
 		return "Not found network addresses. please use ipconfig in commandline";
 	}
-//	
-//	/**
-//	 * This method write to log screen the server has been stopped.
-//	 */
+	
+	/**
+	 * This method write to log screen the server has been stopped.
+	 */
 	@Override
 	protected void serverStopped() {
-		serverController.printToLogConsole("Server has stopped listening for connections");
+		serverController.printToLogConsole("Server has stopped listening for connections\n");
 	}
 	
 	/**
@@ -313,7 +248,7 @@ public class GoNatureServer extends AbstractServer {
 	 */
 	@Override
 	protected void serverClosed() {
-		serverController.printToLogConsole("Server has been closed");
+		serverController.printToLogConsole("Server has been closed\n");
 	}
 	
 	/**
@@ -354,7 +289,7 @@ public class GoNatureServer extends AbstractServer {
 		
 		try {
 			// first tell all the clients to disconnect.
-			server.sendToAllClients(new ServerResponseBackToClient(ServerResponseEnum.Server_Disconnected,"",""));
+			server.sendToAllClients(new ServerResponseBackToClient(ServerResponse.Server_Disconnected,""));
 			server.stopListening();
 			server.close();
 			server=null;

@@ -2,24 +2,22 @@ package logic;
 
 import java.io.Serializable;
 
-import utils.enums.ServerResponseEnum;
+import utils.enums.ServerResponse;
 
 public class ServerResponseBackToClient implements Serializable{
-	private ServerResponseEnum response;
+	private ServerResponse response;
 	private Object message;
-	private String msg;
 	
-	public ServerResponseBackToClient(ServerResponseEnum response,Object message,String msg) {
+	public ServerResponseBackToClient(ServerResponse response,Object message) {
 		this.response=response;
 		this.message=message;
-		this.msg=msg;
 	}
 
-	public ServerResponseEnum getRensponse() {
+	public ServerResponse getRensponse() {
 		return response;
 	}
 
-	public void setRensponse(ServerResponseEnum response) {
+	public void setRensponse(ServerResponse response) {
 		this.response = response;
 	}
 
@@ -32,11 +30,4 @@ public class ServerResponseBackToClient implements Serializable{
 		this.message = message;
 	}
 
-	public String getMsg() {
-		return msg;
-	}
-
-	public void setMsg(String msg) {
-		this.msg = msg;
-	}
 }

@@ -3,21 +3,22 @@ package logic;
 import java.io.Serializable;
 
 import utils.enums.ParkNameEnum;
+import utils.enums.UserStatus;
 import utils.enums.UserTypeEnum;
 
-public class User implements Serializable{
-	private String userId;
-	private String username;
-	private String password;
-	private String firstName;
-	private String lastName;
-	private String phoneNumber;
-	private String emailAddress;
-	private UserTypeEnum userType;
-	private ParkNameEnum relatedPark=null;
+public class User extends ExternalUser implements Serializable{
+	protected String userId;
+	protected String username;
+	protected String password;
+	protected String firstName;
+	protected String lastName;
+	protected String phoneNumber;
+	protected String emailAddress;
+	protected UserStatus userStatus= UserStatus.None;
 	
 	public User(String userId,String username,String password,String firstName,
 			String lastName,String phoneNumber,String emailAddress) {
+		super();
 		this.userId=userId;
 		this.username=username;
 		this.password=password;
@@ -31,6 +32,19 @@ public class User implements Serializable{
 		this.userId=userId;
 		this.username=username;
 		this.password=password;
+	}
+	
+	public User(String userId) {
+		this.userId=userId;
+	}
+	
+	public User(String username,String password) {
+		this.username=username;
+		this.password=password;
+	}
+	
+	public User(UserTypeEnum userType) {
+		this.userType=userType;
 	}
 	
 	public String getUserId() {
@@ -89,25 +103,19 @@ public class User implements Serializable{
 		this.emailAddress=emailAddress;
 	}
 	
-	public UserTypeEnum getUserType() {
-		return userType;
+	
+	public UserStatus getUserStatus() {
+		return userStatus;
 	}
 	
-	public void setUserType(UserTypeEnum userType) {
-		this.userType=userType;
-	}
-	
-	public ParkNameEnum getRelatedPark() {
-		return relatedPark;
-	}
-	
-	public void setRelatedPark(ParkNameEnum relatedPark) {
-		this.relatedPark=relatedPark;
+	public void setUserStatus(UserStatus userStatus) {
+		this.userStatus=userStatus;
 	}
 	
 	@Override
 	public boolean equals(Object obj) {
-		return this.username.equals(((User)obj).username);
+		return  this.username.equals(((User)obj).username) &&
+				this.userId.equals(((User)obj).userId);
 	}
 	
 	
