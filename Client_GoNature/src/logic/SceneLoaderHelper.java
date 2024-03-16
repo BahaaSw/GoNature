@@ -90,7 +90,7 @@ public class SceneLoaderHelper {
 			}
 			
 			case ManageGuidesScreen:{
-				ManageGuidesScreenController controller = new ManageGuidesScreenController();
+				ManageGuidesScreenController controller = new ManageGuidesScreenController(screen);
 				loader.setController(controller);
 				break;
 			}
@@ -149,7 +149,7 @@ public class SceneLoaderHelper {
 	public void setScreenAfterLogoutOrBack() {
 
 		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/view/LandingPage.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/view/LandingPageScreen.fxml"));
 			loader.setController(ClientApplication.landingPageController);
 			Scene scene = new Scene(loader.load());
 			Stage currentWindow = CurrentWindow.getCurrentWindow();
@@ -159,6 +159,7 @@ public class SceneLoaderHelper {
 			currentWindow.setResizable(false);
 			currentWindow.show();
 			CurrentWindow.setCurrentWindow(currentWindow);
+			ClientApplication.runningController=ClientApplication.landingPageController;
 			Platform.runLater(()->ClientApplication.landingPageController.setScreenAfterLogout());
 
 		} catch (IOException e) {

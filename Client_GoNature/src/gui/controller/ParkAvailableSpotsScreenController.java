@@ -59,7 +59,13 @@ public class ParkAvailableSpotsScreenController implements Initializable {
 	}
 	
 	private void onChangeParkSelection(ActionEvent event) {
-		selectedParkName=parkSelect.getValue();
+		if(parkSelect.getValue() instanceof ParkNameEnum)
+			selectedParkName=parkSelect.getValue();
+		else
+			return;
+		currentInParkLabel.setText(String.format("%d", selectedPark.getCurrentInPark()));
+		int availableSpots = (selectedPark.getCurrentMaxCapacity()-selectedPark.getCurrentEstimatedReservedSpots())-selectedPark.getCurrentInPark();
+		availableSpotsLabel.setText(String.format("%d", availableSpots));
 		//TODO: update the gui from database.
 		//TODO: update selectedPark as server response
 //		currentInParkLabel.setText(selectedPark.getCurrentInPark());

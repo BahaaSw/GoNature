@@ -8,6 +8,7 @@ import java.util.ResourceBundle;
 import client.ClientApplication;
 import client.ClientCommunication;
 import client.ClientMainControl;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -39,7 +40,7 @@ import utils.ValidationRules;
 import utils.enums.ClientRequest;
 import utils.enums.UserTypeEnum;
 
-public class LandingPageScreenController implements Initializable {
+public class LandingPageScreenController implements Initializable,IScreenController {
 	@FXML
 	public ImageView icon;
 	@FXML
@@ -224,21 +225,21 @@ public class LandingPageScreenController implements Initializable {
 			return;
 		}
 		
-		User requestedUser;
+		ExternalUser requestedUser;
 		ClientRequestDataContainer requestMessage=new ClientRequestDataContainer();
 		switch(currentUser) {
 			case Employee:
-				requestedUser = new User(fields.get(1),fields.get(2));
+				requestedUser = new Employee(fields.get(0),fields.get(1));
 				requestMessage.setRequest(ClientRequest.Login_As_Employee);
 				requestMessage.setMessage(requestedUser);
 				break;
 			case Guide:
-				requestedUser = new User(fields.get(1),fields.get(2));
+				requestedUser = new Guide(fields.get(0),fields.get(1));
 				requestMessage.setRequest(ClientRequest.Login_As_Guide);
 				requestMessage.setMessage(requestedUser);
 				break;
 			case Visitor:
-				requestedUser = new User(fields.get(1));
+				requestedUser = new Visitor(fields.get(0));
 				requestMessage.setRequest(ClientRequest.Login_As_Visitor);
 				requestMessage.setMessage(requestedUser);
 				break;
@@ -343,6 +344,23 @@ public class LandingPageScreenController implements Initializable {
 
 	public void setStage(Stage stage) {
 		this.stage = stage;
+	}
+
+	@Override
+	public void onLogoutClicked() {}
+
+	@Override
+	public void onServerCrashed() {
+		AlertPopUp alert = new AlertPopUp(AlertType.ERROR,"FATAL ERROR","Server is Down","Server Crashed - The application will be closed.");
+		alert.showAndWait();
+		try {
+			ClientApplication.client.getClient().closeConnection();
+			Platform.runLater(()->CurrentWindow.getCurrentWindow().close());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 

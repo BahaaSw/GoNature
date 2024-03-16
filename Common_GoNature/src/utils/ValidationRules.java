@@ -47,19 +47,28 @@ public class ValidationRules {
 		return false;
 	}
 	
+	public static boolean isFieldEmpty(String field) {
+		return field.equals("");
+	}
+	
 	public static boolean isValidPassword(String password) {
 		String passwordPattern = "\\d{6,}";
-		return Pattern.matches(password, passwordPattern);
+		return Pattern.matches(passwordPattern, password);
 	}
 	
 	public static boolean isValidUsername(String username) {
 		String usernamePattern="^[a-zA-Z0-9]+$";
-		return Pattern.matches(username, usernamePattern);
+		return Pattern.matches(usernamePattern, username);
 	}
 	
 	public static boolean isValidId(String id) {
 		String idPattern="^[1-9]\\d{8}$";
-		return Pattern.matches(id, idPattern);
+		return Pattern.matches(idPattern, id);
+	}
+	
+	public static boolean isNumeric(String str) {
+		String numericPattern="^[0-9]+$";
+		return Pattern.matches(numericPattern, str);
 	}
 	
 	
