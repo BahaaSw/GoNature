@@ -1,6 +1,7 @@
 package logic;
 
 import javafx.beans.property.SimpleStringProperty;
+import ocsf.ConnectionToClient;
 
 
 /**
@@ -22,11 +23,13 @@ public class ClientConnection {
 	private SimpleStringProperty hostIp;
 	private SimpleStringProperty hostName;
 	private SimpleStringProperty status;
+	private ConnectionToClient connection;
 	
-	public ClientConnection(String hostIp,String hostName, String status) {
-		this.hostIp=new SimpleStringProperty(hostIp);
-		this.hostName=new SimpleStringProperty(hostName);
+	public ClientConnection(String status,ConnectionToClient connection) {
+		this.hostIp=new SimpleStringProperty(connection.getInetAddress().getHostAddress());
+		this.hostName=new SimpleStringProperty(connection.getInetAddress().getHostName());
 		this.status=new SimpleStringProperty(status);
+		this.setConnection(connection);
 	}
 	
 	public String getHostName() {
@@ -52,6 +55,19 @@ public class ClientConnection {
 	public void setStatus(String status) {
 		this.status.set(status);
 	}
+
+	public ConnectionToClient getConnection() {
+		return connection;
+	}
+
+	public void setConnection(ConnectionToClient connection) {
+		this.connection = connection;
+	}
+	
+	@Override
+		public boolean equals(Object obj) {
+			return connection.equals(((ClientConnection)obj).getConnection());
+		}
 	
 
 }

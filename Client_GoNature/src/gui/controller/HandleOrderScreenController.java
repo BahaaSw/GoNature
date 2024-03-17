@@ -2,6 +2,7 @@ package gui.controller;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
@@ -15,6 +16,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import logic.ExternalUser;
@@ -22,6 +24,7 @@ import logic.Guide;
 import logic.ICustomer;
 import logic.Order;
 import logic.Visitor;
+import utils.AlertPopUp;
 import utils.CurrentDateAndTime;
 import utils.enums.OrderTypeEnum;
 import utils.enums.ParkNameEnum;
@@ -78,7 +81,7 @@ public class HandleOrderScreenController implements Initializable {
 			);
 	
 	private ObservableList<String> timeForVisits=FXCollections.observableArrayList(
-			"09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00"
+			"09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00","21:00","22:00"
 			);
 	
 	private ObservableList<OrderTypeEnum> visitTypesList = FXCollections.observableArrayList();
@@ -88,7 +91,7 @@ public class HandleOrderScreenController implements Initializable {
 	public HandleOrderScreenController(BorderPane screen,Object order,ICustomer info) {
 		this.screen=screen;
 		requestedOrder =(Order) order;
-		this.customer=customer;
+		this.customer=info;
 	}
 	
 	@Override
@@ -101,12 +104,12 @@ public class HandleOrderScreenController implements Initializable {
 		
 		switch(customer.getUserType()) {
 		case Visitor:
-			visitTypesList.add(OrderTypeEnum.Solo);
-			visitTypesList.add(OrderTypeEnum.Family);
+			visitTypesList.add(OrderTypeEnum.Solo_PreOrder);
+			visitTypesList.add(OrderTypeEnum.Family_PreOrder);
 			customer=(Visitor)customer;
 			break;
 		case Guide:
-			visitTypesList.add(OrderTypeEnum.Group);
+			visitTypesList.add(OrderTypeEnum.Group_PreOrder);
 			customer=(Guide)customer;
 			break;
 		}
@@ -135,9 +138,11 @@ public class HandleOrderScreenController implements Initializable {
 		idField.setText(customer.getCustomerId());
 		phoneNumberField.setText(customer.getPhoneNumber());
 		emailField.setText(customer.getEmailAddress());
-		String[] splitedDate = requestedOrder.getOrderDate().split(" ");
-		pickDate.setValue(LocalDate.parse(splitedDate[0]));
-		pickTime.setValue(splitedDate[1]);
+		LocalDateTime orderTime = requestedOrder.getEnterDate();
+		LocalDate enterTime = orderTime.toLocalDate();
+		String exitTime = orderTime.toString().split("T")[1];
+		pickDate.setValue(enterTime);
+		pickTime.setValue(exitTime);
 		numberOfVisitorsField.setText(String.format("%d",requestedOrder.getNumberOfVisitors()));
 		visitType.setValue(requestedOrder.getOrderType());
 		statusField.setText(requestedOrder.getStatus().toString());
@@ -152,6 +157,16 @@ public class HandleOrderScreenController implements Initializable {
 	private void showErrorMessage(String error) {
 		errorSection.setVisible(true);
 		errorMessageLabel.setText(error);
+	}
+	
+	public void onCancelClicked() {
+		AlertPopUp alert = new AlertPopUp(AlertType.INFORMATION, "test", "test", "test");
+		alert.showAndWait();
+	}
+	
+	public void onConfirmClicked() {
+		AlertPopUp alert = new AlertPopUp(AlertType.INFORMATION, "test", "test", "test");
+		alert.showAndWait();
 	}
 
 }

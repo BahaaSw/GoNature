@@ -31,6 +31,7 @@ import logic.ClientRequestDataContainer;
 import logic.Employee;
 import logic.ExternalUser;
 import logic.Guide;
+import logic.SceneLoaderHelper;
 import logic.ServerResponseBackToClient;
 import logic.User;
 import logic.Visitor;
@@ -97,6 +98,7 @@ public class LandingPageScreenController implements Initializable,IScreenControl
 	
 	private UserTypeEnum currentUser;
 	private Stage stage;
+	private SceneLoaderHelper GuiHelper= new SceneLoaderHelper();
 	
 	public LandingPageScreenController() {}
 	
@@ -272,6 +274,8 @@ public class LandingPageScreenController implements Initializable,IScreenControl
 			case Employee_Connected_Successfully:
 				switchMainScreenAccordingToUserLogin((Employee)response.getMessage());
 				return;
+			case Query_Failed:
+				showErrorMessage("Failed to fetch data from database");
 		}
 		
 	}
@@ -348,6 +352,15 @@ public class LandingPageScreenController implements Initializable,IScreenControl
 
 	@Override
 	public void onLogoutClicked() {}
+	
+//	public void onCloseApplication() {
+//		ClientRequestDataContainer request;
+//		if(!connectToServerVbox.isVisible()) {
+//			request = new ClientRequestDataContainer(ClientRequest.Logout, customer);
+//			ClientApplication.client.accept(request);
+//			ServerResponseBackToClient response = ClientCommunication.responseFromServer;
+//		}
+//	}
 
 	@Override
 	public void onServerCrashed() {

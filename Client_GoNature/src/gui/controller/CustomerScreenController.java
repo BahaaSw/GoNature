@@ -95,7 +95,11 @@ public class CustomerScreenController implements Initializable, IScreenControlle
 	}
 	
 	public void onBackClicked() {
-		onLogoutClicked();
+		if(customer.getUserType()==UserTypeEnum.ExternalUser) {
+			GuiHelper.setScreenAfterLogoutOrBack();
+		}
+		else
+			onLogoutClicked();
 	}
 	
 	public void onHomeClicked() {
@@ -122,7 +126,6 @@ public class CustomerScreenController implements Initializable, IScreenControlle
 		ClientApplication.client.accept(request);
 		ServerResponseBackToClient response = ClientCommunication.responseFromServer;
 		GuiHelper.setScreenAfterLogoutOrBack();
-		
 	}
 	
 	public void onServerCrashed() {

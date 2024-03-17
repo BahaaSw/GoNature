@@ -62,8 +62,7 @@ public class ValidationRules {
 	}
 	
 	public static boolean isValidId(String id) {
-		String idPattern="^[1-9]\\d{8}$";
-		return Pattern.matches(idPattern, id);
+		return isNumeric(id);
 	}
 	
 	public static boolean isNumeric(String str) {
