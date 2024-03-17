@@ -14,23 +14,36 @@ public class Order implements Serializable {
 	private int orderId;
 	private OrderTypeEnum orderType;
 	private ParkNameEnum parkName;
+	private String firstName;
+	private String lastName;
 	private String userId;
+	private String ownerType;
 	private UserTypeEnum userType;
 	private String telephoneNumber;
 	private String email;
-	private String timeOfVisit;
+	private LocalDateTime enterDate; // added
+	private LocalDateTime exitDate; // added 
 	private int numberOfVisitors;
 	private String creationDate;
 	private OrderStatusEnum status;
 	private String lastStatusUpdatedTime;
 	private String confirmationTime;
-	private int price;
-
+	private boolean paid=false; // added
+	private double price;
+	
+	
+	private String timeOfVisit;
+	
 	public Order() {
 	}
 
 	public Order(int orderId) {
 		this.orderId=orderId;
+	}
+	
+	public Order(String orderId) {
+		Integer id = Integer.parseInt(orderId);
+		this.orderId=id;
 	}
 	
 	public Order(int orderId,OrderTypeEnum orderType,ParkNameEnum parkName,String userId,UserTypeEnum userType,
@@ -57,11 +70,11 @@ public class Order implements Serializable {
 		this.orderId = orderId;
 	}
 
-	public int getPrice() {
+	public double getPrice() {
 		return price;
 	}
 
-	public void setPrice(int price) {
+	public void setPrice(double price) {
 		this.price = price;
 	}
 
@@ -166,5 +179,53 @@ public class Order implements Serializable {
 		if (this.orderId == ((Order) obj).getOrderId())
 			return false;
 		return true;
+	}
+
+	public String getOwnerType() {
+		return ownerType;
+	}
+
+	public void setOwnerType(String ownerType) {
+		this.ownerType = ownerType;
+	}
+
+	public LocalDateTime getEnterDate() {
+		return enterDate;
+	}
+
+	public void setEnterDate(LocalDateTime enterDate) {
+		this.enterDate = enterDate;
+	}
+
+	public LocalDateTime getExitDate() {
+		return exitDate;
+	}
+
+	public void setExitDate(LocalDateTime exitDate) {
+		this.exitDate = exitDate;
+	}
+
+	public boolean isPaid() {
+		return paid;
+	}
+
+	public void setPaid(boolean paid) {
+		this.paid = paid;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 }

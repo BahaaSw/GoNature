@@ -4,30 +4,28 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum ParkNameEnum {
-	None ("None"),
-	Banias ("Banias"),
-	Herodium ("Herodium"),
-	Masada ("Masada");
-	
-	private static final Map<String, ParkNameEnum> enumMap = new HashMap<>();
+	None (0),
+	Banias (1),
+	Masada (2),
+	Herodium (3);
 
-    static {
-        for (ParkNameEnum parkNameEnum : ParkNameEnum.values()) {
-            enumMap.put(parkNameEnum.name, parkNameEnum);
-        }
+    private final Integer parkId;
+
+    ParkNameEnum(Integer parkId) {
+        this.parkId = parkId;
     }
-	
-	private String name;
-	private ParkNameEnum(String name) {
-		this.name=name;
-	}
-	
-	@Override
-	public String toString() {
-		return name;
-	}
-	
-    public static ParkNameEnum fromString(String name) {
-        return enumMap.get(name);
+
+    public Integer getParkId() {
+        return this.parkId;
+    }
+
+    public static ParkNameEnum fromParkId(Integer parkId) {
+        for (ParkNameEnum parkName : ParkNameEnum.values()) {
+            if ((parkId == null && parkName.getParkId() == null) || 
+                (parkId != null && parkId.equals(parkName.getParkId()))) {
+                return parkName;
+            }
+        }
+        return None;
     }
 }

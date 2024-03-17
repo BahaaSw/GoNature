@@ -1,6 +1,7 @@
 package gui.controller;
 
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.ResourceBundle;
 
 import javafx.collections.FXCollections;
@@ -10,6 +11,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DateCell;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
@@ -35,7 +38,7 @@ public class MakeOrderScreenController implements Initializable{
 	@FXML
 	public TextField emailField;
 	@FXML
-	public TextField orderDateOfVisitField;
+	public DatePicker pickDate;
 	@FXML
 	public TextField numberOfVisitorsField;
 	@FXML
@@ -83,15 +86,24 @@ public class MakeOrderScreenController implements Initializable{
 		parksList.setOnAction(this::onParkChangeSelection);
 		pickTime.getItems().addAll(timeForVisits);
 		pickTime.setOnAction(this::onTimeChangeSelection);
+		// initialize date picker up to 3 months forward.
+		pickDate.setDayCellFactory(picker->new DateCell() {
+			LocalDate maxDate = LocalDate.now().plusMonths(3);
+			@Override
+			public void updateItem(LocalDate date, boolean empty) {
+				super.updateItem(date,empty);
+				setDisable(empty||date.compareTo(LocalDate.now())<0||date.compareTo(maxDate)>0);
+			}
+		});
 		
 		switch(customerType) {
 		case Visitor:
 		case ExternalUser:
-			visitTypesList.add(OrderTypeEnum.Solo);
-			visitTypesList.add(OrderTypeEnum.Family);
+			visitTypesList.add(OrderTypeEnum.Solo_PreOrder);
+			visitTypesList.add(OrderTypeEnum.Family_PreOrder);
 			break;
 		case Guide:
-			visitTypesList.add(OrderTypeEnum.Group);
+			visitTypesList.add(OrderTypeEnum.Group_PreOrder);
 			break;
 		}
 		visitType.getItems().addAll(visitTypesList);

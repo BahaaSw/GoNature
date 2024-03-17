@@ -1,5 +1,7 @@
 package logic;
 
+import utils.enums.UserTypeEnum;
+
 public class Visitor extends ExternalUser implements ICustomer {
 	private String visitorId;
 	private Order relevantOrder;
@@ -15,6 +17,7 @@ public class Visitor extends ExternalUser implements ICustomer {
 		this.lastName=lastName;
 		this.phoneNumber=phoneNumber;
 		this.emailAddress=emailAddress;
+		userType=UserTypeEnum.Visitor;
 	}
 	
 

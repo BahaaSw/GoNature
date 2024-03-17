@@ -33,7 +33,7 @@ import server.GoNatureServer;
  * The ServerGuiController class is the controller which connect the Server Gui Screen 
  * with the GoNatureServer instance (and the user who click on the buttons)
  */
-public class ServerGuiController {
+public class ServerScreenController {
 	
 	//javaFX binding elements
 	@FXML
@@ -59,7 +59,6 @@ public class ServerGuiController {
 	@FXML
 	private TableColumn<ClientConnection,String> statusColumn;
 	
-	private ArrayList<User> connectedUsers=new ArrayList<User>();
 	
 	// Observable collection in order to bind it to the table view.
 	private final ObservableList<ClientConnection> connectedClientsList = FXCollections.observableArrayList();
@@ -67,7 +66,7 @@ public class ServerGuiController {
 	private int logLine=1;
 	
 	// Empty Constructor
-	public ServerGuiController() 
+	public ServerScreenController() 
 	{
 		
 	}
@@ -138,7 +137,7 @@ public class ServerGuiController {
 	 * @param client- The ConnectionToClient instance which include the details of the client.
 	 */
 	public void addToConnected(ConnectionToClient client,String username) {
-		connectedClientsList.add(new ClientConnection(client.getInetAddress().getHostAddress(), client.getInetAddress().getHostName(),username));
+		connectedClientsList.add(new ClientConnection("Connected - Wait Login",client));
 	}
 	
 	/**
@@ -185,8 +184,5 @@ public class ServerGuiController {
 		dbPasswordField.setDisable(flag);
 	}
 	
-	public ArrayList<User> getConnectedUsers(){
-		return connectedUsers;
-	}
 	
 }

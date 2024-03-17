@@ -13,11 +13,14 @@ public enum ServerResponse {
 	Visitor_Have_No_Orders_Yet, // did not find visitor with such ID in orders table with relevant order
 	Visitor_Connected_Successfully, //did find visitor with such ID in orders table with relevant order
 
+	Order_Not_Found,
+	Order_Found,
+	
 
 	Exception_Was_Thrown, // when the server catch an exception
 	Server_Closed, // when server is closing itself, he should send to all clients
 	Server_Disconnected, // when server is disconnected, he should send to all clients
 	
 	User_Logout_Successfully, // irrelevant, user can logout by it's own.
-	
+	Query_Failed,
 }
