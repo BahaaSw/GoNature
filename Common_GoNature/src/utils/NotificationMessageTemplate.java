@@ -23,7 +23,7 @@ public class NotificationMessageTemplate {
 		return sb.toString();
 	}
 	
-	public static String paymentReceiptMessage(ParkNameEnum parkName,String firstName,String lastName,double totalPrice,int estimatedTimeVisit) {
+	public static String paymentReceiptMessage(ParkNameEnum parkName,String firstName,String lastName,double totalPrice,double estimatedTimeVisit) {
 		StringBuilder sb= new StringBuilder();
 		sb.append(String.format("Welcome To %s\n",parkName.toString()));
 		sb.append(String.format("Dear, %s %s",firstName,lastName));
