@@ -15,7 +15,7 @@
          </font>
       </Label>
       <Separator layoutX="10.0" layoutY="10.0" prefWidth="200.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="160.0" />
-      <VBox layoutX="29.0" layoutY="179.0" prefHeight="587.0" prefWidth="887.0" style="-fx-alignment: center;" styleClass="content_in_box">
+      <VBox layoutX="29.0" layoutY="179.0" prefHeight="443.0" prefWidth="887.0" style="-fx-alignment: center;" styleClass="content_in_box">
          <children>
             <Label fx:id="paymentReceiptMessageLabel" text="Message">
                <font>

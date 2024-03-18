@@ -129,6 +129,7 @@ public class ServerScreenController {
 		connectServer.setDisable(false);
 		disableFields(false);
 		connectedClientsList.clear();
+		
 
 	}
 	

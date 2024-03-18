@@ -69,8 +69,7 @@ public class GoNatureServer extends AbstractServer {
 
 	/**
 	 * This method handle the message from client and sends them to the correct
-	 * method according to the sent Object instance. TODO: in our main project ->
-	 * this method will include all instances.
+	 * method according to the sent Object instance.
 	 * 
 	 * @param msg    - The Object instance the client sent to the server.
 	 * @param client - The ConnectionToClient instance which include the details of
@@ -86,33 +85,38 @@ public class GoNatureServer extends AbstractServer {
 		switch (request) {
 		case Login_As_Employee:
 			response = handleLoginAsEmployee(data, client);
-			if(response.getRensponse()==ServerResponse.User_Already_Connected ||
-					response.getRensponse()==ServerResponse.User_Does_Not_Found||
-					response.getRensponse()==ServerResponse.Password_Incorrect)
+			if (response.getRensponse() == ServerResponse.User_Already_Connected
+					|| response.getRensponse() == ServerResponse.User_Does_Not_Found
+					|| response.getRensponse() == ServerResponse.Password_Incorrect)
 				break;
-			serverController.addToConnected(client, ((Employee)response.getMessage()).getUsername());
+			serverController.addToConnected(client, ((Employee) response.getMessage()).getUsername());
 			break;
 
 		case Login_As_Guide:
 			response = handleLoginAsGuide(data, client);
-			if(response.getRensponse()==ServerResponse.User_Already_Connected || 
-					response.getRensponse()==ServerResponse.Guide_Status_Pending||
-					response.getRensponse()==ServerResponse.Password_Incorrect)
+			if (response.getRensponse() == ServerResponse.User_Already_Connected
+					|| response.getRensponse() == ServerResponse.Guide_Status_Pending
+					|| response.getRensponse() == ServerResponse.Password_Incorrect)
 				break;
-			serverController.addToConnected(client, ((Guide)response.getMessage()).getUsername());
+			serverController.addToConnected(client, ((Guide) response.getMessage()).getUsername());
 			break;
 
 		case Login_As_Visitor:
 			response = handleLoginAsVisitor(data, client);
-			if(response.getRensponse()==ServerResponse.User_Already_Connected ||
-					response.getRensponse()==ServerResponse.Visitor_Have_No_Orders_Yet)
+			if (response.getRensponse() == ServerResponse.User_Already_Connected
+					|| response.getRensponse() == ServerResponse.Visitor_Have_No_Orders_Yet)
 				break;
-			serverController.addToConnected(client, "Visitor "+((Visitor)response.getMessage()).getCustomerId());
+			serverController.addToConnected(client, "Visitor " + ((Visitor) response.getMessage()).getCustomerId());
+			break;
+
+		case Search_For_Guides_Status_Pending:
+			response = handleSearchForGuidesWithStatusPending(data,client);
 			break;
 			
 		case Search_For_Relevant_Order:
-			response = handleSearchForRelevantOrder(data,client);
+			response = handleSearchForRelevantOrder(data, client);
 			break;
+
 		case Logout:
 			handleUserLogoutFromApplication(data.getData(), client, clientIp);
 			break;
@@ -131,6 +135,11 @@ public class GoNatureServer extends AbstractServer {
 		}
 	}
 
+	private ServerResponseBackToClient handleSearchForGuidesWithStatusPending(ClientRequestDataContainer data,ConnectionToClient client) {
+		return null;
+		
+	}
+	
 	private ServerResponseBackToClient handleLoginAsEmployee(ClientRequestDataContainer data,
 			ConnectionToClient client) {
 		Employee employee = (Employee) data.getData();
@@ -138,13 +147,13 @@ public class GoNatureServer extends AbstractServer {
 		DatabaseResponse DbResponse = QueryControl.employeeQueries.searchForApprovedEmployee(employee);
 		if (DbResponse == DatabaseResponse.Such_Employee_Not_Found) {
 			response = new ServerResponseBackToClient(ServerResponse.User_Does_Not_Found, employee);
-			
+
 		} else if (DbResponse == DatabaseResponse.Password_Incorrect) {
 			response = new ServerResponseBackToClient(ServerResponse.Password_Incorrect, employee);
-			
+
 		} else if (DbResponse == DatabaseResponse.Employee_Connected_Successfully) {
 			response = new ServerResponseBackToClient(ServerResponse.Employee_Connected_Successfully, employee);
-			
+
 			for (ClientConnection cl : serverController.getClientsList()) {
 				if (cl.isAlreadyConnected(new ClientConnection(employee.getUsername(), client))) {
 					response.setRensponse(ServerResponse.User_Already_Connected);
@@ -188,59 +197,59 @@ public class GoNatureServer extends AbstractServer {
 		return response;
 	}
 
-	private ServerResponseBackToClient handleLoginAsVisitor(ClientRequestDataContainer data, ConnectionToClient client) {
+	private ServerResponseBackToClient handleLoginAsVisitor(ClientRequestDataContainer data,
+			ConnectionToClient client) {
 		Visitor visitor = (Visitor) data.getData();
 		ServerResponseBackToClient response;
 		DatabaseResponse DbResponse = QueryControl.customerQueries.searchAccessForVisitor(visitor);
 		if (DbResponse == DatabaseResponse.Doesnt_Have_Active_Order) {
 			response = new ServerResponseBackToClient(ServerResponse.Visitor_Have_No_Orders_Yet, visitor);
-			
+
 		} else if (DbResponse == DatabaseResponse.Visitor_Connected_Successfully) {
 			response = new ServerResponseBackToClient(ServerResponse.Visitor_Connected_Successfully, visitor);
 			for (ClientConnection cl : serverController.getClientsList()) {
-				if (cl.isAlreadyConnected(new ClientConnection("Visitor "+visitor.getCustomerId(), client))) {
+				if (cl.isAlreadyConnected(new ClientConnection("Visitor " + visitor.getCustomerId(), client))) {
 					response.setRensponse(ServerResponse.User_Already_Connected);
 					break;
 				}
 			}
-		}
-		else {
+		} else {
 			serverController.printToLogConsole("SQL Exception was thrown during search for login visitor query");
 			response = new ServerResponseBackToClient(ServerResponse.Query_Failed, null);
 		}
 		return response;
 	}
-	
-	private ServerResponseBackToClient handleSearchForRelevantOrder(ClientRequestDataContainer data, ConnectionToClient client) {
-		Order order = (Order)data.getData();
+
+	private ServerResponseBackToClient handleSearchForRelevantOrder(ClientRequestDataContainer data,
+			ConnectionToClient client) {
+		Order order = (Order) data.getData();
 		ServerResponseBackToClient response;
 		DatabaseResponse DbResponse = QueryControl.orderQueries.fetchOrderDetailsByID(order);
-		if(DbResponse == DatabaseResponse.Such_Order_Does_Not_Exists) {
-			response = new ServerResponseBackToClient(ServerResponse.Order_Not_Found,order);
-		}
-		else if(DbResponse == DatabaseResponse.Order_Found_Successfully) {
-			response = new ServerResponseBackToClient(ServerResponse.Order_Found,order);
-		}
-		else {
+		if (DbResponse == DatabaseResponse.Such_Order_Does_Not_Exists) {
+			response = new ServerResponseBackToClient(ServerResponse.Order_Not_Found, order);
+		} else if (DbResponse == DatabaseResponse.Order_Found_Successfully) {
+			response = new ServerResponseBackToClient(ServerResponse.Order_Found, order);
+		} else {
 			serverController.printToLogConsole("SQL Exception was thrown during search relevant order query");
 			response = new ServerResponseBackToClient(ServerResponse.Query_Failed, null);
 		}
 		return response;
 	}
-	
+
 	private void handleUserLogoutFromApplication(Object user, ConnectionToClient client, String clientIp) {
 		try {
-			String id="";
+			String id = "";
 			if (user instanceof Visitor) {
-				id="Visitor"+((Visitor)user).getCustomerId();
-				
+				id = "Visitor" + ((Visitor) user).getCustomerId();
+
+			} else if (user instanceof User) {
+				id = ((User) user).getUsername();
 			}
-			else if(user instanceof User) {
-				id=((User)user).getUsername();
-			}
-				serverController.printToLogConsole(String.format("User : '%s' with IP : '%s' : Request Logout from Application",id, clientIp));
-				serverController.getClientsList().remove(new ClientConnection("", client));
-				serverController.printToLogConsole(String.format("User : '%s' with IP : '%s' : Logged Out Successfully",id, clientIp));
+			serverController.printToLogConsole(
+					String.format("User : '%s' with IP : '%s' : Request Logout from Application", id, clientIp));
+			serverController.getClientsList().remove(new ClientConnection("", client));
+			serverController.printToLogConsole(
+					String.format("User : '%s' with IP : '%s' : Logged Out Successfully", id, clientIp));
 			client.sendToClient(new ServerResponseBackToClient(ServerResponse.User_Logout_Successfully, null));
 		} catch (IOException ex) {
 			serverController.printToLogConsole("Error while sending update message to client");
@@ -332,7 +341,8 @@ public class GoNatureServer extends AbstractServer {
 				return;
 			}
 		}
-		serverController.printToLogConsole("Client " + details.getHostName() + " with IP:" + details.getHostAddress() + " Connected");
+		serverController.printToLogConsole(
+				"Client " + details.getHostName() + " with IP:" + details.getHostAddress() + " Connected");
 	}
 
 	/**
@@ -354,7 +364,7 @@ public class GoNatureServer extends AbstractServer {
 	 * This method stop the server to listen on a specific port and close the
 	 * server.
 	 */
-	public static void stopServer() {
+	public static void stopServer(){
 		// there is no server yet
 		if (server == null)
 			return;
@@ -365,6 +375,7 @@ public class GoNatureServer extends AbstractServer {
 			server.stopListening();
 			server.close();
 			server = null;
+			MySqlConnection.getInstance().closeConnection();
 		} catch (IOException ex) {
 			System.out.println("Error while closing server");
 			ex.printStackTrace();
