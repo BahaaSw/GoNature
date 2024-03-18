@@ -8,11 +8,21 @@ public class Park {
 	private ParkNameEnum parkName;
 	private int currentMaxCapacity;
 	private int currentInPark;
-	private int currentEstimatedStayTime;
+	private double currentEstimatedStayTime;
 	private int currentEstimatedReservedSpots; // the gap between max capacity, to amount of orders we let order
 	private double parkEntranceFee;
 	private String district;
+	private int price; 
+
 	
+	public int getPrice() {
+		return price;
+	}
+
+	public void setPrice(int price) {
+		this.price = price;
+	}
+
 	public Park(int parkId) {
 		this.parkId=parkId;
 	}
@@ -62,11 +72,11 @@ public class Park {
 		this.currentMaxCapacity = currentMaxCapacity;
 	}
 
-	public int getCurrentEstimatedStayTime() {
+	public double getCurrentEstimatedStayTime() {
 		return currentEstimatedStayTime;
 	}
 
-	public void setCurrentEstimatedStayTime(int currentEstimatedStayTime) {
+	public void setCurrentEstimatedStayTime(double currentEstimatedStayTime) {
 		this.currentEstimatedStayTime = currentEstimatedStayTime;
 	}
 

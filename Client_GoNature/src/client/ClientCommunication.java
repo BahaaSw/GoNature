@@ -1,14 +1,12 @@
 package client;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javafx.application.Platform;
 import logic.ClientRequestDataContainer;
 import logic.ServerResponseBackToClient;
 import ocsf.AbstractClient;
 import ocsf.ChatIF;
-import utils.enums.ClientRequest;
 import utils.enums.ServerResponse;
 
 public class ClientCommunication extends AbstractClient {

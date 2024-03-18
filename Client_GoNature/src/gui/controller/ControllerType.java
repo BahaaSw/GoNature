@@ -11,7 +11,7 @@ public enum ControllerType {
 	Finish_Order_Screen_Controller,
 	Handle_Order_Screen_Controller,
 	Make_Order_Screen_Controller,
-	Confirm_Message_Screen_Controller,
+	Order_Summary_Screen_Controller,
 	
 	// Employee Controllers
 	Employee_Homepage_Screen_Controller,

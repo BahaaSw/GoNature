@@ -21,6 +21,17 @@ public enum DatabaseResponse {
 	Order_Found_Successfully,
 	
 	// Park Section
+	Park_Found_Successfully,
+	Such_Park_Does_Not_Exists,
+	Park_MaxCapacity_Was_Updated,
+	Park_EstimatedStayTime_Was_Updated,
+	Park_ReservedSpots_Was_Updated,
+	Park_List_Names_Is_Created,
+	Park_Table_Is_Empty,
+	Park_Price_Returned_Successfully,
+	
+	//currentEstimatedStayTime
+	
 	
 	
 	// Request Section

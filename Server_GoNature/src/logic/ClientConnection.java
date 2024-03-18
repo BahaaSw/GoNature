@@ -22,13 +22,13 @@ import ocsf.ConnectionToClient;
 public class ClientConnection {
 	private SimpleStringProperty hostIp;
 	private SimpleStringProperty hostName;
-	private SimpleStringProperty status;
+	private SimpleStringProperty username;
 	private ConnectionToClient connection;
 	
-	public ClientConnection(String status,ConnectionToClient connection) {
+	public ClientConnection(String username,ConnectionToClient connection) {
 		this.hostIp=new SimpleStringProperty(connection.getInetAddress().getHostAddress());
 		this.hostName=new SimpleStringProperty(connection.getInetAddress().getHostName());
-		this.status=new SimpleStringProperty(status);
+		this.username=new SimpleStringProperty(username);
 		this.setConnection(connection);
 	}
 	
@@ -48,12 +48,12 @@ public class ClientConnection {
 		this.hostIp.set(hostIp);
 	}
 	
-	public String getStatus() {
-		return status.get();
+	public String getUsername() {
+		return username.get();
 	}
 	
-	public void setStatus(String status) {
-		this.status.set(status);
+	public void setUsername(String username) {
+		this.username.set(username);
 	}
 
 	public ConnectionToClient getConnection() {
@@ -68,6 +68,10 @@ public class ClientConnection {
 		public boolean equals(Object obj) {
 			return connection.equals(((ClientConnection)obj).getConnection());
 		}
+	
+	public boolean isAlreadyConnected(ClientConnection newConnect) {
+		return username.get().equals(newConnect.getUsername());
+	}
 	
 
 }

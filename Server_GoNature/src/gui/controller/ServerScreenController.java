@@ -137,7 +137,7 @@ public class ServerScreenController {
 	 * @param client- The ConnectionToClient instance which include the details of the client.
 	 */
 	public void addToConnected(ConnectionToClient client,String username) {
-		connectedClientsList.add(new ClientConnection("Connected - Wait Login",client));
+		connectedClientsList.add(new ClientConnection(username,client));
 	}
 	
 	/**
@@ -168,7 +168,7 @@ public class ServerScreenController {
 	private void initializeViewTable() {
 		ipColumn.setCellValueFactory(new PropertyValueFactory<ClientConnection, String>("hostIp"));
 		hostColumn.setCellValueFactory(new PropertyValueFactory<ClientConnection, String>("hostName"));
-		statusColumn.setCellValueFactory(new PropertyValueFactory<ClientConnection, String>("status"));
+		statusColumn.setCellValueFactory(new PropertyValueFactory<ClientConnection, String>("username"));
 		clientsTable.setItems(connectedClientsList);
 	}
 	

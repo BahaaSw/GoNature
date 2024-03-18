@@ -31,6 +31,7 @@ public class OrderQueries {
 				return DatabaseResponse.Such_Order_Does_Not_Exists;
 			}
 			
+			order.setOrderId(rs.getInt(1));
 			order.setParkName(ParkNameEnum.fromParkId(rs.getInt(2)));
 			order.setUserId(String.format("%d", rs.getInt(3)));
 			order.setOwnerType(rs.getString(4));
@@ -52,5 +53,71 @@ public class OrderQueries {
 //			serverController.printToLogConsole("Query search for user failed");
 			return DatabaseResponse.Failed;
 		}
+	}
+	
+//	public DatabaseResponse InsertOrderDetailsByID(Order order)
+//	{
+//		try {
+//			Connection con = MySqlConnection.getInstance().getConnection();
+//			PreparedStatement stmt = con.prepareStatement("INSERT INTO preorders (OrderId,ParkId,OwnerId,OwnerType,EnterDate,ExitDate,PayStatus,OrderStatus,Email,Phone,FirstName,LastName,OrderType,Amount,Price) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?");
+//			stmt.setInt(1, order.getOrderId());
+//			stmt.setInt(2,order.getParkName().fromParkId());
+//			stmt.setString(3,order.getOwnerType());
+//			stmt.set
+//			ResultSet rs = stmt.executeQuery();
+//
+//			// if the query ran successfully, but returned as empty table.
+//			if (!rs.next()) {
+//				return DatabaseResponse.Such_Order_Does_Not_Exists;
+//			}
+//			
+//			order.setOrderId(rs.getInt(1));
+//			order.setParkName(ParkNameEnum.fromParkId(rs.getInt(2)));
+//			order.setUserId(String.format("%d", rs.getInt(3)));
+//			order.setOwnerType(rs.getString(4));
+//			order.setEnterDate(rs.getTimestamp(5).toLocalDateTime());
+//			order.setExitDate(rs.getTimestamp(6).toLocalDateTime());
+//			order.setPaid(rs.getBoolean(7));
+//			order.setStatus(OrderStatusEnum.fromString(rs.getString(8)));
+//			order.setEmail(rs.getString(9));
+//			order.setTelephoneNumber(rs.getString(10));
+//			order.setFirstName(rs.getString(11));
+//			order.setLastName(rs.getString(12));
+//			order.setOrderType(OrderTypeEnum.fromString(rs.getString(13)));
+//			order.setNumberOfVisitors(rs.getInt(14));
+//			order.setPrice(rs.getDouble(15));
+//			
+//			return DatabaseResponse.Order_Found_Successfully;
+//			
+//		} catch (SQLException ex) {
+////			serverController.printToLogConsole("Query search for user failed");
+//			return DatabaseResponse.Failed;
+//		}
+	//}
+	
+	public int returnTotalPreOrders() 
+	{
+		int ordersCount = 0;
+		
+		try 
+		{
+			Connection con = MySqlConnection.getInstance().getConnection();
+			PreparedStatement stmt = con.prepareStatement("SELECT COUNT(*) AS orderCount FROM preorders");
+			ResultSet rs = stmt.executeQuery();
+
+			// if the query ran successfully, but returned as empty table.
+			if (!rs.next()) {
+				return ordersCount;
+			}
+			
+			ordersCount = rs.getInt("orderCount");
+			return ordersCount;
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+		
+		return ordersCount;
 	}
 }

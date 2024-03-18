@@ -9,7 +9,7 @@ public enum ApplicationViewType {
 	FinishOrderScreen, //Customer : Choose new Date or Enter waiting list.
 	HandleOrderScreen, // Customer (Guide/Visitor) : Manage current order, opens after Identication Screen
 	MakeOrderScreen, // Customer (Guide/Visitor/New Visitor) : Make New Order to Park.
-	ConfirmMessageScreen, // Customer (Visitor/Guide/New Visitor) : Order Confirmation Message.
+	OrderSummaryScreen, // Customer (Visitor/Guide/New Visitor) : Order Confirmation Message.
 	
 	EmployeeHomepageScreen, // Employee Homepage : Common for all employees
 	EmployeeScreen, // Employee Screen : BorderPane load to center each relevant frame
