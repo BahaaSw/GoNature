@@ -272,3 +272,17 @@
     -fx-font-size:18px;
     -fx-text-fill: #000000;
 }
+
+.manager_order{
+
+}
+
+.manager_order Button{
+        -fx-pref-width:200;
+        -fx-pref-height:35;
+        -fx-background-color:#11463c;
+        -fx-text-fill:#ffffff;
+        -fx-font-size:1.4em;
+        -fx-font-weight: bold;
+        -fx-effect:dropshadow(three-pass-box,#DDDDDD,5,0,0,6);
+}

@@ -180,7 +180,7 @@ public class MakeOrderScreenController implements Initializable{
 		// if can't make new order, open rescheduleOrder
 		// else, open order summary
 		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/OrderSummaryScreen.fxml",
-				ApplicationViewType.OrderSummaryScreen,new EntitiesContainer(order));
+				ApplicationViewType.Order_Summary_Screen,new EntitiesContainer(order));
 		screen.setCenter(dashboard);
 	}
 	

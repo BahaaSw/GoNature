@@ -105,7 +105,7 @@ public class CustomerScreenController implements Initializable, IScreenControlle
 	
 	public void onHomeClicked() {
 		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/CustomerHomepageScreen.fxml",
-				ApplicationViewType.CustomerHomgepageScreen,new EntitiesContainer(customer));
+				ApplicationViewType.Customer_Homepage_Screen,new EntitiesContainer(customer));
 		screen.setCenter(dashboard);
 	}
 	
@@ -114,13 +114,13 @@ public class CustomerScreenController implements Initializable, IScreenControlle
 		if(!(currentCustomer==UserTypeEnum.ExternalUser))
 			customerDetails = (ICustomer) customer;
 		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/MakeOrderScreen.fxml",
-				ApplicationViewType.MakeOrderScreen,new EntitiesContainer(customer,customerDetails));
+				ApplicationViewType.Make_Order_Screen,new EntitiesContainer(customer,customerDetails));
 		screen.setCenter(dashboard);
 	}
 	
 	public void onManageOrdersClicked() {
 		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/IdenticationScreen.fxml",
-				ApplicationViewType.IdenticationScreen,new EntitiesContainer(customer));
+				ApplicationViewType.Identication_Screen,new EntitiesContainer(customer));
 		screen.setCenter(dashboard);
 	}
 	

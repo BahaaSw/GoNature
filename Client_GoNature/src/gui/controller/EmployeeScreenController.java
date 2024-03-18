@@ -148,51 +148,51 @@ public class EmployeeScreenController implements Initializable,IScreenController
 	
 	public void onHomeClicked() {
 		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/EmployeeHomepageScreen.fxml",
-				ApplicationViewType.EmployeeHomepageScreen,new EntitiesContainer(employee));
+				ApplicationViewType.Employee_Homepage_Screen,new EntitiesContainer(employee));
 		screen.setCenter(dashboard);
 	}
 	
 	public void onAddNewGuideClicked() {
 		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/ManageGuidesScreen.fxml",
-				ApplicationViewType.ManageGuidesScreen,null);
+				ApplicationViewType.Manage_Guides_Screen,null);
 		screen.setCenter(dashboard);
 	}
 	
 	public void onParkEntranceClicked() {
 		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/ParkEntranceScreen.fxml",
-				ApplicationViewType.ParkEntranceScreen,new EntitiesContainer(employee));
+				ApplicationViewType.Park_Entrance_Screen,new EntitiesContainer(employee));
 		screen.setCenter(dashboard);
 	}
 	
 	public void onCreateReportsClicked() {
 		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/CreateReportsScreen.fxml",
-				ApplicationViewType.CreateReportsScreen,new EntitiesContainer(employee));
+				ApplicationViewType.Create_Reports_Screen,new EntitiesContainer(employee));
 		screen.setCenter(dashboard);
 	}
 	
 	public void onViewReportsClicked() {
 		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/ViewReportsScreen.fxml",
-				ApplicationViewType.ViewReportsScreen,new EntitiesContainer(employee));
+				ApplicationViewType.View_Reports_Screen,new EntitiesContainer(employee));
 		screen.setCenter(dashboard);
 	}
 	
 	public void onParkSettingsClicked() {
 		Park park = new Park(1,ParkNameEnum.Banias,100,50,4,20);
 		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/ParkSettingsScreen.fxml",
-				ApplicationViewType.ParkSettingsScreen,new EntitiesContainer(park,employee));
+				ApplicationViewType.Park_Settings_Screen,new EntitiesContainer(park,employee));
 		screen.setCenter(dashboard);
 	}
 	
 	public void onRequestsClicked() {
 		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/RequestTableScreen.fxml",
-				ApplicationViewType.RequestTableScreen,new EntitiesContainer(employee));
+				ApplicationViewType.Request_Table_Screen,new EntitiesContainer(employee));
 		screen.setCenter(dashboard);
 	}
 	
 	public void onParkSpotsClicked() {
 		Park park = new Park(1,ParkNameEnum.Banias,100,50,4,20);
 		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/ParkAvailableSpotsScreen.fxml",
-				ApplicationViewType.ParkAvailableSpotsScreen,new EntitiesContainer(employee,park));
+				ApplicationViewType.Park_Available_Spots_Screen,new EntitiesContainer(employee,park));
 		screen.setCenter(dashboard);
 	}
 

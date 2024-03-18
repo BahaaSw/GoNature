@@ -22,7 +22,7 @@ public class OrderQueries {
 	public DatabaseResponse fetchOrderDetailsByID(Order order) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
-			PreparedStatement stmt = con.prepareStatement("SELECT * FROM preorders WHERE orderId = ?");
+			PreparedStatement stmt = con.prepareStatement("SELECT * FROM preorders WHERE orderId = ? AND OrderStatus!='Cancelled'");
 			stmt.setInt(1, order.getOrderId());
 			ResultSet rs = stmt.executeQuery();
 

@@ -23,7 +23,7 @@ import logic.Order;
 import utils.CurrentDateAndTime;
 import utils.NotificationMessageTemplate;
 
-public class FinishOrderScreenController implements Initializable {
+public class RescheduleOrderScreenController implements Initializable {
 	@FXML
 	public Label dateLabel;
 	@FXML
@@ -51,7 +51,7 @@ public class FinishOrderScreenController implements Initializable {
 	private String selectedOption;
 	private Order order;
 	
-	public FinishOrderScreenController(BorderPane screen, Object order) {
+	public RescheduleOrderScreenController(BorderPane screen, Object order) {
 		this.screen=screen;
 		this.order=(Order)order;
 	}

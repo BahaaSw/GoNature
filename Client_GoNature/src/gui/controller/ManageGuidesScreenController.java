@@ -46,7 +46,7 @@ public class ManageGuidesScreenController implements Initializable {
 		SceneLoaderHelper GuiHelper= new SceneLoaderHelper();
 		Guide guide = new Guide("1","guide","123456","gal","bitton","1234567890","gal@example.com");
 		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/AddNewGuideScreen.fxml",
-				ApplicationViewType.AddNewGuideScreen,new EntitiesContainer(guide));
+				ApplicationViewType.Add_New_Guide_Screen,new EntitiesContainer(guide));
 		screen.setCenter(dashboard);
 	}
 	
