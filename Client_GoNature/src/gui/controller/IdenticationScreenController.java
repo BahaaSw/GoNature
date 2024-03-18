@@ -28,7 +28,7 @@ import utils.ValidationRules;
 import utils.enums.ClientRequest;
 import utils.enums.UserTypeEnum;
 
-public class IdenticationScreenController implements Initializable{
+public class IdenticationScreenController implements Initializable {
 
 	@FXML
 	public Label dateLabel;
@@ -40,61 +40,63 @@ public class IdenticationScreenController implements Initializable{
 	public HBox errorSection;
 	@FXML
 	public Label errorMessageLabel;
-	
+
 	private BorderPane screen;
 	private ExternalUser customer;
 	private SceneLoaderHelper GuiHelper = new SceneLoaderHelper();
-	
-	public IdenticationScreenController(BorderPane screen,Object customer) {
-		this.screen=screen;
-		this.customer=(ExternalUser)customer;
+
+	public IdenticationScreenController(BorderPane screen, Object customer) {
+		this.screen = screen;
+		this.customer = (ExternalUser) customer;
 	}
-	
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		dateLabel.setText(CurrentDateAndTime.getCurrentDate("'Today' yyyy-MM-dd"));
 		hideErrorMessage();
-		
+
 	}
-	
+
 	public void onSearchClicked() {
-		if(ValidationRules.isFieldEmpty(orderIdField.getText())) {
+		if (ValidationRules.isFieldEmpty(orderIdField.getText())) {
 			showErrorMessage("Order ID cannot be empty!");
 			return;
 		}
-		if(!ValidationRules.isNumeric(orderIdField.getText())) {
+		if (!ValidationRules.isNumeric(orderIdField.getText())) {
 			showErrorMessage("Order ID must contain only digits");
 			return;
 		}
 		Order order = new Order(orderIdField.getText());
-		ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Search_For_Relevant_Order,order);
+		ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Search_For_Relevant_Order,
+				order);
 		ClientApplication.client.accept(request);
 		ServerResponseBackToClient response = ClientCommunication.responseFromServer;
-		
-		switch(response.getRensponse()) {
+
+		switch (response.getRensponse()) {
 		case Order_Not_Found:
 			showErrorMessage("Such Order does not exist!");
 			return;
 		case Order_Found:
 			ICustomer currentCustomer;
-			if(((Order)response.getMessage()).getOwnerType().equals("Visitor"))
-				currentCustomer = (Visitor)customer;
+			if (((Order) response.getMessage()).getOwnerType().equals("Visitor"))
+				currentCustomer = (Visitor) customer;
 			else
-				currentCustomer = (Guide)customer;
-			
-			AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/HandleOrderScreen.fxml",
-					ApplicationViewType.HandleOrderScreen,new EntitiesContainer(response.getMessage(),currentCustomer));
+				currentCustomer = (Guide) customer;
+
+			AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,
+					"/gui/view/HandleOrderScreen.fxml", ApplicationViewType.HandleOrderScreen,
+					new EntitiesContainer(response.getMessage(), currentCustomer));
 			screen.setCenter(dashboard);
 			return;
 		}
-		
+
 	}
-	
+
 	private void hideErrorMessage() {
 		errorMessageLabel.setText("");
 		errorSection.setVisible(false);
 	}
-	
+
 	private void showErrorMessage(String error) {
 		errorSection.setVisible(true);
 		errorMessageLabel.setText(error);

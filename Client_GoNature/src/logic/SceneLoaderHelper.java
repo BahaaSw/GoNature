@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import client.ClientApplication;
 import gui.controller.AddNewGuideScreenController;
-import gui.controller.ConfirmMessageScreenController;
+import gui.controller.OrderSummaryScreenController;
 import gui.controller.CreateReportsScreenController;
 import gui.controller.CustomerHomepageScreenController;
 import gui.controller.EmployeeHomepageScreenController;
@@ -43,8 +43,8 @@ public class SceneLoaderHelper {
 				break;
 			}
 				
-			case ConfirmMessageScreen:{
-				ConfirmMessageScreenController controller= new ConfirmMessageScreenController(screen,data.getEntity1());
+			case OrderSummaryScreen:{
+				OrderSummaryScreenController controller= new OrderSummaryScreenController(screen,data.getEntity1());
 				loader.setController(controller);
 				break;
 			}
@@ -84,7 +84,7 @@ public class SceneLoaderHelper {
 			}
 			
 			case MakeOrderScreen:{
-				MakeOrderScreenController controller = new MakeOrderScreenController(screen,data.getEntity1());
+				MakeOrderScreenController controller = new MakeOrderScreenController(screen,data.getEntity1(),data.getCustomerInterface());
 				loader.setController(controller);
 				break;
 			}

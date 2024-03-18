@@ -5,29 +5,48 @@ import utils.enums.ParkNameEnum;
 public class NotificationMessageTemplate {
 	
 	public static String orderConfirmMessage(String orderId,String park,String date, String time,
-			String type, String amountOfVisitors,String totalPrice) {
+			String type, int amountOfVisitors,String totalPrice) {
 		StringBuilder sb= new StringBuilder();
 		sb.append("Thank you for your order!\n");
 		sb.append("We will send you a reminder one day before your visit.\n");
-		sb.append("You need to confirm your order when you receive the reminder.\n\n");
+		sb.append("You need to confirm your order when you receive the reminder.\n");
 		sb.append("Your order information:\n");
 		sb.append(String.format("Order id: %s.\n", orderId));
 		sb.append(String.format("Park: %s.\n", park));
-		sb.append(String.format("Date: %s.\n", date));
-		sb.append(String.format("Time: %s.\n", time));
+		sb.append(String.format("Date And Time: %s.\n", date));
 		sb.append(String.format("Type: %s.\n", type));
-		sb.append(String.format("Visitors: %s.\n", amountOfVisitors));
+		sb.append(String.format("Visitors: %d.\n", amountOfVisitors));
 		sb.append(String.format("Total price: %s.\n\n", totalPrice));
 		sb.append("We will see you at the park,\n GoNature Group 9 !");
 
 		return sb.toString();
 	}
 	
-	public static String paymentReceiptMessage(ParkNameEnum parkName,String firstName,String lastName,double totalPrice,int estimatedTimeVisit) {
+	public static String orderSummaryMessage(int orderId,String park,String date,
+			String type, int amountOfVisitors,double priceAfterDiscount, double priceBeforeDiscount) {
+		StringBuilder sb= new StringBuilder();
+		sb.append("Thank you for your order!\n");
+		sb.append("Last step before we book your order.\n");
+		sb.append("You have to choose pay now or pay later.\n");
+		sb.append("NOTICE: PrePayment gives you discount\n");
+		sb.append("Your order information:\n");
+		sb.append(String.format("Order id: %d.\n", orderId));
+		sb.append(String.format("Park: %s.\n", park));
+		sb.append(String.format("Date And Time: %s.\n", date));
+		sb.append(String.format("Type: %s.\n", type));
+		sb.append(String.format("Visitors: %d.\n", amountOfVisitors));
+		sb.append(String.format("Total Price (PrePayment): %.2f\n",priceAfterDiscount));
+		sb.append(String.format("Total Price (Pay Later): %.2f\n\n", priceBeforeDiscount));
+		sb.append("We will see you at the park,\n GoNature Group 9 !");
+
+		return sb.toString();
+	}
+	
+	public static String paymentReceiptMessage(ParkNameEnum parkName,String firstName,String lastName,double totalPrice,double estimatedTimeVisit) {
 		StringBuilder sb= new StringBuilder();
 		sb.append(String.format("Welcome To %s\n",parkName.toString()));
 		sb.append(String.format("Dear, %s %s",firstName,lastName));
-		sb.append(String.format("Your order total price (after discount) is: %f\n\n",totalPrice));
+		sb.append(String.format("Your order total price (after discount) is: %.2f\n\n",totalPrice));
 		sb.append("Pay at entrance.\n");
 		sb.append(String.format("NOTE: Visit time duration is %d hours long.\n\n",estimatedTimeVisit));
 		sb.append("Best Regards,\n");

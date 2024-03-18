@@ -86,16 +86,22 @@ public class GoNatureServer extends AbstractServer {
 		switch (request) {
 		case Login_As_Employee:
 			response = handleLoginAsEmployee(data, client);
+			if(response.getRensponse()==ServerResponse.User_Already_Connected)
+				break;
 			serverController.addToConnected(client, ((Employee)response.getMessage()).getUsername());
 			break;
 
 		case Login_As_Guide:
 			response = handleLoginAsGuide(data, client);
+			if(response.getRensponse()==ServerResponse.User_Already_Connected)
+				break;
 			serverController.addToConnected(client, ((Guide)response.getMessage()).getUsername());
 			break;
 
 		case Login_As_Visitor:
 			response = handleLoginAsVisitor(data, client);
+			if(response.getRensponse()==ServerResponse.User_Already_Connected)
+				break;
 			serverController.addToConnected(client, "Visitor "+((Visitor)response.getMessage()).getCustomerId());
 			break;
 			
@@ -135,8 +141,8 @@ public class GoNatureServer extends AbstractServer {
 			response = new ServerResponseBackToClient(ServerResponse.Employee_Connected_Successfully, employee);
 			
 			for (ClientConnection cl : serverController.getClientsList()) {
-				if (cl.equals(new ClientConnection("", client))) {
-					cl.setStatus("Connected As - " + employee.getUsername());
+				if (cl.isAlreadyConnected(new ClientConnection(employee.getUsername(), client))) {
+					response.setRensponse(ServerResponse.User_Already_Connected);
 					break;
 				}
 			}
@@ -160,8 +166,8 @@ public class GoNatureServer extends AbstractServer {
 		} else if (DbResponse == DatabaseResponse.Guide_Connected_Successfully) {
 			response = new ServerResponseBackToClient(ServerResponse.Guide_Connected_Successfully, guide);
 			for (ClientConnection cl : serverController.getClientsList()) {
-				if (cl.equals(new ClientConnection("", client))) {
-					cl.setStatus("Connected As - " + guide.getUsername());
+				if (cl.isAlreadyConnected(new ClientConnection(guide.getUsername(), client))) {
+					response.setRensponse(ServerResponse.User_Already_Connected);
 					break;
 				}
 			}
@@ -186,6 +192,12 @@ public class GoNatureServer extends AbstractServer {
 			
 		} else if (DbResponse == DatabaseResponse.Visitor_Connected_Successfully) {
 			response = new ServerResponseBackToClient(ServerResponse.Visitor_Connected_Successfully, visitor);
+			for (ClientConnection cl : serverController.getClientsList()) {
+				if (cl.isAlreadyConnected(new ClientConnection("Visitor "+visitor.getCustomerId(), client))) {
+					response.setRensponse(ServerResponse.User_Already_Connected);
+					break;
+				}
+			}
 		}
 		else {
 			serverController.printToLogConsole("SQL Exception was thrown during search for login visitor query");

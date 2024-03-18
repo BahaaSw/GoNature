@@ -19,6 +19,7 @@ import logic.ClientRequestDataContainer;
 import logic.EntitiesContainer;
 import logic.ExternalUser;
 import logic.Guide;
+import logic.ICustomer;
 import logic.SceneLoaderHelper;
 import logic.ServerResponseBackToClient;
 import logic.Visitor;
@@ -109,8 +110,11 @@ public class CustomerScreenController implements Initializable, IScreenControlle
 	}
 	
 	public void onMakeOrderClicked() {
+		ICustomer customerDetails = null;
+		if(!(currentCustomer==UserTypeEnum.ExternalUser))
+			customerDetails = (ICustomer) customer;
 		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/MakeOrderScreen.fxml",
-				ApplicationViewType.MakeOrderScreen,new EntitiesContainer(customer));
+				ApplicationViewType.MakeOrderScreen,new EntitiesContainer(customer,customerDetails));
 		screen.setCenter(dashboard);
 	}
 	

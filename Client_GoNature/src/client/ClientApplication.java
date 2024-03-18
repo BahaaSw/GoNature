@@ -24,6 +24,7 @@ public class ClientApplication extends Application {
 			Parent p = loader.getRoot();
 			primaryStage.setTitle("GoNature Client - Landing Page");
 	//		primaryStage.getIcons().add(new Image(GoNatureFinals.APP_ICON));
+//			primaryStage.setOnCloseRequest(null);
 			primaryStage.setScene(new Scene(p));
 			primaryStage.setResizable(false);
 			primaryStage.show();
