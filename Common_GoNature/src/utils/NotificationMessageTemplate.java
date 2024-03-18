@@ -42,13 +42,31 @@ public class NotificationMessageTemplate {
 		return sb.toString();
 	}
 	
-	public static String paymentReceiptMessage(ParkNameEnum parkName,String firstName,String lastName,double totalPrice,double estimatedTimeVisit) {
+	public static String entrancePaymentReceiptMessage(ParkNameEnum parkName,String firstName,String lastName,double totalPrice,double estimatedTimeVisit) {
 		StringBuilder sb= new StringBuilder();
 		sb.append(String.format("Welcome To %s\n",parkName.toString()));
 		sb.append(String.format("Dear, %s %s",firstName,lastName));
 		sb.append(String.format("Your order total price (after discount) is: %.2f\n\n",totalPrice));
 		sb.append("Pay at entrance.\n");
 		sb.append(String.format("NOTE: Visit time duration is %d hours long.\n\n",estimatedTimeVisit));
+		sb.append("Best Regards,\n");
+		sb.append("GoNature Group 9 !");
+		return sb.toString();
+	}
+	
+	public static String prePaymentReceiptMessage(ParkNameEnum parkName,int orderId, String orderDate,
+			String firstName,String lastName,double totalPrice,double estimatedTimeVisit,double discount) {
+		StringBuilder sb= new StringBuilder();
+		sb.append(String.format("Dear, %s %s\n\n",firstName,lastName));
+		sb.append(String.format("Thank you for choosing %s for your upcoming visit!\n", parkName.name()));
+		sb.append("We're excited to have you with us and are here to ensure your experience\n");
+		sb.append("is seamless and enjoyable. Below, you'll find a summary of your order.\n\n");
+		sb.append("Order Summary:\n");
+		sb.append(String.format("Order Number: %d\n", orderId));
+		sb.append(String.format("Order Date : %s\n",orderDate));
+		sb.append(String.format("Total Price (Pre Payment): %.2f\n",totalPrice*discount));
+		sb.append(String.format("Total Price (Pay at Entrance): %.2f\n\n", totalPrice));
+		sb.append(String.format("NOTE: Visit time duration is max %.1f hours long.\n\n",estimatedTimeVisit));
 		sb.append("Best Regards,\n");
 		sb.append("GoNature Group 9 !");
 		return sb.toString();

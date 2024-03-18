@@ -1,14 +1,17 @@
 package gui.controller;
 
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import gui.view.ApplicationViewType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import logic.EntitiesContainer;
 import logic.Order;
@@ -17,6 +20,7 @@ import logic.User;
 import utils.AlertPopUp;
 import utils.CurrentDateAndTime;
 import utils.NotificationMessageTemplate;
+import utils.enums.ParkNameEnum;
 
 public class OrderSummaryScreenController implements Initializable {
 	@FXML
@@ -26,9 +30,7 @@ public class OrderSummaryScreenController implements Initializable {
 	@FXML
 	public Button cancelButton;
 	@FXML
-	public Button payNowButton;
-	@FXML
-	public Button payLaterButton;
+	public Button continueButton;
 	
 	
 	private Order order;
@@ -51,20 +53,43 @@ public class OrderSummaryScreenController implements Initializable {
 	}
 	
 	public void onCancelClicked() {
-		SceneLoaderHelper guiHelper = new SceneLoaderHelper();
-		guiHelper.loadRightScreenToBorderPaneWithController(screen,"", ApplicationViewType.Customer_Homepage_Screen, new EntitiesContainer(order));
+		AlertPopUp alert = new AlertPopUp(AlertType.CONFIRMATION, "Order Cancel", "Are you sure?", "Order will not be saved.",ButtonType.YES,ButtonType.CLOSE);
+		Optional<ButtonType> result = alert.showAndWait();
+
+        // Check which button was clicked and act accordingly
+        if (result.isPresent() && result.get() == ButtonType.YES) {
+    		SceneLoaderHelper guiHelper = new SceneLoaderHelper();
+    		AnchorPane view = guiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/CustomerHomepageScreen.fxml", ApplicationViewType.Customer_Homepage_Screen, new EntitiesContainer(order));
+    		screen.setCenter(view);
+        }
+
 	}
 	
-	public void onPayNowClicked() {
+	public void onContinueClicked() {
 		//TODO: update the order in database as Confirmed-Paid
-		AlertPopUp alert = new AlertPopUp(AlertType.CONFIRMATION, "Payment Confirmation", "test", "test");
-		alert.showAndWait();
+		ButtonType payNow=new ButtonType("Pay Now");
+		ButtonType payLater=new ButtonType("Pay Later");
+		
+		String paymentReceipt = NotificationMessageTemplate.prePaymentReceiptMessage(order.getParkName(), order.getOrderId(),order.getEnterDate().toString(),
+				order.getFirstName(),order.getLastName(),order.getPrice()*order.getNumberOfVisitors(), 4,0.85);
+		AlertPopUp alert = new AlertPopUp(AlertType.CONFIRMATION,"Payment Notification", "Pay Now", paymentReceipt,payNow,payLater,ButtonType.CLOSE);
+		Optional<ButtonType> result = alert.showAndWait();
+
+        // Check which button was clicked and act accordingly
+        if (result.isPresent() && result.get() == payNow) {
+        	//TODO: add query to save the order in database as Wait and Paid!
+    		SceneLoaderHelper guiHelper = new SceneLoaderHelper();
+    		AnchorPane view = guiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/CustomerHomepageScreen.fxml", ApplicationViewType.Customer_Homepage_Screen, new EntitiesContainer(order));
+    		screen.setCenter(view);
+        }
+        else if (result.isPresent() && result.get() == payLater) {
+        	//TODO: add query to save the order in database as Wait not paid!
+    		SceneLoaderHelper guiHelper = new SceneLoaderHelper();
+    		AnchorPane view = guiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/CustomerHomepageScreen.fxml", ApplicationViewType.Customer_Homepage_Screen, new EntitiesContainer(order));
+    		screen.setCenter(view);
+        }
+
 	}
 
-	public void onPayLaterClicked() {
-		//TODO: update the order in database as Wait-Notification
-		AlertPopUp alert = new AlertPopUp(AlertType.CONFIRMATION, "Order Summary", "test", "test");
-		alert.showAndWait();
-	}
 
 }

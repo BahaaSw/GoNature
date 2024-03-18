@@ -36,8 +36,8 @@ public class PaymentReceiptScreenController implements Initializable {
 		dateLabel.setText(CurrentDateAndTime.getCurrentDate("'Today' yyyy-MM-dd"));
 		calculatePriceAfterDiscount();
 		Visitor traveler =(Visitor) visitor;
-		String paymentReceipt = NotificationMessageTemplate.paymentReceiptMessage(order.getParkName(),traveler.getFirstName(),traveler.getLastName(),(double)order.getPrice(),park.getCurrentEstimatedStayTime());
-		paymentReceiptMessageLabel.setText(paymentReceipt);
+//		String paymentReceipt = NotificationMessageTemplate.paymentReceiptMessage(order.getParkName(),traveler.getFirstName(),traveler.getLastName(),(double)order.getPrice(),park.getCurrentEstimatedStayTime());
+//		paymentReceiptMessageLabel.setText(paymentReceipt);
 	}
 	
 	private void calculatePriceAfterDiscount() {

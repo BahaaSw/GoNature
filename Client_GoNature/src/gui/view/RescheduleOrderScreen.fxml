@@ -35,15 +35,6 @@
       </HBox>
       <HBox layoutX="45.0" layoutY="700.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="76.0" prefWidth="850.0" styleClass="app_makeorder" AnchorPane.bottomAnchor="20.0">
          <children>
-            <Button fx:id="cancelReserveButton" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#onCancelReserveClicked" text="Cancel">
-               <graphic>
-                  <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../../utils/resources/cancelIcon.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </Button>
             <Button fx:id="confirmButton" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#onConfirmClicked" text="Confirm">
                <graphic>
                   <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">

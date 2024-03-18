@@ -1,6 +1,7 @@
 package utils;
 
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
@@ -14,6 +15,14 @@ public class AlertPopUp extends Alert {
 		this.setContentText(content);
 //		setStyling();
 		// TODO Auto-generated constructor stub
+	}
+	
+	public AlertPopUp(AlertType type, String title, String header, String content, ButtonType... buttons) {
+		super(type);
+		this.setTitle(title);
+		this.setHeaderText(header);
+		this.setContentText(content);
+		this.getButtonTypes().setAll(buttons);
 	}
 	
 	private void setStyling() {

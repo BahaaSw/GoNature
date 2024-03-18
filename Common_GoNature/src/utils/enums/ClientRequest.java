@@ -31,6 +31,7 @@ public enum ClientRequest {
 	Add_New_Order_To_Waiting_List, // After the customer select enter waiting list and click confirm on finish order controller,
 	
 	Import_Guide_Details, // After Service Employee search for guide id,
+	Search_For_Guides_Status_Pending,
 	Update_Guide_As_Approved, // After Service Employee click on Add
 	Update_Guide_As_Denied, // After Service Employee click on Cancel
 	
