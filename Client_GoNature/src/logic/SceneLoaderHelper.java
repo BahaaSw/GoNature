@@ -8,7 +8,7 @@ import gui.controller.OrderSummaryScreenController;
 import gui.controller.CreateReportsScreenController;
 import gui.controller.CustomerHomepageScreenController;
 import gui.controller.EmployeeHomepageScreenController;
-import gui.controller.FinishOrderScreenController;
+import gui.controller.RescheduleOrderScreenController;
 import gui.controller.HandleOrderScreenController;
 import gui.controller.IdenticationScreenController;
 import gui.controller.MakeOrderScreenController;
@@ -37,95 +37,95 @@ public class SceneLoaderHelper {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource(screenUrl));
 		switch(viewToLoad) {
 		
-			case AddNewGuideScreen:{
+			case Add_New_Guide_Screen:{
 				AddNewGuideScreenController controller = new AddNewGuideScreenController(screen,data.getEntity1());
 				loader.setController(controller);
 				break;
 			}
 				
-			case OrderSummaryScreen:{
+			case Order_Summary_Screen:{
 				OrderSummaryScreenController controller= new OrderSummaryScreenController(screen,data.getEntity1());
 				loader.setController(controller);
 				break;
 			}
 			
-			case CreateReportsScreen:{
+			case Create_Reports_Screen:{
 				CreateReportsScreenController controller = new CreateReportsScreenController(data.getEntity1());
 				loader.setController(controller);
 				break;
 			}
 			
-			case CustomerHomgepageScreen:{
+			case Customer_Homepage_Screen:{
 				CustomerHomepageScreenController controller = new CustomerHomepageScreenController();
 				loader.setController(controller);
 				break;
 			}
-			case EmployeeHomepageScreen:{
+			case Employee_Homepage_Screen:{
 				EmployeeHomepageScreenController controller = new EmployeeHomepageScreenController();
 				loader.setController(controller);
 				break;
 			}
 
-			case FinishOrderScreen:{
-				FinishOrderScreenController controller = new FinishOrderScreenController(screen,data.getEntity1());
+			case Reschedule_Order_Screen:{
+				RescheduleOrderScreenController controller = new RescheduleOrderScreenController(screen,data.getEntity1());
 				loader.setController(controller);
 				break;
 			}
 			
-			case HandleOrderScreen:{
+			case Handle_Order_Screen:{
 				HandleOrderScreenController controller = new HandleOrderScreenController(screen,data.getEntity1(),data.getCustomerInterface());
 				loader.setController(controller);
 				break;
 			}
-			case IdenticationScreen:{
+			case Identication_Screen:{
 				IdenticationScreenController controller = new IdenticationScreenController(screen,data.getEntity1());
 				loader.setController(controller);
 				break;
 			}
 			
-			case MakeOrderScreen:{
+			case Make_Order_Screen:{
 				MakeOrderScreenController controller = new MakeOrderScreenController(screen,data.getEntity1(),data.getCustomerInterface());
 				loader.setController(controller);
 				break;
 			}
 			
-			case ManageGuidesScreen:{
+			case Manage_Guides_Screen:{
 				ManageGuidesScreenController controller = new ManageGuidesScreenController(screen);
 				loader.setController(controller);
 				break;
 			}
 			
-			case ParkAvailableSpotsScreen:{
+			case Park_Available_Spots_Screen:{
 				ParkAvailableSpotsScreenController controller = new ParkAvailableSpotsScreenController(data.getEntity1(),data.getEntity2());
 				loader.setController(controller);
 				break;
 			}
 			
-			case ParkEntranceScreen:{
+			case Park_Entrance_Screen:{
 				ParkEntranceScreenController controller = new ParkEntranceScreenController();
 				loader.setController(controller);
 				break;
 			}
 			
-			case ParkSettingsScreen:{
+			case Park_Settings_Screen:{
 				ParkSettingsScreenController controller = new ParkSettingsScreenController(data.getEntity1(),data.getEntity2());
 				loader.setController(controller);
 				break;
 			}
 			
-			case PaymentReceiptScreen:{
+			case Payment_Receipt_Screen:{
 				PaymentReceiptScreenController controller = new PaymentReceiptScreenController(data.getEntity1(),data.getEntity2(),data.getEntity3());
 				loader.setController(controller);
 				break;
 			}
 			
-			case RequestTableScreen:{
+			case Request_Table_Screen:{
 				RequestTableScreenController controller = new RequestTableScreenController();
 				loader.setController(controller);
 				break;
 			}
 			
-			case ViewReportsScreen:{
+			case View_Reports_Screen:{
 				ViewReportsScreenController controller = new ViewReportsScreenController();
 				loader.setController(controller);
 				break;

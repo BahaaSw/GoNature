@@ -77,14 +77,29 @@ public class IdenticationScreenController implements Initializable {
 			showErrorMessage("Such Order does not exist!");
 			return;
 		case Order_Found:
-			ICustomer currentCustomer;
-			if (((Order) response.getMessage()).getOwnerType().equals("Visitor"))
+			ICustomer currentCustomer = null;
+			if (((Order) response.getMessage()).getOwnerType().equals("Visitor") &&
+					customer.getUserType()==UserTypeEnum.Visitor) {
 				currentCustomer = (Visitor) customer;
-			else
+				if(!currentCustomer.getCustomerId().equals(((Order) response.getMessage()).getUserId())) {
+					showErrorMessage("This Order does not belong to you");
+					return;
+				}
+			}
+			else if (((Order) response.getMessage()).getOwnerType().equals("Guide") && customer.getUserType()==UserTypeEnum.Guide) {
 				currentCustomer = (Guide) customer;
+				if(!currentCustomer.getCustomerId().equals(((Order) response.getMessage()).getUserId())) {
+					showErrorMessage("This Order does not belong to you");
+					return;
+				}
+			}
+			else {
+				showErrorMessage("This Order does not belong to you");
+				return;
+			}
 
 			AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,
-					"/gui/view/HandleOrderScreen.fxml", ApplicationViewType.HandleOrderScreen,
+					"/gui/view/HandleOrderScreen.fxml", ApplicationViewType.Handle_Order_Screen,
 					new EntitiesContainer(response.getMessage(), currentCustomer));
 			screen.setCenter(dashboard);
 			return;

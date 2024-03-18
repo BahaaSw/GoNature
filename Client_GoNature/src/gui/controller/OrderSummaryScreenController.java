@@ -52,7 +52,7 @@ public class OrderSummaryScreenController implements Initializable {
 	
 	public void onCancelClicked() {
 		SceneLoaderHelper guiHelper = new SceneLoaderHelper();
-		guiHelper.loadRightScreenToBorderPaneWithController(screen,"", ApplicationViewType.CustomerHomgepageScreen, new EntitiesContainer(order));
+		guiHelper.loadRightScreenToBorderPaneWithController(screen,"", ApplicationViewType.Customer_Homepage_Screen, new EntitiesContainer(order));
 	}
 	
 	public void onPayNowClicked() {

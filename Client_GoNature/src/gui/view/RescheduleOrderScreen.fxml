@@ -15,7 +15,7 @@
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="940.0" styleClass="app" stylesheets="@appStyles.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Label fx:id="dateLabel" layoutX="782.0" layoutY="44.0" styleClass="app_date_label" text="Today 2024-06-03" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="27.0" />
-      <Label layoutX="348.0" layoutY="66.0" text="Finish Order" AnchorPane.topAnchor="62.0">
+      <Label layoutX="307.0" layoutY="61.0" text="Rechedule Order" AnchorPane.topAnchor="62.0">
          <font>
             <Font name="Calibri" size="49.0" />
          </font>

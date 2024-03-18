@@ -133,11 +133,11 @@ public class HandleOrderScreenController implements Initializable {
 	
 	private void initializeAllGuiFields() {
 		parksList.setValue(requestedOrder.getParkName());
-		firstNameField.setText(customer.getFirstName());
-		lastNameField.setText(customer.getLastName());
-		idField.setText(customer.getCustomerId());
-		phoneNumberField.setText(customer.getPhoneNumber());
-		emailField.setText(customer.getEmailAddress());
+		firstNameField.setText(requestedOrder.getFirstName());
+		lastNameField.setText(requestedOrder.getLastName());
+		idField.setText(requestedOrder.getUserId());
+		phoneNumberField.setText(requestedOrder.getTelephoneNumber());
+		emailField.setText(requestedOrder.getEmail());
 		LocalDateTime orderTime = requestedOrder.getEnterDate();
 		LocalDate enterTime = orderTime.toLocalDate();
 		String exitTime = orderTime.toString().split("T")[1];

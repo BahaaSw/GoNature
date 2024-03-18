@@ -86,21 +86,26 @@ public class GoNatureServer extends AbstractServer {
 		switch (request) {
 		case Login_As_Employee:
 			response = handleLoginAsEmployee(data, client);
-			if(response.getRensponse()==ServerResponse.User_Already_Connected)
+			if(response.getRensponse()==ServerResponse.User_Already_Connected ||
+					response.getRensponse()==ServerResponse.User_Does_Not_Found||
+					response.getRensponse()==ServerResponse.Password_Incorrect)
 				break;
 			serverController.addToConnected(client, ((Employee)response.getMessage()).getUsername());
 			break;
 
 		case Login_As_Guide:
 			response = handleLoginAsGuide(data, client);
-			if(response.getRensponse()==ServerResponse.User_Already_Connected)
+			if(response.getRensponse()==ServerResponse.User_Already_Connected || 
+					response.getRensponse()==ServerResponse.Guide_Status_Pending||
+					response.getRensponse()==ServerResponse.Password_Incorrect)
 				break;
 			serverController.addToConnected(client, ((Guide)response.getMessage()).getUsername());
 			break;
 
 		case Login_As_Visitor:
 			response = handleLoginAsVisitor(data, client);
-			if(response.getRensponse()==ServerResponse.User_Already_Connected)
+			if(response.getRensponse()==ServerResponse.User_Already_Connected ||
+					response.getRensponse()==ServerResponse.Visitor_Have_No_Orders_Yet)
 				break;
 			serverController.addToConnected(client, "Visitor "+((Visitor)response.getMessage()).getCustomerId());
 			break;
