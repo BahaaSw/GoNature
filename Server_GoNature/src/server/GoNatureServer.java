@@ -224,7 +224,7 @@ public class GoNatureServer extends AbstractServer {
 			ConnectionToClient client) {
 		Order order = (Order) data.getData();
 		ServerResponseBackToClient response;
-		DatabaseResponse DbResponse = QueryControl.orderQueries.fetchOrderDetailsByID(order);
+		DatabaseResponse DbResponse = QueryControl.orderQueries.fetchOrderByOrderID(order);
 		if (DbResponse == DatabaseResponse.Such_Order_Does_Not_Exists) {
 			response = new ServerResponseBackToClient(ServerResponse.Order_Not_Found, order);
 		} else if (DbResponse == DatabaseResponse.Order_Found_Successfully) {

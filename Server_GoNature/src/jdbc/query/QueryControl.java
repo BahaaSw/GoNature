@@ -39,6 +39,7 @@ public class QueryControl {
 	public static ReportsQueries reportsQueries = new ReportsQueries();
 	public static RequestQueries requestsQueries = new RequestQueries();
 	public static NotificationQueries notificationQueries = new NotificationQueries();
+	public static OccasionalQueries occasionalQueries = new OccasionalQueries();
 	
 	
 	public QueryControl(ServerScreenController serverController) {
