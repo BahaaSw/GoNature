@@ -19,6 +19,14 @@ public enum DatabaseResponse {
 	// Order Section
 	Such_Order_Does_Not_Exists,
 	Order_Found_Successfully,
+	Order_Status_Updated, // added
+	Order_PhoneNumber_Updated, //added
+	Order_Email_Updated, //added
+	Order_EnterDate_Updated, //added
+	Order_ExitDate_Updated, //added
+	Order_Number_Of_Visitors_Updated, //added
+	Order_Type_Updated, //added
+	Order_Added_Into_Table, //added
 	
 	// Park Section
 	Park_Found_Successfully,
