@@ -58,7 +58,7 @@ public class Order implements Serializable {
 		this.timeOfVisit=timeOfVisit;
 		this.numberOfVisitors=numberOfVisitors;
 		this.creationDate=creationDate;
-		status=OrderStatusEnum.Wait_Notification;
+		status=OrderStatusEnum.Wait_Notify;
 		lastStatusUpdatedTime=CurrentDateAndTime.getCurrentDateAndTime("yyyy-MM-dd hh:mm");
 	}
 

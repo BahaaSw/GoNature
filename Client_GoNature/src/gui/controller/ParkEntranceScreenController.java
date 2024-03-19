@@ -65,9 +65,9 @@ public class ParkEntranceScreenController implements Initializable {
 	private TableColumn<OrderInTable,String> timeLeftCol;
 	
 	private ObservableList<OrderInTable> ordersForNow= FXCollections.observableArrayList(
-	        (new OrderInTable("1", "10", "0503418900", "00:20", "02:20", "00:22", "")),
-	        (new OrderInTable("2", "15", "0503418901", "21:00", "23:30", "22:00", "")),
-	        (new OrderInTable("3", "5", "0503418902", "21:00", "23:45", "23:00", "")));
+	        (new OrderInTable("1", "10", "0503418900", "17:15", "20:15", "17:20", "")),
+	        (new OrderInTable("2", "15", "0503418901", "17:10", "19:00", "17:10", "")),
+	        (new OrderInTable("3", "5", "0503418902", "17:30", "18:00", "17:30", "")));
 	
 	@FXML
 	public HBox errorSection;
@@ -129,6 +129,7 @@ public class ParkEntranceScreenController implements Initializable {
 
 	private void updateOrdersList() {
 	    Platform.runLater(() -> {
+	    	//TODO: fetch all orders from the database
 	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 	        LocalDate today = LocalDate.now();
 //	        ordersForNow.clear(); // Clear the existing items
@@ -147,7 +148,7 @@ public class ParkEntranceScreenController implements Initializable {
 	public void onEnterParkClicked() {
 		//TODO: search for relevant order in database
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-		OrderInTable newOrder = new OrderInTable("5", "10", "0503418900","23:35" , "01:40", "23:35", "");
+		OrderInTable newOrder = new OrderInTable("5", "10", "0503418900","17:10" , "21:00", "17:10", "");
 		ordersForNow.add(newOrder);
 		inParkTable.refresh();
 	}

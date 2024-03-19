@@ -29,7 +29,7 @@ public class ParkQueries {
 			}
 			
 			park.setParkId(rs.getInt(1));
-			park.setParkName(ParkNameEnum.fromParkId(rs.getInt(2)));
+			park.setParkName(ParkNameEnum.fromParkId(rs.getInt(1)));
 			park.setCurrentMaxCapacity(rs.getInt(3));
 			park.setCurrentEstimatedStayTime(rs.getDouble(4));
 			park.setCurrentEstimatedReservedSpots(rs.getInt(5));

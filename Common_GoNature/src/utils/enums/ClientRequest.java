@@ -8,7 +8,7 @@ public enum ClientRequest {
 	Logout, // Common for all clients, after clicked logout.
 	
 	Insert_New_Order_As_WaitNotification, // After customer clicked make order, add order status as wait notification
-	
+	Add_New_Order_If_Available,
 	Update_Order_Status_WaitNotification, // After order created successfully.
 	Update_Order_Status_SentNotification, // After sent notification to client to confirm the order.
 	Update_Order_Status_Confirmed, // After the client confirmed the order, after notification was sent.
@@ -57,4 +57,6 @@ public enum ClientRequest {
 	Create_Usage_Report, // After park manager generate usage reports.
 	Import_Usage_Report,// After park manager request view usage reports.
 	
+	
+	Search_For_Available_Date, // gal - added
 }

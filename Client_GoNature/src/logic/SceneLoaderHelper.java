@@ -10,6 +10,7 @@ import gui.controller.CustomerHomepageScreenController;
 import gui.controller.EmployeeHomepageScreenController;
 import gui.controller.RescheduleOrderScreenController;
 import gui.controller.HandleOrderScreenController;
+import gui.controller.IThreadController;
 import gui.controller.IdenticationScreenController;
 import gui.controller.MakeOrderScreenController;
 import gui.controller.ManageGuidesScreenController;
@@ -31,6 +32,7 @@ import utils.CurrentWindow;
 public class SceneLoaderHelper {
 	
 	private AnchorPane centerScreen;
+	private IThreadController runningController=null;
 	
 	//UserType type
 	public AnchorPane loadRightScreenToBorderPaneWithController(BorderPane screen, String screenUrl,ApplicationViewType viewToLoad,EntitiesContainer data) {
@@ -68,6 +70,7 @@ public class SceneLoaderHelper {
 
 			case Reschedule_Order_Screen:{
 				RescheduleOrderScreenController controller = new RescheduleOrderScreenController(screen,data.getEntity1());
+				runningController = controller;
 				loader.setController(controller);
 				break;
 			}
@@ -136,6 +139,11 @@ public class SceneLoaderHelper {
 			}
 		
 		try {
+			if(runningController!=null) {
+				runningController.cleanUp();
+				runningController=null;
+			}
+			
 			loader.load();
 			centerScreen = loader.getRoot();
 		} catch (IOException e) {

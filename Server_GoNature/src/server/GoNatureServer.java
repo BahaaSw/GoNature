@@ -8,6 +8,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Enumeration;
 
 import gui.controller.ServerScreenController;
@@ -110,13 +112,20 @@ public class GoNatureServer extends AbstractServer {
 			break;
 
 		case Search_For_Guides_Status_Pending:
-			response = handleSearchForGuidesWithStatusPending(data,client);
+			response = handleSearchForGuidesWithStatusPending(data, client);
 			break;
-			
+
 		case Search_For_Relevant_Order:
 			response = handleSearchForRelevantOrder(data, client);
 			break;
 
+		case Add_New_Order_If_Available:
+			response = handleAddNewOrderIfAvailable(data, client);
+			break;
+			
+		case Search_For_Available_Date:
+			response = handleSearchForAvailableDates(data,client);
+			break;
 		case Logout:
 			handleUserLogoutFromApplication(data.getData(), client, clientIp);
 			break;
@@ -135,11 +144,44 @@ public class GoNatureServer extends AbstractServer {
 		}
 	}
 
-	private ServerResponseBackToClient handleSearchForGuidesWithStatusPending(ClientRequestDataContainer data,ConnectionToClient client) {
+	private ServerResponseBackToClient handleSearchForGuidesWithStatusPending(ClientRequestDataContainer data,
+			ConnectionToClient client) {
 		return null;
-		
+
 	}
 	
+	private ServerResponseBackToClient handleSearchForAvailableDates(ClientRequestDataContainer data,
+			ConnectionToClient client) {
+		Order order = (Order)data.getData();
+		ServerResponseBackToClient response;
+		ArrayList<LocalDateTime> availableDates = QueryControl.orderQueries.searchForAvailableDates7DaysForward(order);
+		return new ServerResponseBackToClient(null, availableDates); 
+	}
+
+	private ServerResponseBackToClient handleAddNewOrderIfAvailable(ClientRequestDataContainer data,
+			ConnectionToClient client) {
+		Order order = (Order)data.getData();
+		ServerResponseBackToClient response;
+		DatabaseResponse DbResponse = QueryControl.orderQueries.checkIfNewOrderAvailableAtRequestedDate(order);
+		switch(DbResponse) {
+		case Such_Park_Does_Not_Exists:
+		case Failed:
+			return null;
+		case Current_Date_Is_Full:
+			response = new ServerResponseBackToClient(ServerResponse.Requested_Order_Date_Unavaliable, order);
+			break;
+		case Requested_Date_Is_Available:
+			response = new ServerResponseBackToClient(ServerResponse.Requested_Order_Date_Is_Available, order);
+			break;
+		case Number_Of_Visitors_More_Than_Max_Capacity:
+			response = new ServerResponseBackToClient(ServerResponse.Too_Many_Visitors,order);
+			break;
+		default :
+			return null;
+		}
+		return response;
+	}
+
 	private ServerResponseBackToClient handleLoginAsEmployee(ClientRequestDataContainer data,
 			ConnectionToClient client) {
 		Employee employee = (Employee) data.getData();
@@ -364,7 +406,7 @@ public class GoNatureServer extends AbstractServer {
 	 * This method stop the server to listen on a specific port and close the
 	 * server.
 	 */
-	public static void stopServer(){
+	public static void stopServer() {
 		// there is no server yet
 		if (server == null)
 			return;

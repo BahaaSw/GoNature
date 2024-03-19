@@ -23,6 +23,8 @@ import utils.enums.UserTypeEnum;
 
 public class OrderQueries {
 
+	private ParkQueries parkQueries = new ParkQueries();
+	
 	public OrderQueries() {
 	}
 
@@ -79,30 +81,90 @@ public class OrderQueries {
 	 * @return The amount of visitors that are currently in the park, returns -1 in
 	 *         case of failure
 	 */
-	public int numberOfVisitorsAtSpecificTime(Order order) {
-		int visitorsAmount = 0;
+	public Integer[] checkAvailableSpotInParkAtSpecificHour(LocalDateTime timeToCheck,Integer parkId) {
+		Integer[] amountAndCapacity = new Integer[2];
 
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
 			PreparedStatement stmt = con.prepareStatement(
-					"SELECT SUM(Amount) AS Count FROM preorders WHERE EnterDate <= ? AND ExitDate > ? AND (OrderStatus = 'Wait Notify' OR OrderStatus = 'Notified' OR OrderStatus = 'Confirm Not Paid' OR OrderStatus = 'Paid' OR OrderStatus = 'In Park') AND parkId = ?;");
-			stmt.setString(1, order.getEnterDate().toString());
-			stmt.setString(2, order.getEnterDate().toString());
-			stmt.setInt(3, order.getParkName().getParkId());
+				    "SELECT " +
+				        "(SELECT SUM(Amount) " +
+				        "FROM preorders " +
+				        "WHERE EnterDate <= ? AND " +
+				              "ExitDate > ? AND " +
+				              "(OrderStatus = 'Wait Notify' OR " +
+				               "OrderStatus = 'Notified' OR " +
+				               "OrderStatus = 'Confirmed' OR " +
+				               "OrderStatus = 'In Park') " +
+				               "AND parkId = ?) AS Count, " +
+				        "p.MaxCapacity " +
+				    "FROM parks p " +
+				    "WHERE p.parkId = ?;"
+				);
+			stmt.setString(1, timeToCheck.toString());
+			stmt.setString(2, timeToCheck.toString());
+			stmt.setInt(3,parkId);
+			stmt.setInt(4, parkId);
 
 			ResultSet rs = stmt.executeQuery();
 			if (!rs.next()) {
-				return visitorsAmount;
+				amountAndCapacity[0] = null;
+				amountAndCapacity[1]=rs.getInt(2);
+				return amountAndCapacity;
 			}
 
-			visitorsAmount = rs.getInt(1);
-			return visitorsAmount;
+			amountAndCapacity[0] = rs.getInt(1);
+			amountAndCapacity[1]=rs.getInt(2);
+			return amountAndCapacity;
 
 		} catch (SQLException ex) {
 			ex.printStackTrace();
-			return -1;
+			return null;
 		}
 		
+	}
+	
+	public ArrayList<LocalDateTime> searchForAvailableDates7DaysForward (Order order){
+		ArrayList<LocalDateTime> availableDates = new ArrayList<LocalDateTime>();
+		int parkId = order.getParkName().getParkId();
+		LocalDateTime enterTime = order.getEnterDate();
+		int amountOfVisitors = order.getNumberOfVisitors();
+		
+		for(int i=0;i<7;i++) {
+			if(isThisDateAvailable(parkId, enterTime.plusDays(i), amountOfVisitors)) {
+				availableDates.add(enterTime.plusDays(i));
+			}
+		}
+		return availableDates;
+	}
+	
+	public boolean isThisDateAvailable(int parkId,LocalDateTime enterTime,int amountOfVisitors){
+		Park requestedPark = new Park(parkId);
+		DatabaseResponse response = parkQueries.getParkById(requestedPark);
+		if(response==DatabaseResponse.Park_Found_Successfully) {
+			double estimatedVisitTime = requestedPark.getCurrentEstimatedStayTime();
+			// Split the estimatedVisitTime into whole days and fractional day components
+			long estimatedVisitTimeInHours = (long) (estimatedVisitTime);
+			
+			LocalDateTime exitTime = enterTime.plusHours(estimatedVisitTimeInHours);
+			
+			// Assuming a check every hour
+			long frequencyInHours = 1;
+
+			// Calculate the duration between enterTime and exitTime in hours
+			long hoursBetween = java.time.Duration.between(enterTime, exitTime).toHours();
+
+			// Calculate the number of checks needed
+			long numberOfChecks = hoursBetween / frequencyInHours;
+			
+			for(int hour=0;hour<numberOfChecks;hour++) {
+				Integer[] ret = checkAvailableSpotInParkAtSpecificHour(enterTime.plusHours(hour),parkId);
+				if(ret[0]!=null && ret[0]+amountOfVisitors>ret[1])
+					return false;	
+			}
+			return true;
+		}
+		return false;
 	}
 
 
@@ -183,6 +245,44 @@ public class OrderQueries {
 		}
 	}
 
+	public DatabaseResponse checkIfNewOrderAvailableAtRequestedDate(Order order) {
+		Park requestedPark = new Park(order.getParkName().getParkId());
+		DatabaseResponse response = parkQueries.getParkById(requestedPark);
+		if(response==DatabaseResponse.Park_Found_Successfully) {
+			if(order.getNumberOfVisitors()>requestedPark.getCurrentMaxCapacity()) {
+				return DatabaseResponse.Number_Of_Visitors_More_Than_Max_Capacity;
+			}
+			double estimatedVisitTime = requestedPark.getCurrentEstimatedStayTime();
+			// Split the estimatedVisitTime into whole days and fractional day components
+			long estimatedVisitTimeInHours = (long) (estimatedVisitTime);
+			
+			LocalDateTime enterTime = order.getEnterDate();
+			LocalDateTime exitTime = enterTime.plusHours(estimatedVisitTimeInHours);
+			order.setExitDate(exitTime);
+			
+			// Assuming a check every hour
+			long frequencyInHours = 1;
+
+			// Calculate the duration between enterTime and exitTime in hours
+			long hoursBetween = java.time.Duration.between(enterTime, exitTime).toHours();
+
+			// Calculate the number of checks needed
+			long numberOfChecks = hoursBetween / frequencyInHours;
+			
+			for(int hour=0;hour<numberOfChecks;hour++) {
+				Integer[] ret = checkAvailableSpotInParkAtSpecificHour(order.getEnterDate().plusHours(hour),order.getParkName().getParkId());
+				if(ret[0]!=null && ret[0]+order.getNumberOfVisitors()>ret[1])
+					return DatabaseResponse.Current_Date_Is_Full;	
+			}
+			
+			order.setPrice(requestedPark.getPrice());
+			return DatabaseResponse.Requested_Date_Is_Available;
+			
+		}
+		
+		return response;
+	}
+	
 	/**
 	 * Gets an order and adds it to the pre-order table in DB
 	 * 
@@ -191,21 +291,22 @@ public class OrderQueries {
 	 *         on Failure: returns Failed
 	 *         exception: returns Exception_Was_Thrown
 	 */
-	public DatabaseResponse insertOrderIntoDB(Order order) {
+	public synchronized DatabaseResponse insertOrderIntoDB(Order order) {
 
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
 			PreparedStatement stmt = con.prepareStatement(
 					"INSERT INTO preorders (OrderId, ParkId, OwnerId, OwnerType, EnterDate, ExitDate, PayStatus, OrderStatus, Email, Phone, FirstName, LastName, OrderType, Amount, Price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
-			stmt.setInt(1, order.getOrderId());
+			int newOrderId = ReturnTotalPreOrders()+1;
+			stmt.setInt(1, newOrderId);
 			stmt.setInt(2, order.getParkName().getParkId());
 			stmt.setString(3, order.getUserId());
 			stmt.setString(4, order.getOwnerType());
 			stmt.setString(5, order.getEnterDate().toString());
 			stmt.setString(6, order.getExitDate().toString());
 			int isPaid = order.isPaid() ? 1 : 0;
-			stmt.setInt(7, isPaid);
-			stmt.setString(8, order.getStatus().toString());
+			stmt.setInt(7, isPaid); // insert as not paid yet
+			stmt.setString(8, "Wait Notify");
 			stmt.setString(9, order.getEmail());
 			stmt.setString(10, order.getTelephoneNumber());
 			stmt.setString(11, order.getFirstName());
