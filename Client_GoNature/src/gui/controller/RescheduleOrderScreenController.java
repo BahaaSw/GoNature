@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import client.ClientApplication;
+import client.ClientCommunication;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,11 +23,15 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import logic.ClientRequestDataContainer;
 import logic.Order;
+import logic.ServerResponseBackToClient;
 import utils.CurrentDateAndTime;
 import utils.NotificationMessageTemplate;
+import utils.enums.ClientRequest;
+import utils.enums.ServerResponse;
 
-public class RescheduleOrderScreenController implements Initializable {
+public class RescheduleOrderScreenController implements Initializable,IThreadController {
 	@FXML
 	public Label dateLabel;
 	@FXML
@@ -47,20 +53,20 @@ public class RescheduleOrderScreenController implements Initializable {
 	public VBox availableDatesView;
 
 	@FXML
-	public ListView<LocalDate> availableDatesList;
-	private ArrayList<LocalDate> availableDatesFromDb;
-	private ObservableList<LocalDate> availableDatesToDisplay=FXCollections.observableArrayList(
-			LocalDate.now()
-			);
+	public ListView<LocalDateTime> availableDatesList;
+	private ArrayList<LocalDateTime> availableDatesFromDb;
+	private ObservableList<LocalDateTime> availableDatesToDisplay = FXCollections.observableArrayList();
 
 	private BorderPane screen;
 	private String selectedOption;
 	private Order order;
-	private LocalDate selectedDate = null;
+	private LocalDateTime selectedDate = null;
+	private Thread searchAvailableDates=null;
 
 	public RescheduleOrderScreenController(BorderPane screen, Object order) {
 		this.screen = screen;
 		this.order = (Order) order;
+
 	}
 
 	@Override
@@ -80,9 +86,9 @@ public class RescheduleOrderScreenController implements Initializable {
 	}
 
 	private void onChangeSelection(ActionEvent event) {
-		if(selectOptionComboBox.getValue()==null)
+		if (selectOptionComboBox.getValue() == null)
 			return;
-		
+
 		selectedOption = selectOptionComboBox.getValue();
 		if (selectedOption.equals("Choose New Date")) {
 			waitingListView.setVisible(false);
@@ -91,6 +97,7 @@ public class RescheduleOrderScreenController implements Initializable {
 			availableDatesToDisplay.clear();
 			showAvailableDates();
 		} else if (selectedOption.equals("Enter Waiting List")) {
+			cleanUp();
 			waitingListView.setVisible(true);
 			availableDatesView.setVisible(false);
 			showWaitingListNotificationMessage();
@@ -99,56 +106,44 @@ public class RescheduleOrderScreenController implements Initializable {
 			availableDatesView.setVisible(false);
 		}
 	}
-	
+
 	private void showAvailableDates() {
-		// TODO: Import all available dates week forward.
+	    // Check if the previous thread is alive and interrupt it
+	    if (searchAvailableDates != null && searchAvailableDates.isAlive()) {
+	        searchAvailableDates.interrupt();
+	        try {
+	            searchAvailableDates.join(); // Wait for the thread to stop
+	        } catch (InterruptedException e) {
+	            Thread.currentThread().interrupt(); // Restore interrupted status
+	        }
+	    }
 
-		List<LocalDate> dates = new ArrayList<LocalDate>() {{
-	        add(LocalDate.now());
-	        add(LocalDate.now().plusDays(1));
-	        add(LocalDate.now().plusDays(2));
-	        add(LocalDate.now().plusDays(3));
-	        add(LocalDate.now().plusDays(4));
-	        add(LocalDate.now().plusDays(5));
-	        add(LocalDate.now().plusDays(6));
-	        add(LocalDate.now().plusDays(7));
-	    }};
-	    
-		availableDatesToDisplay = FXCollections.observableArrayList(dates);
-		
-		new Thread(() -> {
-		    while (!dates.isEmpty()) {
-		        try {
-		            Thread.sleep(1000); // Wait for 10 seconds
+	    // Instantiate a new Thread object for searchAvailableDates
+	    searchAvailableDates = new Thread(() -> {
+	        while (!Thread.interrupted()) {
+	            try {
+	                Thread.sleep(2000); // Wait for 2 seconds, not 10
 
-		            // Safely update the list and UI from the JavaFX Application Thread
-		            Platform.runLater(() -> {
-		                if (!dates.isEmpty()) {
-		                    dates.remove(0); // Remove the first/oldest date from the list
-		                    ObservableList<LocalDate> observableDates = FXCollections.observableArrayList(dates);
-		                    availableDatesList.setItems(observableDates);
-		                }
-		            });
-		        } catch (InterruptedException e) {
-		            Thread.currentThread().interrupt(); // Restore interrupted status
-		            break; // Exit the loop if the thread was interrupted
-		        }
-		    }
-		}).start();
+	                // Safely update the list and UI from the JavaFX Application Thread
+	                Platform.runLater(() -> {
+	                    ClientApplication.client
+	                            .accept(new ClientRequestDataContainer(ClientRequest.Search_For_Available_Date, order));
+	                    ServerResponseBackToClient response = ClientCommunication.responseFromServer;
+	                    if (response.getRensponse() == ServerResponse.Query_Failed)
+	                        Thread.currentThread().interrupt();
+	                    List<LocalDateTime> dates = (ArrayList<LocalDateTime>) response.getMessage();
+	                    ObservableList<LocalDateTime> observableDates = FXCollections.observableArrayList(dates);
+	                    availableDatesList.setItems(observableDates);
+	                });
+	            } catch (InterruptedException e) {
+	                Thread.currentThread().interrupt(); // Restore interrupted status
+	                break; // Exit the loop if the thread was interrupted
+	            }
+	        }
+	    });
 
-//		availableDatesList.setCellFactory(cell -> new ListCell<LocalDate>() {
-//			@Override
-//			protected void updateItem(LocalDate item, boolean empty) {
-//				super.updateItem(item, empty);
-//				if (empty || item == null) {
-//					setText(null);
-//				} else {
-//					// Format the date as you prefer
-//					setText(item.toString()); // Default format
-//				}
-//			}
-//		});
-
+	    // Start the new thread
+	    searchAvailableDates.start();
 	}
 
 	private void showWaitingListNotificationMessage() {
@@ -162,6 +157,20 @@ public class RescheduleOrderScreenController implements Initializable {
 
 	public void onConfirmClicked() {
 		// TODO: update new order in database with it's relevant status
+	}
+
+	@Override
+	public void cleanUp() {
+	    // Stop the searchAvailableDates thread if it's running
+	    if (searchAvailableDates != null && searchAvailableDates.isAlive()) {
+	        searchAvailableDates.interrupt();
+	        try {
+	            searchAvailableDates.join(); // Wait for the thread to stop
+	        } catch (InterruptedException e) {
+	            Thread.currentThread().interrupt(); // Restore interrupted status
+	        }
+	    }
+		
 	}
 
 }

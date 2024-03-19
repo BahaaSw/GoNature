@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ResourceBundle;
 
+import client.ClientApplication;
+import client.ClientCommunication;
 import gui.view.ApplicationViewType;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -17,15 +19,21 @@ import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import logic.ClientRequestDataContainer;
 import logic.EntitiesContainer;
 import logic.ExternalUser;
 import logic.ICustomer;
 import logic.Order;
 import logic.SceneLoaderHelper;
+import logic.ServerResponseBackToClient;
+import utils.AlertPopUp;
 import utils.CurrentDateAndTime;
+import utils.enums.ClientRequest;
+import utils.enums.OrderStatusEnum;
 import utils.enums.OrderTypeEnum;
 import utils.enums.ParkNameEnum;
 import utils.enums.UserTypeEnum;
@@ -73,8 +81,8 @@ public class MakeOrderScreenController implements Initializable {
 	private ObservableList<ParkNameEnum> parks = FXCollections.observableArrayList(ParkNameEnum.Banias,
 			ParkNameEnum.Herodium, ParkNameEnum.Masada);
 
-	private ObservableList<String> timeForVisits = FXCollections.observableArrayList("09:00", "10:00", "11:00", "12:00",
-			"13:00", "14:00", "15:00", "16:00", "17:00", "18:00");
+	private ObservableList<String> timeForVisits = FXCollections.observableArrayList("08:00","09:00", "10:00", "11:00", "12:00",
+			"13:00", "14:00", "15:00", "16:00");
 
 	private ObservableList<OrderTypeEnum> visitTypesList = FXCollections.observableArrayList();
 
@@ -102,6 +110,14 @@ public class MakeOrderScreenController implements Initializable {
 			}
 		});
 
+		initializeGuiByCustomerType();
+		visitType.getItems().addAll(visitTypesList);
+		visitType.setOnAction(this::onVisitTypeChangeSelection);
+
+		hideErrorMessage();
+	}
+
+	private void initializeGuiByCustomerType() {
 		switch (customerType) {
 		case Visitor:
 			visitTypesList.add(OrderTypeEnum.Solo_PreOrder);
@@ -135,12 +151,8 @@ public class MakeOrderScreenController implements Initializable {
 			idField.setText(customerDetails.getCustomerId());
 			break;
 		}
-		visitType.getItems().addAll(visitTypesList);
-		visitType.setOnAction(this::onVisitTypeChangeSelection);
-
-		hideErrorMessage();
 	}
-
+	
 	private void onParkChangeSelection(ActionEvent event) {
 		selectedPark = parksList.getValue();
 	}
@@ -154,14 +166,46 @@ public class MakeOrderScreenController implements Initializable {
 	}
 
 	public void onMakeOrderClicked() {
-		// TODO: logic for creation new order, check available
+		Order order = createOrderFromFields();
+		
+		ClientRequestDataContainer requestMessage = new ClientRequestDataContainer(ClientRequest.Add_New_Order_If_Available,order);
+		ClientApplication.client.accept(requestMessage);
+		ServerResponseBackToClient response = ClientCommunication.responseFromServer;
+		AnchorPane view;
+		
+		switch(response.getRensponse()) {
+		case Requested_Order_Date_Is_Available:
+			view = GuiHelper.loadRightScreenToBorderPaneWithController(screen,
+					"/gui/view/OrderSummaryScreen.fxml", ApplicationViewType.Order_Summary_Screen,
+					new EntitiesContainer(response.getMessage()));
+			screen.setCenter(view);
+			break;
+			
+		case Requested_Order_Date_Unavaliable:
+			view = GuiHelper.loadRightScreenToBorderPaneWithController(screen,
+					"/gui/view/RescheduleOrderScreen.fxml", ApplicationViewType.Reschedule_Order_Screen,
+					new EntitiesContainer(response.getMessage()));
+			screen.setCenter(view);
+			break;
+		case Too_Many_Visitors:
+			AlertPopUp alert = new AlertPopUp(AlertType.INFORMATION, "", "", "");
+			alert.showAndWait();
+			break;
+		}
+		
+	}
+	
+	private Order createOrderFromFields() {
 		// TODO: check all fields validation.
 		Order order = new Order();
-		order.setOrderId(5);
 		order.setParkName(selectedPark);
+		order.setOwnerType((customerType==UserTypeEnum.ExternalUser)?"Visitor":customerDetails.getUserType().name());
 		order.setFirstName(firstNameField.getText());
 		order.setLastName(lastNameField.getText());
 		order.setUserId(idField.getText());
+		order.setPaid(false);
+		order.setStatus(OrderStatusEnum.Wait_Notify);
+		
 		order.setTelephoneNumber(phoneNumberField.getText());
 		order.setEmail(emailField.getText());
 		LocalDate date = pickDate.getValue();
@@ -169,26 +213,7 @@ public class MakeOrderScreenController implements Initializable {
 		order.setEnterDate(LocalDateTime.parse(fullDateTime));
 		order.setNumberOfVisitors(Integer.parseInt(numberOfVisitorsField.getText()));
 		order.setOrderType(selectedVisitType);
-		order.setPrice(30);
-
-		// TODO: query check available date
-		boolean isAvailableAtDate = false;
-		AnchorPane view;
-		// TODO: decide which screen to load.
-		// if can't make new order, open rescheduleOrder
-		// else, open order summary
-		if (isAvailableAtDate) {
-			view = GuiHelper.loadRightScreenToBorderPaneWithController(screen,
-					"/gui/view/OrderSummaryScreen.fxml", ApplicationViewType.Order_Summary_Screen,
-					new EntitiesContainer(order));
-			screen.setCenter(view);
-		}
-		else {
-			view = GuiHelper.loadRightScreenToBorderPaneWithController(screen,
-					"/gui/view/RescheduleOrderScreen.fxml", ApplicationViewType.Reschedule_Order_Screen,
-					new EntitiesContainer(order));
-			screen.setCenter(view);
-		}
+		return order;
 	}
 
 	private void hideErrorMessage() {

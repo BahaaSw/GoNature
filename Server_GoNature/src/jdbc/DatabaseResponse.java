@@ -27,6 +27,9 @@ public enum DatabaseResponse {
 	Order_Number_Of_Visitors_Updated, //added
 	Order_Type_Updated, //added
 	Order_Added_Into_Table, //added
+	Current_Date_Is_Full,// gal - added
+	Requested_Date_Is_Available, // gal - added
+	Number_Of_Visitors_More_Than_Max_Capacity,
 	
 	// Park Section
 	Park_Found_Successfully,
