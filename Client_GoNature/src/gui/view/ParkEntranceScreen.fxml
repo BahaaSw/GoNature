@@ -69,7 +69,7 @@
       </Label>
       <HBox layoutX="41.0" layoutY="707.0" prefHeight="79.0" prefWidth="874.0" styleClass="manager_order">
          <children>
-            <Button fx:id="cancelSelectedOrder" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#onCancelSelectedOrderClicked" styleClass="app_search" text="Cancel Order">
+            <Button fx:id="cancelSelectedOrder" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#onCancelSelectedOrderClicked" styleClass="app_search" text="Not Arrived">
                <graphic>
                   <ImageView fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
                      <image>

@@ -129,7 +129,7 @@ public class SceneLoaderHelper {
 			}
 			
 			case View_Reports_Screen:{
-				ViewReportsScreenController controller = new ViewReportsScreenController();
+				ViewReportsScreenController controller = new ViewReportsScreenController(data.getEntity1());
 				loader.setController(controller);
 				break;
 			}

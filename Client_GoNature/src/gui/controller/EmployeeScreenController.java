@@ -101,8 +101,6 @@ public class EmployeeScreenController implements Initializable,IScreenController
 				addNewGuideButton.setManaged(false);
 				parkEntranceButton.setVisible(false);
 				parkEntranceButton.setManaged(false);
-				viewReportsButton.setVisible(false);
-				viewReportsButton.setManaged(false);
 				requestsButton.setVisible(false);
 				requestsButton.setManaged(false);
 				break;

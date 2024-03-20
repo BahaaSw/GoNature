@@ -1,25 +1,11 @@
 package gui.controller;
 
 import java.awt.Desktop;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.ResourceBundle;
-
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtils;
-import org.jfree.chart.JFreeChart;
-import org.jfree.data.category.DefaultCategoryDataset;
-
-import com.itextpdf.text.Document;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.pdf.PdfDocument;
-import com.itextpdf.text.pdf.PdfWriter;
 
 import client.ClientApplication;
 import client.ClientCommunication;
@@ -32,11 +18,13 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import logic.CancellationsReport;
 import logic.ClientRequestDataContainer;
-import logic.ParkDailySummary;
+import logic.Employee;
 import logic.Report;
 import logic.ServerResponseBackToClient;
+import logic.VisitsReport;
 import utils.CurrentDateAndTime;
 import utils.enums.ClientRequest;
+import utils.enums.EmployeeTypeEnum;
 import utils.enums.ParkNameEnum;
 import utils.enums.ReportType;
 
@@ -66,9 +54,19 @@ public class ViewReportsScreenController implements Initializable {
 	private ParkNameEnum selectedPark = ParkNameEnum.None;
 	private String selectedYear = "";
 	private String selectedMonth = "";
+	private Employee employee;
 
-	public ViewReportsScreenController() {
-
+	public ViewReportsScreenController(Object employee) {
+		this.employee = (Employee) employee;
+		if (this.employee.getEmployeeType() == EmployeeTypeEnum.Park_Manager) {
+			reportsList = FXCollections.observableArrayList(ReportType.UsageReport, ReportType.TotalVisitorsReport);
+			parksList = FXCollections.observableArrayList(this.employee.getRelatedPark());
+		} else {
+			reportsList = FXCollections.observableArrayList(ReportType.UsageReport, ReportType.VisitsReports,
+					ReportType.CancellationsReport, ReportType.TotalVisitorsReport);
+			parksList = FXCollections.observableArrayList(ParkNameEnum.Banias, ParkNameEnum.Herodium,
+					ParkNameEnum.Masada);
+		}
 	}
 
 	@Override
@@ -104,41 +102,57 @@ public class ViewReportsScreenController implements Initializable {
 
 	public void onViewReportClicked() {
 
-		CancellationsReport requestedReport = new CancellationsReport(Integer.parseInt(selectedMonth),
-				Integer.parseInt(selectedYear), selectedPark);
-		ClientRequest reportToOpen = (selectedReport == ReportType.CancellationsReport)
-				? ClientRequest.Import_Cancellations_Report
-				: (selectedReport == ReportType.TotalVisitorsReport) ? ClientRequest.Import_Total_Visitors_Report
-						: (selectedReport == ReportType.UsageReport) ? ClientRequest.Import_Usage_Report
-								: (selectedReport == ReportType.VisitsReports) ? ClientRequest.Import_Visits_Report
-										: null;
-		
-		ClientRequestDataContainer request = new ClientRequestDataContainer(reportToOpen, requestedReport);
-		ClientApplication.client.accept(request);
-		ServerResponseBackToClient response = ClientCommunication.responseFromServer;
-
-		switch (response.getRensponse()) {
-		case Such_Report_Not_Found:
+		Report report=null;
+		ClientRequest reportToOpen=null;
+		if (selectedReport == null) {
+			// TODO: Alert
 			return;
-		case Cancellations_Report_Found:
-			try {
-				// Create a temp file
-				String reportName = selectedReport+"_"+selectedYear+"_"+selectedMonth;
-				File tempFile = File.createTempFile(reportName, ".pdf");
-				tempFile.deleteOnExit(); // Request the file be deleted when the application exits
-
-				// Write the PDF content to the temp file
-				try (FileOutputStream fos = new FileOutputStream(tempFile)) {
-					fos.write((byte[]) response.getMessage()); // Assuming response.getMessage() returns the correct
-																// byte array for the PDF
-				}
-
-				// Open the file with the default system viewer
-				Desktop.getDesktop().open(tempFile);
-			} catch (IOException e) {
-				e.printStackTrace();
+		} else {
+			switch (selectedReport) {
+			case CancellationsReport:
+				report = new CancellationsReport(Integer.parseInt(selectedMonth),
+						Integer.parseInt(selectedYear), selectedPark);
+				reportToOpen=ClientRequest.Import_Cancellations_Report;
+				break;
+			case TotalVisitorsReport:
+				break;
+			case UsageReport:
+				break;
+			case VisitsReports:
+				report = new VisitsReport(Integer.parseInt(selectedMonth),
+						Integer.parseInt(selectedYear), selectedPark);
+				reportToOpen=ClientRequest.Import_Visits_Report;
+				break;
+			default:
+				return;
 			}
-			break;
+
+			ClientRequestDataContainer request = new ClientRequestDataContainer(reportToOpen, report);
+			ClientApplication.client.accept(request);
+			ServerResponseBackToClient response = ClientCommunication.responseFromServer;
+
+			switch (response.getRensponse()) {
+			case Such_Report_Not_Found:
+				return;
+			case Cancellations_Report_Found:
+				try {
+					// Create a temp file
+					String reportName = selectedReport + "_" + selectedYear + "_" + selectedMonth;
+					File tempFile = File.createTempFile(reportName, ".pdf");
+					tempFile.deleteOnExit(); // Request the file be deleted when the application exits
+
+					// Write the PDF content to the temp file
+					try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+						fos.write((byte[]) response.getMessage()); // Assuming response.getMessage() returns the correct
+																	// byte array for the PDF
+					}
+					// Open the file with the default system viewer
+					Desktop.getDesktop().open(tempFile);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				break;
+			}
 		}
 	}
 

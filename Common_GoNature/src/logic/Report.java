@@ -12,6 +12,7 @@ public class Report implements Serializable {
 	protected ParkNameEnum requestedPark;
 	protected int month;
 	protected int year;
+	protected byte[] blobPdfContent;
 	
 	public Report(ReportType reportType) {
 		this.reportType=reportType;
@@ -47,6 +48,14 @@ public class Report implements Serializable {
 
 	public void setYear(int year) {
 		this.year = year;
+	}
+	
+	public byte[] getBlobPdfContent() {
+		return blobPdfContent;
+	}
+	
+	public void setBlobPdfContent(byte[] content) {
+		blobPdfContent=content;
 	}
 	
 }

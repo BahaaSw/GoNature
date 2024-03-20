@@ -111,7 +111,7 @@ public class MakeOrderScreenController implements Initializable {
 		});
 
 		initializeGuiByCustomerType();
-		visitType.getItems().addAll(visitTypesList);
+		visitType.setItems(visitTypesList);
 		visitType.setOnAction(this::onVisitTypeChangeSelection);
 
 		hideErrorMessage();
