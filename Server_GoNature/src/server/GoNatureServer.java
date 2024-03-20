@@ -1,5 +1,8 @@
 package server;
 
+import java.awt.Desktop;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -16,6 +19,7 @@ import gui.controller.ServerScreenController;
 import jdbc.DBConnectionDetails;
 import jdbc.QueryType;
 import jdbc.query.QueryControl;
+import logic.CancellationsReport;
 import logic.ClientConnection;
 import logic.ClientRequestDataContainer;
 import logic.Employee;
@@ -126,6 +130,15 @@ public class GoNatureServer extends AbstractServer {
 		case Search_For_Available_Date:
 			response = handleSearchForAvailableDates(data,client);
 			break;
+			
+		case Create_Cancellations_Report:
+			response = handleCreateCancellationsReport(data,client);
+			break;
+			
+		case Import_Cancellations_Report:
+			response = handleImportCancellationsReport(data,client);
+			break;
+			
 		case Logout:
 			handleUserLogoutFromApplication(data.getData(), client, clientIp);
 			break;
@@ -144,6 +157,32 @@ public class GoNatureServer extends AbstractServer {
 		}
 	}
 
+	private ServerResponseBackToClient handleCreateCancellationsReport(ClientRequestDataContainer data,
+			ConnectionToClient client) {
+		CancellationsReport report = (CancellationsReport)data.getData();
+		ServerResponseBackToClient response;
+		boolean result = QueryControl.reportsQueries.generateCancellationsReport(report);
+		if(result)
+			response = new ServerResponseBackToClient(ServerResponse.Report_Generated_Successfully, report);
+		else
+			response = new ServerResponseBackToClient(ServerResponse.Report_Failed_Generate, report);
+		
+		return response;
+	}
+	
+	private ServerResponseBackToClient handleImportCancellationsReport(ClientRequestDataContainer data,
+			ConnectionToClient client) {
+		CancellationsReport report = (CancellationsReport)data.getData();
+		ServerResponseBackToClient response;
+		byte[] blobInBytes = QueryControl.reportsQueries.getRequestedCancellationsReport(report);
+		if(blobInBytes==null)
+			response = new ServerResponseBackToClient(ServerResponse.Such_Report_Not_Found, blobInBytes);
+		else {
+			response = new ServerResponseBackToClient(ServerResponse.Cancellations_Report_Found, blobInBytes);
+		}
+		return response;
+	}
+	
 	private ServerResponseBackToClient handleSearchForGuidesWithStatusPending(ClientRequestDataContainer data,
 			ConnectionToClient client) {
 		return null;
