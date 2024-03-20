@@ -34,9 +34,10 @@ public enum DatabaseResponse {
 	// Park Section
 	Park_Found_Successfully,
 	Such_Park_Does_Not_Exists,
-	Park_MaxCapacity_Was_Updated,
-	Park_EstimatedStayTime_Was_Updated,
-	Park_ReservedSpots_Was_Updated,
+	Park_Parameter_Updated_Successfully,
+//	Park_MaxCapacity_Was_Updated,
+//	Park_EstimatedStayTime_Was_Updated,
+//	Park_ReservedSpots_Was_Updated,
 	Park_List_Names_Is_Created,
 	Park_Table_Is_Empty,
 	Park_Price_Returned_Successfully,
@@ -46,10 +47,16 @@ public enum DatabaseResponse {
 	
 	
 	// Request Section
+	No_Pending_Request_Exsists, // tamir/siso added
+	Pending_Request_Pulled, // tamir/siso added
+	No_Request_Exsists, // tamir/siso added
+	Request_Was_Updated, // tamir/siso added
 	
 	
 	// Report Section
 	
+	//ServiceEmployee
+	Guide_Was_Approved, // tamir/siso added
 	
 
 //	UserAlreadyLoggedIn,

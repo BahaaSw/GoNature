@@ -10,7 +10,11 @@ public enum OrderTypeEnum {
 	Family_PreOrder ("Family Preorder"),
 	Family_Occasional ("Family Occasional"),
 	Group_PreOrder ("Guide Preorder"),
-	Group_Occasional ("Group Occasional");
+	Group_Occasional ("Group Occasional"),
+	Family("Family"),
+	Solo("Solo"),
+	Group("Group");
+	
 	
 	private static final Map<String, OrderTypeEnum> enumMap = new HashMap<>();
 

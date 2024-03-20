@@ -3,10 +3,9 @@ package utils.enums;
 public enum RequestTypeEnum {
 	
 	None ("None"),
-	Reserved_Spots_Change ("Reserved_Spots_Change"),
-	Max_Visitors_In_Park_Change ("Max_Visitors_In_Park_Change"),
-	Estimated_VisitTime_Change ("EstimatedVisitTime_Change"),
-	CurrentInPark_Change ("CurrentInPark_Change");
+	ReservedSpots ("ReservedSpots"),
+	MaxCapacity("MaxCapacity"),
+	EstimatedVisitTime ("EstimatedVisitTime");
 	
     private final String value;
 

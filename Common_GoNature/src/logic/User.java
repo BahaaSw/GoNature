@@ -2,11 +2,13 @@ package logic;
 
 import java.io.Serializable;
 
+import utils.enums.EmployeeTypeEnum;
 import utils.enums.ParkNameEnum;
 import utils.enums.UserStatus;
 import utils.enums.UserTypeEnum;
 
 public class User extends ExternalUser implements Serializable{
+
 	protected String userId;
 	protected String username;
 	protected String password;
@@ -15,6 +17,11 @@ public class User extends ExternalUser implements Serializable{
 	protected String phoneNumber;
 	protected String emailAddress;
 	protected UserStatus userStatus= UserStatus.None;
+	protected ParkNameEnum parkId;
+	protected EmployeeTypeEnum employeeType;
+	
+
+	public User() {}
 	
 	public User(String userId,String username,String password,String firstName,
 			String lastName,String phoneNumber,String emailAddress) {
@@ -119,6 +126,20 @@ public class User extends ExternalUser implements Serializable{
 				this.userId.equals(((User)obj).userId);
 	}
 	
+	public ParkNameEnum getParkid() {
+		return parkId;
+	}
+
+	public void setParkid(ParkNameEnum parkid) {
+		this.parkId = parkid;
+	}
 	
+	public EmployeeTypeEnum getEmployeeType() {
+		return employeeType;
+	}
+
+	public void setEmployeeType(EmployeeTypeEnum employeeType) {
+		this.employeeType = employeeType;
+	}
 	
 }

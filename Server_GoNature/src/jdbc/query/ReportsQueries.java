@@ -23,6 +23,8 @@ import jdbc.DatabaseResponse;
 import jdbc.MySqlConnection;
 import logic.CancellationsReport;
 import logic.ParkDailySummary;
+import logic.VisitReport;
+import logic.VisitReportDailySummary;
 import utils.enums.OrderStatusEnum;
 import utils.enums.OrderTypeEnum;
 import utils.enums.ParkNameEnum;
@@ -93,6 +95,10 @@ public class ReportsQueries {
 		return false;
 
 	}
+	
+	public VisitReportDailySummary getVisitReportDailySummary(int month, int day, int parkId) {return null;}
+	
+
 
 	private boolean insertGeneratedCancellationsReportToDatabase(CancellationsReport report) {
 		try {

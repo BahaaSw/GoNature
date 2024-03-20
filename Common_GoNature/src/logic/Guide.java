@@ -1,9 +1,12 @@
 package logic;
 
+import utils.enums.ParkNameEnum;
 import utils.enums.UserStatus;
 import utils.enums.UserTypeEnum;
 
 public class Guide extends User implements ICustomer {
+
+	public Guide() {}
 
 	public Guide(String userId) {
 		super(userId);

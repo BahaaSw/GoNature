@@ -10,7 +10,7 @@ import jdbc.DatabaseResponse;
 import jdbc.MySqlConnection;
 
 import logic.Park;
-
+import logic.Request;
 import utils.enums.ParkNameEnum;
 
 public class ParkQueries {
@@ -131,6 +131,31 @@ public class ParkQueries {
 			park.setPrice(rs.getInt(7));
 			
 			return DatabaseResponse.Park_Price_Returned_Successfully;
+			
+		} catch (SQLException ex) {
+//			serverController.printToLogConsole("Query search for park failed");
+			return DatabaseResponse.Failed;
+		}
+	}
+	
+	public DatabaseResponse InsertNewValueInRequestedPark(Request request)
+	{
+		try {
+			
+			String columnName = request.getRequestType().getValue(); // to get the field we want to update
+			
+			Connection con = MySqlConnection.getInstance().getConnection();
+			PreparedStatement stmt = con.prepareStatement("UPDATE requests SET" + columnName + " = ? WHERE ParkId = ?");
+			
+			stmt.setInt(1, request.getNewValue());
+			stmt.setInt(2, request.getParkId());
+			int rs = stmt.executeUpdate();
+
+			// if the query ran successfully, but returned as empty table.
+			if (rs==0) {
+				return DatabaseResponse.Such_Park_Does_Not_Exists;
+			}
+			return DatabaseResponse.Park_Parameter_Updated_Successfully;
 			
 		} catch (SQLException ex) {
 //			serverController.printToLogConsole("Query search for park failed");

@@ -27,6 +27,8 @@ public class Request {
 			this.RequestDate=RequestDate;
 		}
 		
+		public Request() {}
+		
 		public int getRequestId() {
 			return RequestId;
 		}
