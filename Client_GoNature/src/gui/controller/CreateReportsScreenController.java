@@ -3,17 +3,26 @@ package gui.controller;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import client.ClientApplication;
+import client.ClientCommunication;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import logic.CancellationsReport;
+import logic.ClientRequestDataContainer;
 import logic.Employee;
+import logic.ServerResponseBackToClient;
+import utils.AlertPopUp;
 import utils.CurrentDateAndTime;
+import utils.enums.ClientRequest;
+import utils.enums.ParkNameEnum;
 import utils.enums.ReportType;
 
 public class CreateReportsScreenController implements Initializable {
@@ -64,7 +73,24 @@ public class CreateReportsScreenController implements Initializable {
 	
 	public void onGenerateReportClicked() {
 		//TODO: implement generation of report
-		//TODO: the client thinks it should always succeed. 
+		//TODO: the client thinks it should always succeed.
+		if(selectedReportType==ReportType.CancellationsReport) {
+			CancellationsReport report = new CancellationsReport(3,2024,ParkNameEnum.Banias);
+			ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Create_Cancellations_Report,report);
+			ClientApplication.client.accept(request);
+			ServerResponseBackToClient response = ClientCommunication.responseFromServer;
+			AlertPopUp alert;
+			switch(response.getRensponse()) {
+			case Report_Generated_Successfully:
+				alert = new AlertPopUp(AlertType.INFORMATION, "Success","Report generated successfully","...");
+				alert.showAndWait();
+				break;
+			case Report_Failed_Generate:
+				alert = new AlertPopUp(AlertType.ERROR, "FAIL","fail","fail");
+				alert.showAndWait();
+				break;
+			}
+		}
 	}
 	
 	private void hideErrorMessage() {

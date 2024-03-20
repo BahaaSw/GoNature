@@ -20,6 +20,11 @@ public enum ServerResponse {
 	Requested_Order_Date_Is_Available,
 	Too_Many_Visitors,
 	
+	Such_Report_Not_Found,
+	Cancellations_Report_Found,
+	Report_Generated_Successfully,
+	Report_Failed_Generate,
+	
 	Exception_Was_Thrown, // when the server catch an exception
 	Server_Closed, // when server is closing itself, he should send to all clients
 	Server_Disconnected, // when server is disconnected, he should send to all clients
