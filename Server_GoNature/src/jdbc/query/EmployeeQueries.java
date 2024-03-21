@@ -31,7 +31,7 @@ public class EmployeeQueries {
 			stmt.setString(1, employee.getUsername());
 			ResultSet rs = stmt.executeQuery();
 
-			// if the query ran successfully, but returned as empty table...
+			// if the query ran successfully, but returned as empty table.....
 			if (!rs.next()) {
 				return DatabaseResponse.Such_Employee_Not_Found;
 			}
