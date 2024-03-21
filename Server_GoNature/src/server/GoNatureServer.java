@@ -28,6 +28,7 @@ import logic.Order;
 import logic.ServerResponseBackToClient;
 import logic.User;
 import logic.Visitor;
+import logic.VisitsReport;
 import jdbc.DatabaseResponse;
 import jdbc.MySqlConnection;
 import ocsf.AbstractServer;
@@ -130,6 +131,13 @@ public class GoNatureServer extends AbstractServer {
 		case Search_For_Available_Date:
 			response = handleSearchForAvailableDates(data,client);
 			break;
+		
+		case Create_Visits_Report:
+			response = handleCreateVisitsReport(data,client);
+			break;
+		case Import_Visits_Report:
+			response = handleImportVisitsReport(data,client);
+			break;
 			
 		case Create_Cancellations_Report:
 			response = handleCreateCancellationsReport(data,client);
@@ -157,6 +165,32 @@ public class GoNatureServer extends AbstractServer {
 		}
 	}
 
+	private ServerResponseBackToClient handleImportVisitsReport(ClientRequestDataContainer data,
+			ConnectionToClient client) {
+		VisitsReport report = (VisitsReport)data.getData();
+		ServerResponseBackToClient response;
+		byte[] blobInBytes = QueryControl.reportsQueries.getRequestedVisitsReport(report);
+		if(blobInBytes==null)
+			response = new ServerResponseBackToClient(ServerResponse.Such_Report_Not_Found, blobInBytes);
+		else {
+			response = new ServerResponseBackToClient(ServerResponse.Cancellations_Report_Found, blobInBytes);
+		}
+		return response;
+	}
+	
+	private ServerResponseBackToClient handleCreateVisitsReport(ClientRequestDataContainer data,
+			ConnectionToClient client) {
+		VisitsReport report = (VisitsReport)data.getData();
+		ServerResponseBackToClient response;
+		boolean result = QueryControl.reportsQueries.generateVisitsReport(report);
+		if(result)
+			response = new ServerResponseBackToClient(ServerResponse.Report_Generated_Successfully, report);
+		else
+			response = new ServerResponseBackToClient(ServerResponse.Report_Failed_Generate, report);
+		
+		return response;
+	}
+	
 	private ServerResponseBackToClient handleCreateCancellationsReport(ClientRequestDataContainer data,
 			ConnectionToClient client) {
 		CancellationsReport report = (CancellationsReport)data.getData();

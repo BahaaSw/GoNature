@@ -48,6 +48,8 @@ public class User extends ExternalUser implements Serializable{
 		this.userType=userType;
 	}
 	
+	public User() {}
+	
 	public String getUserId() {
 		return userId;
 	}
@@ -118,6 +120,8 @@ public class User extends ExternalUser implements Serializable{
 		return  this.username.equals(((User)obj).username) &&
 				this.userId.equals(((User)obj).userId);
 	}
+	
+
 	
 	
 	

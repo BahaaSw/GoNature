@@ -111,7 +111,7 @@ public class MakeOrderScreenController implements Initializable {
 		});
 
 		initializeGuiByCustomerType();
-		visitType.getItems().addAll(visitTypesList);
+		visitType.setItems(visitTypesList);
 		visitType.setOnAction(this::onVisitTypeChangeSelection);
 
 		hideErrorMessage();
@@ -199,7 +199,7 @@ public class MakeOrderScreenController implements Initializable {
 		// TODO: check all fields validation.
 		Order order = new Order();
 		order.setParkName(selectedPark);
-		order.setOwnerType((customerType==UserTypeEnum.ExternalUser)?"Visitor":customerDetails.getUserType().name());
+		order.setOwnerType((customerType==UserTypeEnum.ExternalUser)?UserTypeEnum.Visitor:customerDetails.getUserType());
 		order.setFirstName(firstNameField.getText());
 		order.setLastName(lastNameField.getText());
 		order.setUserId(idField.getText());

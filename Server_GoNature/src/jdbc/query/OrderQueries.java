@@ -52,7 +52,7 @@ public class OrderQueries {
 			order.setOrderId(rs.getInt(1));
 			order.setParkName(ParkNameEnum.fromParkId(rs.getInt(2)));
 			order.setUserId(String.format("%d", rs.getInt(3)));
-			order.setOwnerType(rs.getString(4));
+			order.setOwnerType(UserTypeEnum.fromString(rs.getString(4)));
 			order.setEnterDate(rs.getTimestamp(5).toLocalDateTime());
 			order.setExitDate(rs.getTimestamp(6).toLocalDateTime());
 			order.setPaid(rs.getBoolean(7));
@@ -194,7 +194,7 @@ public class OrderQueries {
 			order.setOrderId(rs.getInt(1));
 			order.setParkName(ParkNameEnum.fromParkId(rs.getInt(2)));
 			order.setUserId(String.format("%d", rs.getInt(3)));
-			order.setOwnerType(rs.getString(4));
+			order.setOwnerType(UserTypeEnum.fromString(rs.getString(4)));
 			order.setEnterDate(rs.getTimestamp(5).toLocalDateTime());
 			order.setExitDate(rs.getTimestamp(6).toLocalDateTime());
 			order.setPaid(rs.getBoolean(7));
@@ -301,7 +301,7 @@ public class OrderQueries {
 			stmt.setInt(1, newOrderId);
 			stmt.setInt(2, order.getParkName().getParkId());
 			stmt.setString(3, order.getUserId());
-			stmt.setString(4, order.getOwnerType());
+			stmt.setString(4, order.getOwnerType().name());
 			stmt.setString(5, order.getEnterDate().toString());
 			stmt.setString(6, order.getExitDate().toString());
 			int isPaid = order.isPaid() ? 1 : 0;

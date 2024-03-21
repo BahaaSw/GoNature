@@ -6,11 +6,12 @@ import java.util.Map;
 public enum OrderTypeEnum {
 	None ("None"),
 	Solo_PreOrder ("Solo Preorder"),
-	Solo_Occasional ("Solo Occasional"),
+	Solo ("Solo"),
 	Family_PreOrder ("Family Preorder"),
-	Family_Occasional ("Family Occasional"),
+	Family ("Family"),
 	Group_PreOrder ("Guide Preorder"),
-	Group_Occasional ("Group Occasional");
+	Group ("Group");
+	
 	
 	private static final Map<String, OrderTypeEnum> enumMap = new HashMap<>();
 

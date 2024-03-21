@@ -18,7 +18,9 @@ import javafx.scene.layout.HBox;
 import logic.CancellationsReport;
 import logic.ClientRequestDataContainer;
 import logic.Employee;
+import logic.Report;
 import logic.ServerResponseBackToClient;
+import logic.VisitsReport;
 import utils.AlertPopUp;
 import utils.CurrentDateAndTime;
 import utils.enums.ClientRequest;
@@ -74,12 +76,27 @@ public class CreateReportsScreenController implements Initializable {
 	public void onGenerateReportClicked() {
 		//TODO: implement generation of report
 		//TODO: the client thinks it should always succeed.
-		if(selectedReportType==ReportType.CancellationsReport) {
-			CancellationsReport report = new CancellationsReport(3,2024,ParkNameEnum.Banias);
-			ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Create_Cancellations_Report,report);
+		Report report;
+		ClientRequest reportRequest;
+		if(selectedReportType==null) {
+			//TODO: Alert
+			return;
+		}
+		else {
+			if(selectedReportType==ReportType.CancellationsReport) {
+				report = new CancellationsReport(3,2024,ParkNameEnum.Banias);
+				reportRequest=ClientRequest.Create_Cancellations_Report;
+			}
+			else {
+				report = new VisitsReport(3,2024,ParkNameEnum.Banias);
+				reportRequest=ClientRequest.Create_Visits_Report;
+			}
+			
+			ClientRequestDataContainer request = new ClientRequestDataContainer(reportRequest,report);
 			ClientApplication.client.accept(request);
 			ServerResponseBackToClient response = ClientCommunication.responseFromServer;
 			AlertPopUp alert;
+			
 			switch(response.getRensponse()) {
 			case Report_Generated_Successfully:
 				alert = new AlertPopUp(AlertType.INFORMATION, "Success","Report generated successfully","...");
