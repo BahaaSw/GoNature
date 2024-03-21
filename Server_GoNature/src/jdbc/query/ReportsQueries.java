@@ -22,7 +22,9 @@ import org.jfree.data.category.DefaultCategoryDataset;
 
 import jdbc.DatabaseResponse;
 import jdbc.MySqlConnection;
+import logic.AmountDivisionReport;
 import logic.CancellationsReport;
+import logic.ParkAmountSummary;
 import logic.ParkDailySummary;
 import logic.VisitsReport;
 import utils.ReportGenerator;
@@ -69,6 +71,78 @@ public class ReportsQueries {
 		}
 
 	}
+	//added by nadav
+	public ParkAmountSummary getAmountDivisionByOrderTypeInChoosenMonth(int month, int parkId,int year) {
+				ParkAmountSummary parkAmountSum = new ParkAmountSummary();
+				try {
+					Connection con = MySqlConnection.getInstance().getConnection();
+					PreparedStatement stmt = con
+							.prepareStatement("SELECT\n"
+									+ "    SUM(ParkSolo) AS TotalSolo,\n"
+									+ "    SUM(ParkFamily) AS TotalFamily,\n"
+									+ "    SUM(ParkGroup) AS TotalGroup\n"
+									+ "FROM (\n"
+									+ "    SELECT\n"
+									+ "        SUM(CASE WHEN parkId = ? AND OrderType='Solo' THEN Amount ELSE 0 END) AS ParkSolo,\n"
+									+ "        SUM(CASE WHEN parkId = ? AND OrderType='Family' THEN Amount ELSE 0 END) AS ParkFamily,\n"
+									+ "        SUM(CASE WHEN parkId = ? AND OrderType='Group' THEN Amount ELSE 0 END) AS ParkGroup\n"
+									+ "    FROM\n"
+									+ "        occasionalvisits\n"
+									+ "    WHERE\n"
+									+ "        OrderStatus = 'Completed' \n"
+									+ "        AND MONTH(EnterDate) = ?\n"
+									+ "        AND YEAR(EnterDate) = ?\n"
+									+ "    UNION ALL\n"
+									+ "    SELECT\n"
+									+ "        SUM(CASE WHEN parkId = ? AND OrderType='Solo Preorder' THEN Amount ELSE 0 END) AS ParkSolo,\n"
+									+ "        SUM(CASE WHEN parkId = ? AND OrderType='Family Preorder' THEN Amount ELSE 0 END) AS ParkFamily,\n"
+									+ "        SUM(CASE WHEN parkId = ? AND OrderType='Group Preorder' THEN Amount ELSE 0 END) AS ParkGroup\n"
+									+ "\n"
+									+ "    FROM\n"
+									+ "        preorders\n"
+									+ "    WHERE\n"
+									+ "        OrderStatus = 'Completed' \n"
+									+ "        AND MONTH(EnterDate) = ?\n"
+									+ "        AND YEAR(EnterDate) = ?\n"
+									+ ") AS subquery;");
+
+					stmt.setInt(1, parkId);
+					stmt.setInt(2, parkId);
+					stmt.setInt(3, parkId);
+					stmt.setInt(4, month);
+					stmt.setInt(5, year);
+					stmt.setInt(6, parkId);
+					stmt.setInt(7, parkId);
+					stmt.setInt(8, parkId);
+					stmt.setInt(9, month);
+					stmt.setInt(10, year);
+					
+					ResultSet rs = stmt.executeQuery();
+
+					// if the query ran successfully, but returned as empty table.
+					if (!rs.next()) {
+						parkAmountSum.setAmountGroup(0);
+						parkAmountSum.setAmountFamily(0);
+						parkAmountSum.setAmountSolo(0);
+						parkAmountSum.setMonth(month);
+						parkAmountSum.setYear(year);
+						parkAmountSum.setPark(ParkNameEnum.fromParkId(parkId));
+						return parkAmountSum;
+					}
+					parkAmountSum.setAmountSolo(rs.getInt(1));
+					parkAmountSum.setAmountFamily(rs.getInt(2));
+					parkAmountSum.setAmountGroup(rs.getInt(3));
+					parkAmountSum.setMonth(month);
+					parkAmountSum.setYear(year);
+					parkAmountSum.setPark(ParkNameEnum.fromParkId(parkId));
+					return parkAmountSum;
+
+				} catch (SQLException ex) {
+//				serverController.printToLogConsole("Query search for user failed");
+					return null;
+				}
+
+			}
 
 	public boolean generateCancellationsReport(CancellationsReport report) {
 		int year = report.getYear();
@@ -109,11 +183,32 @@ public class ReportsQueries {
 		if (!isQuerySucceed)
 			return false;
 
-		report.setBlobPdfContent(ReportGenerator.generateTotalVisitorsAmountReportAsPdf(report));
+		report.setBlobPdfContent(ReportGenerator.generateVisitsReportAsPdf(report));
 
 		if (insertVisitsAmountReportToDatabase(report))
 			return true;
 		return false;
+	}
+	//added by nadav
+	public boolean generateTotalAmountDivisionReport(AmountDivisionReport report) {
+		int year = report.getYear();
+		int month = report.getMonth();
+		int parkId = report.getRequestedPark().getParkId();
+		ParkAmountSummary parkAmountSum=new ParkAmountSummary();
+
+		parkAmountSum = getAmountDivisionByOrderTypeInChoosenMonth(month, parkId,year);
+			
+		if (parkAmountSum==null)
+			return false;
+
+		report.setReportData(parkAmountSum);
+		report.setBlobPdfContent(ReportGenerator.generateTotalVisitorsAmountReportAsPdf(report));
+
+		if (insertTotalAmountReportToDatabase(report))
+			return true;
+
+		return false;
+
 	}
 
 	private boolean getParkVisitsSummaryByEnterTime(VisitsReport report) {
@@ -308,6 +403,31 @@ public class ReportsQueries {
 		}
 	}
 
+	private boolean insertTotalAmountReportToDatabase(AmountDivisionReport report) {
+		try {
+			Connection con = MySqlConnection.getInstance().getConnection();
+			PreparedStatement stmt = con.prepareStatement(
+					"INSERT INTO totalvisitorsreport (parkId, year, month, pdfblob) \r\n" + "VALUES (?, ?, ?, ?)");
+ 
+			stmt.setInt(1, report.getRequestedPark().getParkId());
+			stmt.setInt(2, report.getYear());
+			stmt.setInt(3, report.getMonth());
+			stmt.setBytes(4, report.getBlobPdfContent());
+
+			int rs = stmt.executeUpdate();
+
+			// if the query ran successfully, but returned as empty table.
+			if (rs == 0) {
+				return false;
+			}
+
+			return true;
+		} catch (SQLException ex) {
+//		serverController.printToLogConsole("Query search for user failed");
+			return false;
+		}
+	}
+	
 	public byte[] getRequestedCancellationsReport(CancellationsReport report) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -380,5 +500,44 @@ public class ReportsQueries {
 			return null;
 		}
 	}
+	
+	public byte[] getRequestedTotalAmountReport(AmountDivisionReport report) {
+			try {
+				Connection con = MySqlConnection.getInstance().getConnection();
+				PreparedStatement stmt = con.prepareStatement(
+						"SELECT PdfBlob FROM totalvisitorsreport WHERE Year = ? AND Month = ? AND ParkId = ?");
+
+				stmt.setInt(1, report.getYear());
+				stmt.setInt(2, report.getMonth());
+				stmt.setInt(3, report.getRequestedPark().getParkId());
+
+				ResultSet rs = stmt.executeQuery();
+
+				if (!rs.next()) {
+					return null;
+				}
+				// retrieve the Blob from the database
+				Blob pdfBlob = rs.getBlob(1);
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				byte[] buf = new byte[50000];
+				try (InputStream in = pdfBlob.getBinaryStream()) {
+					int n;
+					while ((n = in.read(buf)) > 0) {
+						baos.write(buf, 0, n);
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+					return null;
+				}
+
+				byte[] pdfBytes = baos.toByteArray();
+				return pdfBytes;
+			} catch (SQLException ex) {
+				return null;
+			}
+
+		}
+	
+		
 
 }

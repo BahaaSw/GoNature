@@ -19,6 +19,7 @@ import gui.controller.ServerScreenController;
 import jdbc.DBConnectionDetails;
 import jdbc.QueryType;
 import jdbc.query.QueryControl;
+import logic.AmountDivisionReport;
 import logic.CancellationsReport;
 import logic.ClientConnection;
 import logic.ClientRequestDataContainer;
@@ -147,6 +148,15 @@ public class GoNatureServer extends AbstractServer {
 			response = handleImportCancellationsReport(data,client);
 			break;
 			
+		//added by nadav	
+		case Create_Total_Visitors_Report:
+			response = handleCreateTotalAmountDivisionReport(data,client);
+			break;
+			
+		case Import_Total_Visitors_Report:
+			response = handleImportTotalAmountDivisionReport(data,client);
+			break;
+		//	
 		case Logout:
 			handleUserLogoutFromApplication(data.getData(), client, clientIp);
 			break;
@@ -165,6 +175,33 @@ public class GoNatureServer extends AbstractServer {
 		}
 	}
 
+	//added by nadav
+		private ServerResponseBackToClient handleCreateTotalAmountDivisionReport(ClientRequestDataContainer data,
+				ConnectionToClient client) {
+			AmountDivisionReport report = (AmountDivisionReport)data.getData();
+			ServerResponseBackToClient response;
+			boolean result = QueryControl.reportsQueries.generateTotalAmountDivisionReport(report);
+			if(result)
+				response = new ServerResponseBackToClient(ServerResponse.Report_Generated_Successfully, report);
+			else
+				response = new ServerResponseBackToClient(ServerResponse.Report_Failed_Generate, report);
+			
+			return response;
+		}
+		//TODO change 
+		private ServerResponseBackToClient handleImportTotalAmountDivisionReport(ClientRequestDataContainer data,
+				ConnectionToClient client) {
+			AmountDivisionReport report = (AmountDivisionReport)data.getData();
+			ServerResponseBackToClient response;
+			byte[] blobInBytes = QueryControl.reportsQueries.getRequestedTotalAmountReport(report);
+			if(blobInBytes==null)
+				response = new ServerResponseBackToClient(ServerResponse.Such_Report_Not_Found, blobInBytes);
+			else {
+				response = new ServerResponseBackToClient(ServerResponse.Cancellations_Report_Found, blobInBytes);
+			}
+			return response;
+		}
+	
 	private ServerResponseBackToClient handleImportVisitsReport(ClientRequestDataContainer data,
 			ConnectionToClient client) {
 		VisitsReport report = (VisitsReport)data.getData();

@@ -17,6 +17,7 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.DefaultPieDataset;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Element;
@@ -28,6 +29,7 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
+import logic.AmountDivisionReport;
 import logic.CancellationsReport;
 import logic.ParkDailySummary;
 import logic.VisitsReport;
@@ -154,7 +156,7 @@ public class ReportGenerator {
 
 	}
 	
-	public static byte[] generateTotalVisitorsAmountReportAsPdf(VisitsReport report) {
+	public static byte[] generateVisitsReportAsPdf(VisitsReport report) {
 		Document document = new Document();
 		// Create a temporary file
 		Path tempFilePath = null;
@@ -370,6 +372,80 @@ public class ReportGenerator {
 			return null;
 
 		}
+	}
+	
+	public static byte[] generateTotalVisitorsAmountReportAsPdf(AmountDivisionReport report) {
+		Document document = new Document();
+		// Create a temporary file
+		Path tempFilePath = null;
+		File tempFile = null;
+		try {
+			tempFilePath = Files.createTempFile("TotalAmount_report", ".pdf");
+			tempFile = tempFilePath.toFile();
+			// Initialize PdfWriter to write to the temporary file
+			PdfWriter.getInstance(document, new FileOutputStream(tempFile));
+			document.open();
+
+			// Header Font
+			Font headerFont = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD);
+			Font boldFont = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
+			// Header
+			Paragraph header = new Paragraph("Total amount of travlers report", headerFont);
+			header.setAlignment(Element.ALIGN_CENTER);
+			document.add(header);
+
+			// Adding some space
+			document.add(new Paragraph("\n"));
+
+			// Park, Year, Month Info
+			document.add(new Paragraph("Park: " + report.getRequestedPark().name(), boldFont));
+			document.add(new Paragraph("Year: " + report.getYear(), boldFont));
+			document.add(new Paragraph("Month: " + report.getMonth(), boldFont));
+
+			// Adding some space before the table
+			document.add(new Paragraph("\n"));
+
+			// pie Chart
+			DefaultPieDataset dataset = new DefaultPieDataset();
+			dataset.setValue("Solo", report.getReportData().getAmountSolo());
+	        dataset.setValue("Family", report.getReportData().getAmountFamily());
+	        dataset.setValue("Group", report.getReportData().getAmountGroup());
+
+	        JFreeChart pieChart = ChartFactory.createPieChart(
+	                "Order Distribution", // chart title
+	                dataset, // dataset
+	                true, // include legend
+	                true,
+	                false);
+
+
+			// Save chart as image and add to document
+			Path chartPath = Files.createTempFile("chart_", ".png");
+			ChartUtils.saveChartAsPNG(chartPath.toFile(), pieChart, 500, 300);
+			Image chartImage = Image.getInstance(chartPath.toString());
+			document.add(chartImage);
+			document.add(new Paragraph("\n"));
+
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			document.close();
+		}
+
+		// Now, read the content of the temporary file into a byte array
+		try (FileInputStream input = new FileInputStream(tempFile)) {
+			byte[] pdfAsBytes = new byte[(int) tempFile.length()];
+			input.read(pdfAsBytes);
+			
+			return pdfAsBytes;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+
+
 	}
 	
 	public static byte[] generateUsageReportAsPdf() {
