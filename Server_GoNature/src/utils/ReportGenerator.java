@@ -452,11 +452,6 @@ public class ReportGenerator {
 		return null;
 	}
 	
-	public static byte[] generateVisitsSummaryReportAsPdf() {
-		return null;
-	}
-	
-	
 	private static JFreeChart createBarChart(final CategoryDataset dataset,String charTitle, String xAxis,
 			String yAxis) {
 	    // Create the chart

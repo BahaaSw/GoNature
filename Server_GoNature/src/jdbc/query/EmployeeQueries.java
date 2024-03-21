@@ -109,7 +109,7 @@ public class EmployeeQueries {
 	{
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
-			PreparedStatement stmt = con.prepareStatement("UPDATE users SET Status = 'Approved' WHERE UserId = ?");
+			PreparedStatement stmt = con.prepareStatement("UPDATE users SET Status = 'Approve' WHERE UserId = ?");
 			stmt.setString(1, guide.getUserId());
 			int rs = stmt.executeUpdate();
 
@@ -139,6 +139,7 @@ public class EmployeeQueries {
 				return DatabaseResponse.No_Pending_Request_Exists;
 			}
 
+			rs.previous();
 			while (rs.next()) {
 
 	            Guide guide = new Guide();

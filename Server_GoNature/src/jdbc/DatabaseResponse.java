@@ -70,5 +70,5 @@ public enum DatabaseResponse {
 //	UserChangedToDisconnected,
 
 	Added_New_User_To_Database,
-	
+	All_Guides_Approved,
 }
