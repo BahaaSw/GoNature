@@ -286,3 +286,20 @@
         -fx-font-weight: bold;
         -fx-effect:dropshadow(three-pass-box,#DDDDDD,5,0,0,6);
 }
+
+.manage_guides{
+
+}
+
+.manage_guides TableColumn{
+    -fx-alignment: center;
+}
+
+.manage_guides ComboBox{
+    -fx-pref-width: 100;
+    -fx-pref-height: 25;
+    -fx-font-family: "Calibri";
+    -fx-font-size: 1em;
+    -fx-background-color: #a8ccf8;
+    -fx-effect: dropshadow(three-pass-box,#aaaaaa,3,0,0,3);
+}

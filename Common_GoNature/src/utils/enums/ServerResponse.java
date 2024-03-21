@@ -12,7 +12,12 @@ public enum ServerResponse {
 	Guide_Connected_Successfully,
 	Visitor_Have_No_Orders_Yet, // did not find visitor with such ID in orders table with relevant order
 	Visitor_Connected_Successfully, //did find visitor with such ID in orders table with relevant order
-
+	Guides_With_Status_Pending_Not_Found,
+	Guides_With_Status_Pending_Found,
+	
+	Updated_Guides_To_Approved_Successfully,
+	Updated_Guides_To_Approved_Failed,
+	
 	Order_Not_Found,
 	Order_Found,
 	Order_Added_Successfully,

@@ -117,9 +117,7 @@ public class GoNatureServer extends AbstractServer {
 			serverController.addToConnected(client, "Visitor " + ((Visitor) response.getMessage()).getCustomerId());
 			break;
 
-		case Search_For_Guides_Status_Pending:
-			response = handleSearchForGuidesWithStatusPending(data, client);
-			break;
+
 
 		case Search_For_Relevant_Order:
 			response = handleSearchForRelevantOrder(data, client);
@@ -133,6 +131,15 @@ public class GoNatureServer extends AbstractServer {
 			response = handleSearchForAvailableDates(data,client);
 			break;
 		
+		// Service Employee Section
+		case Update_Guide_As_Approved:
+			response = handleUpdateGuideAsApproved(data,client);
+			break;
+		case Search_For_Guides_Status_Pending:
+			response = handleSearchForGuidesWithStatusPending(data, client);
+			break;
+			
+		//Reports Section
 		case Create_Visits_Report:
 			response = handleCreateVisitsReport(data,client);
 			break;
@@ -173,10 +180,10 @@ public class GoNatureServer extends AbstractServer {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-
+	}	
+	
 	//added by nadav
-		private ServerResponseBackToClient handleCreateTotalAmountDivisionReport(ClientRequestDataContainer data,
+	private ServerResponseBackToClient handleCreateTotalAmountDivisionReport(ClientRequestDataContainer data,
 				ConnectionToClient client) {
 			AmountDivisionReport report = (AmountDivisionReport)data.getData();
 			ServerResponseBackToClient response;
@@ -189,7 +196,7 @@ public class GoNatureServer extends AbstractServer {
 			return response;
 		}
 		//TODO change 
-		private ServerResponseBackToClient handleImportTotalAmountDivisionReport(ClientRequestDataContainer data,
+	private ServerResponseBackToClient handleImportTotalAmountDivisionReport(ClientRequestDataContainer data,
 				ConnectionToClient client) {
 			AmountDivisionReport report = (AmountDivisionReport)data.getData();
 			ServerResponseBackToClient response;
@@ -256,9 +263,32 @@ public class GoNatureServer extends AbstractServer {
 	
 	private ServerResponseBackToClient handleSearchForGuidesWithStatusPending(ClientRequestDataContainer data,
 			ConnectionToClient client) {
-		return null;
+		ArrayList<Guide> guidesList = (ArrayList<Guide>)data.getData();
+		ServerResponseBackToClient response=null;
+		DatabaseResponse dbResponse = QueryControl.employeeQueries.ShowAllGuidesWithPendingStatus(guidesList);
+		switch(dbResponse) {
+		case No_Pending_Request_Exists:
+			response = new ServerResponseBackToClient(ServerResponse.Guides_With_Status_Pending_Not_Found, guidesList);
+			break;
+		case Pending_Request_Pulled:
+			response = new ServerResponseBackToClient(ServerResponse.Guides_With_Status_Pending_Found, guidesList);
+			break;
+		}
+		return response;
 
 	}
+	
+	private ServerResponseBackToClient handleUpdateGuideAsApproved(ClientRequestDataContainer data, ConnectionToClient client) {
+		ArrayList<Guide> guidesList = (ArrayList<Guide>)data.getData();
+		DatabaseResponse dbResponse;
+		for(int i=0;i<guidesList.size();i++) {
+			dbResponse = QueryControl.employeeQueries.UpdateGuideStatusToApprove(guidesList.get(i));
+			if(dbResponse==DatabaseResponse.Failed)
+				return new ServerResponseBackToClient(ServerResponse.Updated_Guides_To_Approved_Failed, null);
+		}
+		return new ServerResponseBackToClient(ServerResponse.Updated_Guides_To_Approved_Successfully, null);
+	}
+	
 	
 	private ServerResponseBackToClient handleSearchForAvailableDates(ClientRequestDataContainer data,
 			ConnectionToClient client) {
