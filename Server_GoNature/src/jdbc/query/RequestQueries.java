@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 import jdbc.DatabaseResponse;
@@ -13,71 +14,7 @@ import utils.enums.RequestStatusEnum;
 import utils.enums.RequestTypeEnum;
 
 public class RequestQueries {
-	
-//	public DatabaseResponse UpdateParkMaxCapacity(Request request) {
-//		try {
-//			Connection con = MySqlConnection.getInstance().getConnection();
-//			PreparedStatement stmt = con.prepareStatement("UPDATE parks SET MaxCapacity = ? WHERE ParkId = ?");
-//			stmt.setInt(1, request.getNewValue());
-//			stmt.setInt(2,request.getParkId());
-//			int rs = stmt.executeUpdate();
-//
-//			// if the query ran successfully, but returned as empty table.
-//			if (rs==0) {
-//				return DatabaseResponse.Such_Park_Does_Not_Exists;
-//			}
-//
-//			return DatabaseResponse.Park_MaxCapacity_Was_Updated;
-//			
-//		} catch (SQLException ex) {
-////			serverController.printToLogConsole("Query search for user failed");
-//			return DatabaseResponse.Failed;
-//		}
-//	}
-//	public DatabaseResponse UpdateParkEstimatedVisitTime(Request request)
-//	{
-//		try {
-//			Connection con = MySqlConnection.getInstance().getConnection();
-//			PreparedStatement stmt = con.prepareStatement("UPDATE parks SET EstimatedVisitTime = ? WHERE ParkId = ?");
-//			stmt.setInt(1, request.getNewValue());
-//			stmt.setInt(2,request.getParkId());
-//			int rs = stmt.executeUpdate();
-//
-//			// if the query ran successfully, but returned as empty table.
-//			if (rs==0) {
-//				return DatabaseResponse.Such_Park_Does_Not_Exists;
-//			}
-//			
-//			return DatabaseResponse.Park_EstimatedStayTime_Was_Updated;
-//			
-//		} catch (SQLException ex) {
-////			serverController.printToLogConsole("Query search for user failed");
-//			return DatabaseResponse.Failed;
-//		}
-//	}
-//	
-//	public DatabaseResponse UpdateParkReservedSpots(Request request)
-//	{
-//		try {
-//			Connection con = MySqlConnection.getInstance().getConnection();
-//			PreparedStatement stmt = con.prepareStatement("UPDATE parks SET ReservedSpots = ? WHERE ParkId = ?");
-//			stmt.setInt(1, request.getNewValue());
-//			stmt.setInt(2,request.getParkId());
-//			int rs = stmt.executeUpdate();
-//
-//			// if the query ran successfully, but returned as empty table.
-//			if (rs==0) {
-//				return DatabaseResponse.Such_Park_Does_Not_Exists;
-//			}
-//
-//
-//			return DatabaseResponse.Park_ReservedSpots_Was_Updated;
-//			
-//		} catch (SQLException ex) {
-////			serverController.printToLogConsole("Query search for user failed");
-//			return DatabaseResponse.Failed;
-//		}
-//	}
+	private ParkQueries parkQueries= new ParkQueries();
 	
 	public DatabaseResponse ShowAllParkManagerRequests(ArrayList<Request> request) //Method to pull all the requests with pending status. (Tamir/Siso)
 	{
@@ -92,6 +29,7 @@ public class RequestQueries {
 				return DatabaseResponse.No_Pending_Request_Exists;
 			}
 			
+			rs.previous();
 			while (rs.next()) {
 
 	            Request newRequest = new Request();
@@ -119,14 +57,18 @@ public class RequestQueries {
 	{
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
-			PreparedStatement stmt = con.prepareStatement("UPDATE requests SET RequestStatus = WHERE RequestId = ?");
+			PreparedStatement stmt = con.prepareStatement("UPDATE requests SET RequestStatus = ? WHERE RequestId = ?");
 			stmt.setString(1, status);
 			stmt.setInt(2,request.getRequestId());
 			int rs = stmt.executeUpdate();
 
 			// if the query ran successfully, but returned as empty table.
 			if (rs==0) {
-				return DatabaseResponse.No_Request_Exsists;
+				return DatabaseResponse.No_Request_Exists;
+			}
+			
+			if(status.equals("Approved")) {
+				parkQueries.InsertNewValueInRequestedPark(request);
 			}
 
 			return DatabaseResponse.Request_Was_Updated;
@@ -135,6 +77,48 @@ public class RequestQueries {
 //			serverController.printToLogConsole("Query search for user failed");
 			return DatabaseResponse.Failed;
 		}
+	}
+	
+	public boolean InsertNewRequest(Request request) {
+	    try {
+	        Connection con = MySqlConnection.getInstance().getConnection();
+
+	        // Check if a pending request of the same type for the same park exists
+	        String checkSql = "SELECT 1 FROM requests WHERE ParkId = ? AND RequestType = ? AND RequestStatus = 'Pending'";
+	        PreparedStatement checkStmt = con.prepareStatement(checkSql);
+	        checkStmt.setInt(1, request.getParkId());
+	        checkStmt.setString(2, request.getRequestType().name());
+	        ResultSet checkRs = checkStmt.executeQuery();
+	        if (checkRs.next()) {
+	            // A matching pending request exists, so do not insert a new one
+	            return false;
+	        }
+
+	        // No matching pending request exists, proceed with insert
+	        String insertSql = "INSERT INTO requests (ParkId, RequestType, OldValue, NewValue, RequestStatus, RequestDate) VALUES (?, ?, ?, ?, ?, ?)";
+	        PreparedStatement stmt = con.prepareStatement(insertSql);
+	        stmt.setInt(1, request.getParkId());
+	        stmt.setString(2, request.getRequestType().name());
+	        stmt.setInt(3, request.getOldValue());
+	        stmt.setInt(4, request.getNewValue());
+	        stmt.setString(5, request.getRequestStatus().name());
+	        
+	        // Convert LocalDateTime to Timestamp
+	        Timestamp requestDateTimestamp = Timestamp.valueOf(request.getRequestDate());
+	        stmt.setTimestamp(6, requestDateTimestamp);
+
+	        int rs = stmt.executeUpdate();
+
+	        // if the query ran successfully, but returned as empty table.
+	        if (rs == 0) {
+	            return false;
+	        }
+
+	        return true;
+	    } catch (SQLException ex) {
+	        ex.printStackTrace();
+	        return false;
+	    }
 	}
 	
 }

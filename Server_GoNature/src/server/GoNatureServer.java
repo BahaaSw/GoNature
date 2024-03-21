@@ -26,6 +26,8 @@ import logic.ClientRequestDataContainer;
 import logic.Employee;
 import logic.Guide;
 import logic.Order;
+import logic.Park;
+import logic.Request;
 import logic.ServerResponseBackToClient;
 import logic.User;
 import logic.Visitor;
@@ -139,6 +141,28 @@ public class GoNatureServer extends AbstractServer {
 			response = handleSearchForGuidesWithStatusPending(data, client);
 			break;
 			
+		// Park Section
+		case Search_For_Specific_Park:
+			response = handleSearchForSpecificPark(data,client);
+			break;
+			
+		// Requests Section
+		case Make_New_Park_Estimated_Visit_Time_Request:
+			response = handleMakeNewParkEstimatedVisitTimeRequest(data,client);
+			break;
+		case Make_New_Park_Reserved_Entries_Request:
+			response = handleMakeNewParkReservedEntriesRequest(data,client);
+			break;
+		case Make_New_Park_Capacity_Request:
+			response = handleMakeNewParkCapacityRequest(data,client);
+			break;
+		case Import_All_Pending_Requests:
+			response = handleImportAllPendingRequests(data,client);
+			break;
+		case Update_Request_In_Database:
+			response = handleUpdateRequestInDatabase(data,client);
+			break;
+			
 		//Reports Section
 		case Create_Visits_Report:
 			response = handleCreateVisitsReport(data,client);
@@ -181,6 +205,87 @@ public class GoNatureServer extends AbstractServer {
 			e.printStackTrace();
 		}
 	}	
+	
+	private ServerResponseBackToClient handleSearchForSpecificPark(ClientRequestDataContainer data,
+			ConnectionToClient client) {
+		Park park = (Park)data.getData();
+		ServerResponseBackToClient response;
+		boolean foundPark = QueryControl.parkQueries.getParkById(park);
+		if(foundPark)
+			response = new ServerResponseBackToClient(ServerResponse.Fetched_Park_Details_Successfully, park);
+		else
+			response = new ServerResponseBackToClient(ServerResponse.Fetched_Park_Details_Failed, park);
+		return response;
+		
+	}
+	
+	private ServerResponseBackToClient handleMakeNewParkEstimatedVisitTimeRequest(ClientRequestDataContainer data,
+			ConnectionToClient client) {
+		Request request = (Request)data.getData();
+		ServerResponseBackToClient response;
+		boolean success = QueryControl.requestsQueries.InsertNewRequest(request);
+		if(success)
+			response = new ServerResponseBackToClient(ServerResponse.Request_Sent_To_Department_Successfully, request);
+		else
+			response = new ServerResponseBackToClient(ServerResponse.Last_Request_With_Same_Type_Still_Pending,request);
+		return response;
+	}
+	
+	private ServerResponseBackToClient handleImportAllPendingRequests(ClientRequestDataContainer data,
+			ConnectionToClient client) {
+		ArrayList<Request> requestList = (ArrayList<Request>)data.getData();
+		ServerResponseBackToClient response=null;
+		DatabaseResponse dbResponse = QueryControl.requestsQueries.ShowAllParkManagerRequests(requestList);
+		switch(dbResponse) {
+		case No_Pending_Request_Exists:
+			response = new ServerResponseBackToClient(ServerResponse.There_Are_Not_Pending_Requests, requestList);
+			break;
+		case Pending_Request_Pulled:
+			response = new ServerResponseBackToClient(ServerResponse.Pending_Requests_Found_Successfully, requestList);
+			break;
+		}
+		return response;
+
+	}
+	
+	private ServerResponseBackToClient handleUpdateRequestInDatabase(ClientRequestDataContainer data,
+			ConnectionToClient client) {
+		ArrayList<Request> requestList = (ArrayList<Request>)data.getData();
+		DatabaseResponse dbResponse;
+		for(int i=0;i<requestList.size();i++) {
+			dbResponse = QueryControl.requestsQueries.UpdateStatusRequest(requestList.get(i), requestList.get(i).getRequestStatus().name());
+			if(dbResponse==DatabaseResponse.No_Request_Exists || dbResponse==DatabaseResponse.Failed)
+				return new ServerResponseBackToClient(ServerResponse.Updated_Requests_Failed, null);
+		}
+		return new ServerResponseBackToClient(ServerResponse.Updated_Requests_Successfully, null);
+	}
+	
+	private ServerResponseBackToClient handleMakeNewParkReservedEntriesRequest(ClientRequestDataContainer data,
+			ConnectionToClient client) {
+		Request request = (Request)data.getData();
+		ServerResponseBackToClient response;
+		boolean success = QueryControl.requestsQueries.InsertNewRequest(request);
+		if(success)
+			response = new ServerResponseBackToClient(ServerResponse.Request_Sent_To_Department_Successfully, request);
+		else
+			response = new ServerResponseBackToClient(ServerResponse.Last_Request_With_Same_Type_Still_Pending,request);
+		return response;
+	}
+
+	
+	private ServerResponseBackToClient handleMakeNewParkCapacityRequest(ClientRequestDataContainer data,
+			ConnectionToClient client) {
+		Request request = (Request)data.getData();
+		ServerResponseBackToClient response;
+		boolean success = QueryControl.requestsQueries.InsertNewRequest(request);
+		if(success)
+			response = new ServerResponseBackToClient(ServerResponse.Request_Sent_To_Department_Successfully, request);
+		else
+			response = new ServerResponseBackToClient(ServerResponse.Last_Request_With_Same_Type_Still_Pending,request);
+		return response;
+	}
+	
+	
 	
 	//added by nadav
 	private ServerResponseBackToClient handleCreateTotalAmountDivisionReport(ClientRequestDataContainer data,

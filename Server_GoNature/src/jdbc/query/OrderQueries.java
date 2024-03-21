@@ -140,8 +140,8 @@ public class OrderQueries {
 	
 	public boolean isThisDateAvailable(int parkId,LocalDateTime enterTime,int amountOfVisitors){
 		Park requestedPark = new Park(parkId);
-		DatabaseResponse response = parkQueries.getParkById(requestedPark);
-		if(response==DatabaseResponse.Park_Found_Successfully) {
+		boolean foundPark = parkQueries.getParkById(requestedPark);
+		if(foundPark) {
 			double estimatedVisitTime = requestedPark.getCurrentEstimatedStayTime();
 			// Split the estimatedVisitTime into whole days and fractional day components
 			long estimatedVisitTimeInHours = (long) (estimatedVisitTime);
@@ -247,8 +247,9 @@ public class OrderQueries {
 
 	public DatabaseResponse checkIfNewOrderAvailableAtRequestedDate(Order order) {
 		Park requestedPark = new Park(order.getParkName().getParkId());
-		DatabaseResponse response = parkQueries.getParkById(requestedPark);
-		if(response==DatabaseResponse.Park_Found_Successfully) {
+		DatabaseResponse response=DatabaseResponse.Requested_Date_Is_Available;
+		boolean foundPark  = parkQueries.getParkById(requestedPark);
+		if(foundPark) {
 			if(order.getNumberOfVisitors()>requestedPark.getCurrentMaxCapacity()) {
 				return DatabaseResponse.Number_Of_Visitors_More_Than_Max_Capacity;
 			}

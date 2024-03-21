@@ -175,7 +175,7 @@ public class EmployeeScreenController implements Initializable,IScreenController
 	}
 	
 	public void onParkSettingsClicked() {
-		Park park = new Park(1,ParkNameEnum.Banias,100,50,4,20);
+		Park park = new Park(employee.getRelatedPark().getParkId());
 		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/ParkSettingsScreen.fxml",
 				ApplicationViewType.Park_Settings_Screen,new EntitiesContainer(park,employee));
 		screen.setCenter(dashboard);

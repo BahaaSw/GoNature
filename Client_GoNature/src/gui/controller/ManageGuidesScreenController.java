@@ -89,7 +89,7 @@ public class ManageGuidesScreenController implements Initializable {
 		firstnameCol.setCellValueFactory(new PropertyValueFactory<>("firstName"));
 
 		// Full Name Column
-		firstnameCol.setCellValueFactory(new PropertyValueFactory<>("lastName"));
+		lastnameCol.setCellValueFactory(new PropertyValueFactory<>("lastName"));
 
 		// Email Column
 		emailCol.setCellValueFactory(new PropertyValueFactory<>("email"));
@@ -99,7 +99,7 @@ public class ManageGuidesScreenController implements Initializable {
 
 		// Status Column with ComboBox
 		statusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
-		statusCol.setCellFactory(ComboBoxTableCell.forTableColumn("Pending", "Approved", "Denied"));
+		statusCol.setCellFactory(ComboBoxTableCell.forTableColumn("Pending", "Approved"));
 		statusCol.setOnEditCommit((TableColumn.CellEditEvent<GuideInTable, String> t) -> (t.getTableView().getItems()
 				.get(t.getTablePosition().getRow())).setStatus(t.getNewValue()));
 
