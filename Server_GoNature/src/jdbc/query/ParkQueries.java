@@ -15,7 +15,7 @@ import utils.enums.ParkNameEnum;
 
 public class ParkQueries {
 	
-	public DatabaseResponse getParkById(Park park) {
+	public boolean getParkById(Park park) {
 		
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -25,22 +25,22 @@ public class ParkQueries {
 
 			// if the query ran successfully, but returned as empty table.
 			if (!rs.next()) {
-				return DatabaseResponse.Such_Park_Does_Not_Exists;
+				return false;
 			}
 			
 			park.setParkId(rs.getInt(1));
 			park.setParkName(ParkNameEnum.fromParkId(rs.getInt(1)));
 			park.setCurrentMaxCapacity(rs.getInt(3));
-			park.setCurrentEstimatedStayTime(rs.getDouble(4));
+			park.setCurrentEstimatedStayTime(rs.getInt(4));
 			park.setCurrentEstimatedReservedSpots(rs.getInt(5));
 			park.setCurrentInPark(rs.getInt(6));
 			park.setPrice(rs.getInt(7));
 			
-			return DatabaseResponse.Park_Found_Successfully;
+			return true;
 			
 		} catch (SQLException ex) {
 //			serverController.printToLogConsole("Query search for park failed");
-			return DatabaseResponse.Failed;
+			return false;
 		}
 	}
 	
@@ -60,7 +60,7 @@ public class ParkQueries {
 			park.setParkId(rs.getInt(1));
 			park.setParkName(ParkNameEnum.fromParkId(rs.getInt(2)));
 			park.setCurrentMaxCapacity(rs.getInt(3));
-			park.setCurrentEstimatedStayTime(rs.getDouble(4));
+			park.setCurrentEstimatedStayTime(rs.getInt(4));
 			park.setCurrentEstimatedReservedSpots(rs.getInt(5));
 			park.setCurrentInPark(rs.getInt(6));
 			park.setPrice(rs.getInt(7));
@@ -125,7 +125,7 @@ public class ParkQueries {
 			park.setParkId(rs.getInt(1));
 			park.setParkName(ParkNameEnum.fromParkId(rs.getInt(2)));
 			park.setCurrentMaxCapacity(rs.getInt(3));
-			park.setCurrentEstimatedStayTime(rs.getDouble(4));
+			park.setCurrentEstimatedStayTime(rs.getInt(4));
 			park.setCurrentEstimatedReservedSpots(rs.getInt(5));
 			park.setCurrentInPark(rs.getInt(6));
 			park.setPrice(rs.getInt(7));
@@ -145,7 +145,7 @@ public class ParkQueries {
 			String columnName = request.getRequestType().getValue(); // to get the field we want to update
 
 			Connection con = MySqlConnection.getInstance().getConnection();
-			PreparedStatement stmt = con.prepareStatement("UPDATE requests SET" + columnName + " = ? WHERE ParkId = ?");
+			PreparedStatement stmt = con.prepareStatement("UPDATE parks SET " + columnName + " = ? WHERE ParkId = ?");
 
 			stmt.setInt(1, request.getNewValue());
 			stmt.setInt(2, request.getParkId());

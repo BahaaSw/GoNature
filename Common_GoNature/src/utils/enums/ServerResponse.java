@@ -30,6 +30,19 @@ public enum ServerResponse {
 	Report_Generated_Successfully,
 	Report_Failed_Generate,
 	
+	//Park Section
+	Fetched_Park_Details_Successfully,
+	Fetched_Park_Details_Failed,
+	
+	// Request Section
+	Last_Request_With_Same_Type_Still_Pending,
+	Request_Sent_To_Department_Successfully,
+	There_Are_Not_Pending_Requests,
+	Pending_Requests_Found_Successfully,
+	Updated_Requests_Successfully,
+	Updated_Requests_Failed,
+	
+	
 	Exception_Was_Thrown, // when the server catch an exception
 	Server_Closed, // when server is closing itself, he should send to all clients
 	Server_Disconnected, // when server is disconnected, he should send to all clients

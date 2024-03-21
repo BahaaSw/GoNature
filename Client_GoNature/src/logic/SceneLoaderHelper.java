@@ -123,7 +123,7 @@ public class SceneLoaderHelper {
 			}
 			
 			case Request_Table_Screen:{
-				RequestTableScreenController controller = new RequestTableScreenController();
+				RequestTableScreenController controller = new RequestTableScreenController(screen);
 				loader.setController(controller);
 				break;
 			}

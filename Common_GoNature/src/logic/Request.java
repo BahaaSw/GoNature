@@ -1,11 +1,13 @@
 package logic;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import utils.enums.RequestTypeEnum;
+import utils.enums.ParkNameEnum;
 import utils.enums.RequestStatusEnum;
 
-public class Request {
+public class Request implements Serializable{
 
 	private int requestId;
 	private int parkId;
@@ -27,6 +29,15 @@ public class Request {
 	}
 
 	public Request() {
+	}
+	
+	public Request(int parkId,RequestTypeEnum requestType, int oldValue, int newValue, LocalDateTime requestDate ) {
+		this.parkId=parkId;
+		this.requestType=requestType;
+		this.oldValue=oldValue;
+		this.newValue=newValue;
+		this.requestDate=requestDate;
+		requestStatus=RequestStatusEnum.Pending;
 	}
 
 	public int getRequestId() {

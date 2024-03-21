@@ -37,7 +37,7 @@ public enum DatabaseResponse {
 	Park_Parameter_Updated_Successfully,
 	No_Pending_Request_Exists, // tamir/siso added
 	Pending_Request_Pulled, // tamir/siso added
-	No_Request_Exsists, // tamir/siso added
+	No_Request_Exists, // tamir/siso added
 	Request_Was_Updated, // tamir/siso added
 	
 	//ServiceEmployee

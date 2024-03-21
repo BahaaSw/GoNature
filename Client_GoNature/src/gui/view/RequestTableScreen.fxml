@@ -15,26 +15,31 @@
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="940.0" styleClass="app" stylesheets="@appStyles.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <HBox prefHeight="53.0" prefWidth="830.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="9.0" />
-      <Label layoutX="858.0" layoutY="31.0" styleClass="app_date_label" text="Today 2024-06-03" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="27.0" />
+      <Label fx:id="dateLabel" layoutX="858.0" layoutY="31.0" styleClass="app_date_label" text="Today 2024-06-03" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="27.0" />
       <Separator layoutX="431.0" layoutY="108.0" prefWidth="200.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="140.0" />
       <Text layoutX="377.0" layoutY="100.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Requests" AnchorPane.topAnchor="62.5">
          <font>
             <Font name="Calibri" size="50.0" />
          </font>
       </Text>
-      <TableView layoutX="135.0" layoutY="206.0" prefHeight="457.0" prefWidth="665.0">
-        <columns>
-            <TableColumn prefWidth="89.99997329711914" text="Request ID" />
-          <TableColumn prefWidth="91.33331298828125" text="Park" />
-          <TableColumn prefWidth="126.66667175292969" text="Request Type" />
-            <TableColumn prefWidth="119.3333740234375" text="Old Value" />
-            <TableColumn minWidth="0.0" prefWidth="116.00003051757812" text="New Value" />
-            <TableColumn minWidth="0.0" prefWidth="120.666748046875" text="Status" />
-        </columns>
-      </TableView>
+      <HBox layoutX="31.0" layoutY="307.0" prefHeight="313.0" prefWidth="878.0" styleClass="manage_guides">
+         <children>
+            <TableView fx:id="requestsTable" prefHeight="510.0" prefWidth="934.0">
+              <columns>
+                  <TableColumn fx:id="requestIdCol" prefWidth="78.0" text="Request ID" />
+                <TableColumn fx:id="parkCol" prefWidth="94.0" text="Park" />
+                <TableColumn fx:id="requestedTypeCol" prefWidth="154.0" text="Request Type" />
+                  <TableColumn fx:id="oldValueCol" prefWidth="114.0" text="Old Value" />
+                  <TableColumn fx:id="newValueCol" minWidth="0.0" prefWidth="114.0" text="New Value" />
+                  <TableColumn fx:id="requestedDateCol" minWidth="0.0" prefWidth="164.0" text="Requested Date" />
+                  <TableColumn fx:id="statusCol" minWidth="0.0" prefWidth="159.0" text="Status" />
+              </columns>
+            </TableView>
+         </children>
+      </HBox>
       <HBox layoutY="662.0" prefHeight="137.0" prefWidth="940.0" styleClass="app_makeorder">
          <children>
-            <Button contentDisplay="RIGHT" mnemonicParsing="false" styleClass="app_makeorder" text="Save">
+            <Button fx:id="saveButton" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#onSaveClicked" styleClass="app_makeorder" text="Save">
                <graphic>
                   <ImageView fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -44,5 +49,14 @@
                </graphic></Button>
          </children>
       </HBox>
+      <Button fx:id="refreshButton" contentDisplay="RIGHT" layoutX="402.0" layoutY="226.0" mnemonicParsing="false" onAction="#onRefreshClicked" styleClass="app_makeorder" text="Refresh">
+         <graphic>
+            <ImageView fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../utils/resources/refreshIcon.png" />
+               </image>
+            </ImageView>
+         </graphic>
+      </Button>
    </children>
 </AnchorPane>

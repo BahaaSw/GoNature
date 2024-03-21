@@ -1,14 +1,16 @@
 package logic;
 
+import java.io.Serializable;
+
 import utils.EntrancePrice;
 import utils.enums.ParkNameEnum;
 
-public class Park {
+public class Park implements Serializable{
 	private int parkId;
 	private ParkNameEnum parkName;
 	private int currentMaxCapacity;
 	private int currentInPark;
-	private double currentEstimatedStayTime;
+	private int currentEstimatedStayTime;
 	private int currentEstimatedReservedSpots; // the gap between max capacity, to amount of orders we let order
 	private double parkEntranceFee;
 	private String district;
@@ -72,11 +74,11 @@ public class Park {
 		this.currentMaxCapacity = currentMaxCapacity;
 	}
 
-	public double getCurrentEstimatedStayTime() {
+	public int getCurrentEstimatedStayTime() {
 		return currentEstimatedStayTime;
 	}
 
-	public void setCurrentEstimatedStayTime(double currentEstimatedStayTime) {
+	public void setCurrentEstimatedStayTime(int currentEstimatedStayTime) {
 		this.currentEstimatedStayTime = currentEstimatedStayTime;
 	}
 
