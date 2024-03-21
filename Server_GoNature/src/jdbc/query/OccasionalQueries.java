@@ -4,7 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 import jdbc.DatabaseResponse;
 import jdbc.MySqlConnection;
@@ -87,7 +89,8 @@ public class OccasionalQueries {
 		int occasionalInPark = 0;
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
-			PreparedStatement stmt = con.prepareStatement("SELECT COUNT(*) AS OccasionalInPark FROM occasionalvisits WHERE OrderStatus = 'In Park'");
+			PreparedStatement stmt = con.prepareStatement(
+					"SELECT COUNT(*) AS OccasionalInPark FROM occasionalvisits WHERE OrderStatus = 'In Park'");
 			ResultSet rs = stmt.executeQuery();
 
 			// if the query ran successfully, but returned as empty table.
@@ -116,7 +119,8 @@ public class OccasionalQueries {
 	public DatabaseResponse UpdateOccasionalOrderStatus(Order order, OrderStatusEnum status) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
-			PreparedStatement stmt = con.prepareStatement("Update occasionalvisits SET OrderStatus = ? WHERE OrderId = ?;");
+			PreparedStatement stmt = con
+					.prepareStatement("Update occasionalvisits SET OrderStatus = ? WHERE OrderId = ?");
 			stmt.setString(1, status.toString());
 			stmt.setInt(2, order.getOrderId());
 			int rs = stmt.executeUpdate();
@@ -147,7 +151,8 @@ public class OccasionalQueries {
 	public DatabaseResponse UpdateOrderExitDate(Order order, LocalDateTime exitDate) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
-			PreparedStatement stmt = con.prepareStatement("UPDATE occasionalvisits SET ExitDate = ? WHERE (OrderId = ?);");
+			PreparedStatement stmt = con
+					.prepareStatement("UPDATE occasionalvisits SET ExitDate = ? WHERE (OrderId = ?)");
 			stmt.setString(1, exitDate.toString());
 			stmt.setInt(2, order.getOrderId());
 			int rs = stmt.executeUpdate();
@@ -161,5 +166,71 @@ public class OccasionalQueries {
 			return DatabaseResponse.Exception_Was_Thrown;
 		}
 	}
+	
+	public DatabaseResponse insertOccasionalOrder(Order order) {
+		try {
+			Connection con = MySqlConnection.getInstance().getConnection();
+			PreparedStatement stmt = con.prepareStatement(
+					"INSERT INTO occasionalvisits (OrderId, ParkId, EnterDate, ExitDate, OrderStatus, Email, Phone, FirstName, LastName, OrderType, Amount, Price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+			int newOrderId = ReturnTotalOccasionalVisits() + 1;
+			order.setOrderId(newOrderId);
+
+			stmt.setInt(1, newOrderId);
+			stmt.setInt(2, order.getParkName().getParkId());
+			stmt.setString(3, order.getEnterDate().toString());
+			stmt.setString(4, order.getExitDate().toString());
+			stmt.setString(5, order.getStatus().toString());
+			stmt.setString(6, order.getEmail());
+			stmt.setString(7, order.getTelephoneNumber());
+			stmt.setString(8, order.getFirstName());
+			stmt.setString(9, order.getLastName());
+			stmt.setString(10, order.getOrderType().toString());
+			stmt.setInt(11, order.getNumberOfVisitors());
+			stmt.setDouble(12, order.getPrice());
+
+			int rs = stmt.executeUpdate();
+
+			// if the query ran successfully, but returned as empty table.
+			if (rs == 0) {
+				return DatabaseResponse.Failed;
+			}
+			return DatabaseResponse.Order_Added_Into_Table;
+
+		} catch (SQLException ex) {
+			return DatabaseResponse.Exception_Was_Thrown;
+		}
+	}
+
+	public ArrayList<Order> getAllOccasionalOrdersInPark(int parkId) {
+		LocalDate today = LocalDateTime.now().toLocalDate();
+		ArrayList<Order> foundOrders = new ArrayList<>();
+		try {
+			Connection con = MySqlConnection.getInstance().getConnection();
+			PreparedStatement stmt = con.prepareStatement(
+					"SELECT * FROM occasionalvisits WHERE ParkId = ? AND Date(EnterDate) = ?  AND OrderStatus = 'In Park';");
+			stmt.setInt(1, parkId);
+			stmt.setString(2, today.toString());
+			ResultSet rs = stmt.executeQuery();
+
+			// if the query ran successfully, but returned as empty table.
+			if (!rs.next()) {
+				return null;
+			}
+			rs.first();
+			while (rs.next()) {
+				Order order = new Order(rs.getInt(1), ParkNameEnum.fromParkId(rs.getInt(2)),
+						LocalDateTime.parse(rs.getString(3)), LocalDateTime.parse(rs.getString(4)),
+						OrderStatusEnum.fromString(rs.getString(5)), rs.getString(6), rs.getString(7), rs.getString(8),
+						rs.getString(9), OrderTypeEnum.fromString(rs.getString(10)), rs.getInt(11), rs.getDouble(12));
+				foundOrders.add(order);
+			}
+			return foundOrders;
+
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			return null;
+		}
+	}
+
 
 }

@@ -17,8 +17,7 @@ public class Order implements Serializable {
 	private String firstName;
 	private String lastName;
 	private String userId;
-	private String ownerType;
-	private UserTypeEnum userType;
+	private UserTypeEnum ownerType;
 	private String telephoneNumber;
 	private String email;
 	private LocalDateTime enterDate; // added
@@ -52,7 +51,6 @@ public class Order implements Serializable {
 		this.orderType=orderType;
 		this.parkName=parkName;
 		this.userId=userId;
-		this.userType=userType;
 		this.telephoneNumber=telephoneNumber;
 		this.email=email;
 		this.timeOfVisit=timeOfVisit;
@@ -60,6 +58,44 @@ public class Order implements Serializable {
 		this.creationDate=creationDate;
 		status=OrderStatusEnum.Wait_Notify;
 		lastStatusUpdatedTime=CurrentDateAndTime.getCurrentDateAndTime("yyyy-MM-dd hh:mm");
+	}
+	
+
+	public Order(int orderId, ParkNameEnum parkName, LocalDateTime enterDate, LocalDateTime exitDate,
+			OrderStatusEnum status, String email, String telephoneNumber, String firstName, String lastName,
+			OrderTypeEnum orderType, int numberOfVisitors, double price) {
+		this.orderId = orderId;
+		this.orderType = orderType;
+		this.parkName = parkName;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.telephoneNumber = telephoneNumber;
+		this.email = email;
+		this.enterDate = enterDate;
+		this.exitDate = exitDate;
+		this.numberOfVisitors = numberOfVisitors;
+		this.status = status;
+		this.price = price;
+	}
+
+	public Order(int orderId, ParkNameEnum parkName, String userId, UserTypeEnum ownerType, LocalDateTime enterDate,
+			LocalDateTime exitDate, int paid, OrderStatusEnum status, String email, String telephoneNumber,
+			String firstName, String lastName, OrderTypeEnum orderType, int numberOfVisitors, double price) {
+		this.orderId = orderId;
+		this.parkName = parkName;
+		this.userId = userId;
+		this.ownerType = ownerType;
+		this.enterDate = enterDate;
+		this.exitDate = exitDate;
+		this.paid = paid == 1 ? true : false;
+		this.status = status;
+		this.email = email;
+		this.telephoneNumber = telephoneNumber;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.orderType = orderType;
+		this.numberOfVisitors = numberOfVisitors;
+		this.price = price;
 	}
 
 	public int getOrderId() {
@@ -158,12 +194,12 @@ public class Order implements Serializable {
 		this.status = status;
 	}
 
-	public UserTypeEnum getUserType() {
-		return userType;
+	public UserTypeEnum getOwnerType() {
+		return ownerType;
 	}
 
-	public void setUserType(UserTypeEnum userType) {
-		this.userType = userType;
+	public void setOwnerType(UserTypeEnum ownerType) {
+		this.ownerType = ownerType;
 	}
 	
 	public String getLastStatusUpdatedTime() {
@@ -181,13 +217,6 @@ public class Order implements Serializable {
 		return true;
 	}
 
-	public String getOwnerType() {
-		return ownerType;
-	}
-
-	public void setOwnerType(String ownerType) {
-		this.ownerType = ownerType;
-	}
 
 	public LocalDateTime getEnterDate() {
 		return enterDate;

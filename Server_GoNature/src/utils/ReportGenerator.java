@@ -322,11 +322,12 @@ public class ReportGenerator {
 				dataset.addValue(data.get(2),"Group",column);
 			}
 
-			JFreeChart chart = createChart(dataset,"Total Visits Distributed By Idle Time","Idle Time","Visits");
-			ChartUtils.saveChartAsPNG(new File("GroupedBarChart.png"), chart, 450, 400);
+			JFreeChart chart = createBarChart(dataset,"Total Visits Distributed By Idle Time","Idle Time","Visits");
+			Path chartPath = Files.createTempFile("chart_", ".png");
+			ChartUtils.saveChartAsPNG(chartPath.toFile(), chart, 450, 400);
 			
 			// Add the grouped bar chart image to the PDF
-			Image chartImage = Image.getInstance("GroupedBarChart.png");
+			Image chartImage = Image.getInstance(chartPath.toString());
 			document.add(chartImage);
 
 			// Add the second grouped bar chart
@@ -344,12 +345,12 @@ public class ReportGenerator {
 				dataset.addValue(totalGroup,"Group",column);
 			}
 
-			chart = createChart(dataset,"Total Visits Distributed By Enter Time","Enter Time","Visits");
-			
-			ChartUtils.saveChartAsPNG(new File("GroupedBarChart2.png"), chart, 450, 400);
+			chart = createBarChart(dataset,"Total Visits Distributed By Enter Time","Enter Time","Visits");
+			chartPath = Files.createTempFile("chart_2", ".png");
+			ChartUtils.saveChartAsPNG(chartPath.toFile(), chart, 450, 400);
 			
 			// Add the grouped bar chart image to the PDF
-			chartImage = Image.getInstance("GroupedBarChart2.png");
+			chartImage = Image.getInstance(chartPath.toString());
 			document.add(chartImage);
 			
 		} catch (Exception e) {
@@ -380,7 +381,7 @@ public class ReportGenerator {
 	}
 	
 	
-	private static JFreeChart createChart(final CategoryDataset dataset,String charTitle, String xAxis,
+	private static JFreeChart createBarChart(final CategoryDataset dataset,String charTitle, String xAxis,
 			String yAxis) {
 	    // Create the chart
 	    JFreeChart chart = ChartFactory.createBarChart(
