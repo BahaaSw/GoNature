@@ -16,6 +16,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import logic.AmountDivisionReport;
 import logic.CancellationsReport;
 import logic.ClientRequestDataContainer;
 import logic.Employee;
@@ -115,6 +116,9 @@ public class ViewReportsScreenController implements Initializable {
 				reportToOpen=ClientRequest.Import_Cancellations_Report;
 				break;
 			case TotalVisitorsReport:
+				report = new AmountDivisionReport(Integer.parseInt(selectedMonth),
+						Integer.parseInt(selectedYear), selectedPark);
+				reportToOpen=ClientRequest.Import_Total_Visitors_Report;
 				break;
 			case UsageReport:
 				break;
