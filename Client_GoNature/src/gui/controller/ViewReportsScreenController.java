@@ -22,6 +22,7 @@ import logic.ClientRequestDataContainer;
 import logic.Employee;
 import logic.Report;
 import logic.ServerResponseBackToClient;
+import logic.UsageReport;
 import logic.VisitsReport;
 import utils.CurrentDateAndTime;
 import utils.enums.ClientRequest;
@@ -121,11 +122,15 @@ public class ViewReportsScreenController implements Initializable {
 				reportToOpen=ClientRequest.Import_Total_Visitors_Report;
 				break;
 			case UsageReport:
+				report = new UsageReport(Integer.parseInt(selectedMonth),
+				Integer.parseInt(selectedYear), selectedPark);
+				reportToOpen=ClientRequest.Import_Usage_Report;
+				
 				break;
 			case VisitsReports:
 				report = new VisitsReport(Integer.parseInt(selectedMonth),
 						Integer.parseInt(selectedYear), selectedPark);
-				reportToOpen=ClientRequest.Import_Visits_Report;
+				reportToOpen=ClientRequest.Import_Usage_Report;
 				break;
 			default:
 				return;

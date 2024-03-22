@@ -32,9 +32,130 @@ import com.itextpdf.text.pdf.PdfWriter;
 import logic.AmountDivisionReport;
 import logic.CancellationsReport;
 import logic.ParkDailySummary;
+import logic.ParkFullDaySummary;
+import logic.UsageReport;
 import logic.VisitsReport;
 
 public class ReportGenerator {
+	
+	public static byte[] generateUsageReportAsPdfBlob(UsageReport report)
+	{
+		Document document = new Document();
+		// Create a temporary file
+		Path tempFilePath = null;
+		File tempFile = null;
+		try {
+			tempFilePath = Files.createTempFile("usage_report", ".pdf");
+			tempFile = tempFilePath.toFile();
+			// Initialize PdfWriter to write to the temporary file
+			PdfWriter.getInstance(document, new FileOutputStream(tempFile));
+			document.open();
+
+			// Header Font
+			Font headerFont = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD);
+			Font boldFont = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
+			Font normalFont = new Font(Font.FontFamily.HELVETICA, 12, Font.NORMAL);
+
+			// Header
+			Paragraph header = new Paragraph("Usage Report", headerFont);
+			header.setAlignment(Element.ALIGN_CENTER);
+			document.add(header);
+
+			// Adding some space
+			document.add(new Paragraph("\n"));
+
+			// Park, Year, Month Info
+			document.add(new Paragraph("Park: " + report.getRequestedPark().name(), boldFont));
+			document.add(new Paragraph("Year: " + report.getYear(), boldFont));
+			document.add(new Paragraph("Month: " + report.getMonth(), boldFont));
+
+			// Adding some space before the table
+			document.add(new Paragraph("\n"));
+
+			// Table
+			PdfPTable table = new PdfPTable(4); // 4 columns.
+			table.setWidthPercentage(100); // Width 100%
+			table.setSpacingBefore(10f); // Space before table
+
+			// Table headers
+			String[] tableHeaders = { "Day", "full", "not full" };
+			for (String headerText : tableHeaders) {
+				PdfPCell headerCell = new PdfPCell(new Paragraph(headerText, boldFont));
+				headerCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+				table.addCell(headerCell);
+			}
+
+			// Table data
+			// Assuming reportData is a LinkedHashMap or TreeMap to maintain order
+			for (Integer day : report.getReportData().keySet()) {
+				ParkFullDaySummary summary = report.getReportData().get(day);
+//				table.addCell(new PdfPCell(new Paragraph(day.toString(), normalFont)));
+//				table.addCell(new PdfPCell(new Paragraph(String.valueOf(summary.getCancelsOrders()), normalFont)));
+//				table.addCell(new PdfPCell(new Paragraph(String.valueOf(summary.getTimePassedOrders()), normalFont)));
+//				table.addCell(new PdfPCell(new Paragraph(String.valueOf(summary.getTotalOrders()), normalFont)));
+			}
+
+			document.add(table);
+
+			// Line Chart
+			DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+			for (Integer day : report.getReportData().keySet()) {
+				ParkFullDaySummary summary = report.getReportData().get(day);
+//				dataset.addValue(summary.getCancelsOrders(), "Cancels", day);
+//				dataset.addValue(summary.getTimePassedOrders(), "Time Passed", day);
+//				dataset.addValue(summary.getTotalOrders(), "Total Orders", day);
+			}
+
+			JFreeChart lineChart = ChartFactory.createLineChart("Monthly Statistics", "Day", "Count", dataset,
+					PlotOrientation.VERTICAL, true, true, false);
+
+			// Get the plot and configure the range (Y) and domain (X) axes
+			CategoryPlot plot = (CategoryPlot) lineChart.getPlot();
+			CategoryAxis domainAxis = plot.getDomainAxis();
+
+			// Optional: rotate domain axis labels to make them more readable
+			domainAxis.setCategoryLabelPositions(CategoryLabelPositions.UP_45);
+
+			// Optional: set the lower margin or category margin if needed
+			domainAxis.setLowerMargin(0.01);
+			domainAxis.setCategoryMargin(0.01);
+			// Save chart as image and add to document
+			Path chartPath = Files.createTempFile("chart_", ".png");
+			ChartUtils.saveChartAsPNG(chartPath.toFile(), lineChart, 500, 300);
+			Image chartImage = Image.getInstance(chartPath.toString());
+			document.add(chartImage);
+			
+			document.add(new Paragraph("\n"));
+
+//			// Cancels Average
+//			Paragraph cancelsAveragePara = new Paragraph(String.format("Cancels Average: %.2f", report.getAverageCancels()), normalFont);
+//			cancelsAveragePara.setAlignment(Element.ALIGN_CENTER);
+//			document.add(cancelsAveragePara);
+//
+//			// Cancels Median
+//			Paragraph cancelsMedianPara = new Paragraph(String.format("Cancels Median: %.2f", report.getMedianCancels()), normalFont);
+//			cancelsMedianPara.setAlignment(Element.ALIGN_CENTER);
+//			document.add(cancelsMedianPara);
+
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			document.close();
+		}
+
+		// Now, read the content of the temporary file into a byte array
+		try (FileInputStream input = new FileInputStream(tempFile)) {
+			byte[] fileAsBytes = new byte[(int) tempFile.length()];
+			input.read(fileAsBytes);
+			return fileAsBytes;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+
+		}
+	}
 
 	public static byte[] generateCancellationsReportAsPdfBlob(CancellationsReport report) {
 

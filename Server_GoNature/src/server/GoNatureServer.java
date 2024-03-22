@@ -21,6 +21,7 @@ import jdbc.QueryType;
 import jdbc.query.QueryControl;
 import logic.AmountDivisionReport;
 import logic.CancellationsReport;
+import logic.UsageReport;
 import logic.ClientConnection;
 import logic.ClientRequestDataContainer;
 import logic.Employee;
@@ -177,6 +178,13 @@ public class GoNatureServer extends AbstractServer {
 			
 		case Import_Cancellations_Report:
 			response = handleImportCancellationsReport(data,client);
+			break;
+			
+		case Create_Usage_Report:
+			response = handleCreateUsageReport(data,client);
+			break;
+		case Import_Usage_Report:
+			response = handleImportUsageReport(data,client);
 			break;
 			
 		//added by nadav	
@@ -358,6 +366,32 @@ public class GoNatureServer extends AbstractServer {
 		CancellationsReport report = (CancellationsReport)data.getData();
 		ServerResponseBackToClient response;
 		byte[] blobInBytes = QueryControl.reportsQueries.getRequestedCancellationsReport(report);
+		if(blobInBytes==null)
+			response = new ServerResponseBackToClient(ServerResponse.Such_Report_Not_Found, blobInBytes);
+		else {
+			response = new ServerResponseBackToClient(ServerResponse.Cancellations_Report_Found, blobInBytes);
+		}
+		return response;
+	}
+	
+	///Added by siso tamir and nadav
+	
+	private ServerResponseBackToClient handleCreateUsageReport(ClientRequestDataContainer data,ConnectionToClient client) {
+		UsageReport report = (UsageReport)data.getData();
+		ServerResponseBackToClient response;
+		boolean result = QueryControl.reportsQueries.generateUsageReport(report);
+		if(result)
+			response = new ServerResponseBackToClient(ServerResponse.Report_Generated_Successfully, report);
+		else
+			response = new ServerResponseBackToClient(ServerResponse.Report_Failed_Generate, report);
+		
+		return response;
+	}
+	
+	private ServerResponseBackToClient handleImportUsageReport(ClientRequestDataContainer data,ConnectionToClient client) {
+		UsageReport report = (UsageReport)data.getData();
+		ServerResponseBackToClient response;
+		byte[] blobInBytes = QueryControl.reportsQueries.getRequestedUsageReport(report);
 		if(blobInBytes==null)
 			response = new ServerResponseBackToClient(ServerResponse.Such_Report_Not_Found, blobInBytes);
 		else {
