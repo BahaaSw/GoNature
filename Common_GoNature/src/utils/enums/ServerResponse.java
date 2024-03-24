@@ -21,6 +21,7 @@ public enum ServerResponse {
 	Order_Not_Found,
 	Order_Found,
 	Order_Added_Successfully,
+	Order_Added_Failed,
 	Requested_Order_Date_Unavaliable,
 	Requested_Order_Date_Is_Available,
 	Too_Many_Visitors,
@@ -41,6 +42,9 @@ public enum ServerResponse {
 	Pending_Requests_Found_Successfully,
 	Updated_Requests_Successfully,
 	Updated_Requests_Failed,
+	
+	No_Notifications_Found,
+	Notifications_Found,
 	
 	
 	Exception_Was_Thrown, // when the server catch an exception

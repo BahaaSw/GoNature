@@ -129,7 +129,6 @@ public class ServerScreenController {
 		connectServer.setDisable(false);
 		disableFields(false);
 		connectedClientsList.clear();
-		
 
 	}
 	
@@ -179,10 +178,10 @@ public class ServerScreenController {
 	 */
 	private void disableFields(boolean flag) {
 		connectServer.setDisable(flag);
-		portField.setDisable(flag);
-		dbNameField.setDisable(flag);
-		dbUsernameField.setDisable(flag);
-		dbPasswordField.setDisable(flag);
+		portField.setEditable(flag);
+		dbNameField.setEditable(flag);
+		dbUsernameField.setEditable(flag);
+		dbPasswordField.setEditable(flag);
 	}
 	
 	

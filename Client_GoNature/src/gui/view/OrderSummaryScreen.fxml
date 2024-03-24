@@ -28,7 +28,7 @@
             </Label>
          </children>
       </VBox>
-      <HBox layoutX="28.0" layoutY="638.0" prefHeight="95.0" prefWidth="887.0" styleClass="app_makeorder">
+      <HBox fx:id="buttonsHbox" layoutX="28.0" layoutY="638.0" prefHeight="95.0" prefWidth="887.0" styleClass="app_makeorder">
          <children>
             <Button fx:id="cancelButton" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#onCancelClicked" styleClass="app_makeorder" text="Cancel">
                <graphic>
