@@ -26,6 +26,8 @@ import logic.AmountDivisionReport;
 import logic.CancellationsReport;
 import logic.ParkAmountSummary;
 import logic.ParkDailySummary;
+import logic.ParkFullDaySummary;
+import logic.UsageReport;
 import logic.VisitsReport;
 import utils.ReportGenerator;
 import utils.enums.OrderStatusEnum;
@@ -34,7 +36,7 @@ import utils.enums.ParkNameEnum;
 
 public class ReportsQueries {
 
-	public ParkDailySummary getParkDailySummaryByDay(int month, int day, int parkId) {
+	public ParkDailySummary getParkDailySummaryByDay(int day,int month, int parkId) { 
 		ParkDailySummary currentDaySummary = new ParkDailySummary();
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -71,6 +73,132 @@ public class ReportsQueries {
 		}
 
 	}
+	
+	public ParkFullDaySummary getIfParkWasFullEachDay(int day,int month, int year, ParkNameEnum park) //added by tamir
+	{
+		ParkFullDaySummary currentDaySummary = new ParkFullDaySummary();
+		String parkColumnName = park.name();
+		try {
+			Connection con = MySqlConnection.getInstance().getConnection();
+			PreparedStatement stmt = con.prepareStatement("SELECT " + parkColumnName +" FROM parkfulldates WHERE day(Date)=? AND month(Date)=? AND year(Date)=?");
+	        stmt.setInt(1, day);
+	        stmt.setInt(2, month);
+	        stmt.setInt(3, year);
+	        ResultSet rs = stmt.executeQuery();
+	        
+	        if(!rs.next())
+	        {
+	             currentDaySummary = new ParkFullDaySummary();
+	             currentDaySummary.setDay(day);
+	             currentDaySummary.setIsfull(false); // assuming default is not full
+	             currentDaySummary.setPark(park);
+	             return currentDaySummary;
+	        }
+	        
+            boolean isFull = rs.getInt(parkColumnName) == 1; //if condition that compares rs.getInt(parkColumnName) == 1
+            currentDaySummary.setDay(day);
+            currentDaySummary.setIsfull(isFull);
+            currentDaySummary.setPark(park);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return currentDaySummary;
+	}
+	
+	public boolean generateUsageReport(UsageReport report) {
+
+		int year = report.getYear();
+		int month = report.getMonth();
+		
+		YearMonth yearMonth = YearMonth.of(year, month);
+		int daysInMonth = yearMonth.lengthOfMonth();
+
+		HashMap<Integer, ParkFullDaySummary> parkSummaryByDays = new HashMap<Integer, ParkFullDaySummary>();
+
+		for (int day = 1; day <= daysInMonth; day++) 
+		{
+			ParkFullDaySummary temp = getIfParkWasFullEachDay(day,month,year,report.getRequestedPark());
+			if (temp != null)
+			{
+				parkSummaryByDays.put(day, temp);
+			}
+		}
+		if (parkSummaryByDays.isEmpty())
+			return false;
+
+		report.setReportData(parkSummaryByDays);
+		report.setBlobPdfContent(ReportGenerator.generateUsageReportAsPdfBlob(report));
+
+		if (insertGeneratedUsageReportToDatabase(report))
+			return true;
+
+		return false;
+
+	}
+	
+	private boolean insertGeneratedUsageReportToDatabase(UsageReport report) {
+		try {
+			Connection con = MySqlConnection.getInstance().getConnection();
+			PreparedStatement stmt = con.prepareStatement(
+					"INSERT INTO usagereport (parkId, year, month, pdfblob) \r\n" + "VALUES (?, ?, ?, ?)");
+
+			stmt.setInt(1, report.getRequestedPark().getParkId());
+			stmt.setInt(2, report.getYear());
+			stmt.setInt(3, report.getMonth());
+			stmt.setBytes(4, report.getBlobPdfContent());
+
+			int rs = stmt.executeUpdate();
+
+			// if the query ran successfully, but returned as empty table.
+			if (rs == 0) {
+				return false;
+			}
+
+			return true;
+		} catch (SQLException ex) {
+//		serverController.printToLogConsole("Query search for user failed");
+			return false;
+		}
+	}
+	
+	public byte[] getRequestedUsageReport(UsageReport report) {
+		try {
+			Connection con = MySqlConnection.getInstance().getConnection();
+			PreparedStatement stmt = con.prepareStatement(
+					"SELECT pdfblob FROM usagereport WHERE Year = ? AND Month = ? AND ParkId = ?");
+
+			stmt.setInt(1, report.getYear());
+			stmt.setInt(2, report.getMonth());
+			stmt.setInt(3, report.getRequestedPark().getParkId());
+
+			ResultSet rs = stmt.executeQuery();
+
+			if (!rs.next()) {
+				return null;
+			}
+			// retrieve the Blob from the database
+			Blob pdfBlob = rs.getBlob(1);
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			byte[] buf = new byte[50000];
+			try (InputStream in = pdfBlob.getBinaryStream()) {
+				int n;
+				while ((n = in.read(buf)) > 0) {
+					baos.write(buf, 0, n);
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+				return null;
+			}
+
+			byte[] pdfBytes = baos.toByteArray();
+			return pdfBytes;
+		} catch (SQLException ex) {
+			return null;
+		}
+	}
+	
 	//added by nadav
 	public ParkAmountSummary getAmountDivisionByOrderTypeInChoosenMonth(int month, int parkId,int year) {
 				ParkAmountSummary parkAmountSum = new ParkAmountSummary();
@@ -462,7 +590,6 @@ public class ReportsQueries {
 		} catch (SQLException ex) {
 			return null;
 		}
-
 	}
 	
 	public byte[] getRequestedVisitsReport(VisitsReport report) {

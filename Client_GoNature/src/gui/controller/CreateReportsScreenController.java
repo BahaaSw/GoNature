@@ -21,6 +21,7 @@ import logic.ClientRequestDataContainer;
 import logic.Employee;
 import logic.Report;
 import logic.ServerResponseBackToClient;
+import logic.UsageReport;
 import logic.VisitsReport;
 import utils.AlertPopUp;
 import utils.CurrentDateAndTime;
@@ -142,9 +143,12 @@ public class CreateReportsScreenController implements Initializable {
 				report = new VisitsReport(Integer.parseInt(selectedMonth),Integer.parseInt(selectedYear),selectedPark);
 				reportRequest=ClientRequest.Create_Visits_Report;
 			}
-			else {
+			else if(selectedReportType==ReportType.TotalVisitorsReport){
 				report = new AmountDivisionReport(Integer.parseInt(selectedMonth),Integer.parseInt(selectedYear),selectedPark);
 				reportRequest=ClientRequest.Create_Total_Visitors_Report;
+			}else {
+				report = new UsageReport(Integer.parseInt(selectedMonth),Integer.parseInt(selectedYear),selectedPark);
+				reportRequest=ClientRequest.Create_Usage_Report;
 			}
 			
 			ClientRequestDataContainer request = new ClientRequestDataContainer(reportRequest,report);

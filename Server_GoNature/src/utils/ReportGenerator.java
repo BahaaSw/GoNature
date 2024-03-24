@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 
 import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
@@ -32,9 +33,143 @@ import com.itextpdf.text.pdf.PdfWriter;
 import logic.AmountDivisionReport;
 import logic.CancellationsReport;
 import logic.ParkDailySummary;
+import logic.ParkFullDaySummary;
+import logic.UsageReport;
 import logic.VisitsReport;
 
 public class ReportGenerator {
+	
+	public static byte[] generateUsageReportAsPdfBlob(UsageReport report)
+	{
+		Document document = new Document();
+		// Create a temporary file
+		Path tempFilePath = null;
+		File tempFile = null;
+		try {
+			tempFilePath = Files.createTempFile("usage_report", ".pdf");
+			tempFile = tempFilePath.toFile();
+			// Initialize PdfWriter to write to the temporary file
+			PdfWriter.getInstance(document, new FileOutputStream(tempFile));
+			document.open();
+
+			// Header Font
+			Font headerFont = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD);
+			Font boldFont = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
+			Font normalFont = new Font(Font.FontFamily.HELVETICA, 12, Font.NORMAL);
+
+			// Header
+			Paragraph header = new Paragraph("Usage Report", headerFont);
+			header.setAlignment(Element.ALIGN_CENTER);
+			document.add(header);
+
+			// Adding some space
+			document.add(new Paragraph("\n"));
+
+			// Park, Year, Month Info
+			document.add(new Paragraph("Park: " + report.getRequestedPark().name(), boldFont));
+			document.add(new Paragraph("Year: " + report.getYear(), boldFont));
+			document.add(new Paragraph("Month: " + report.getMonth(), boldFont));
+
+			// Adding some space before the table
+			document.add(new Paragraph("\n"));
+			//****************************************added by nadav************************************
+			// Table
+			PdfPTable table = new PdfPTable(2); // 4 columns.
+			table.setWidthPercentage(100); // Width 100%
+			table.setSpacingBefore(10f); // Space before table
+
+			// Table headers
+			String[] tableHeaders = { "Day", "Full Capacity" };
+			for (String headerText : tableHeaders) {
+				PdfPCell headerCell = new PdfPCell(new Paragraph(headerText, boldFont));
+				headerCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+				table.addCell(headerCell);
+			}
+
+			// Table data
+			// Assuming reportData is a LinkedHashMap or TreeMap to maintain order
+			for (Integer day : report.getReportData().keySet()) {
+				ParkFullDaySummary summary = report.getReportData().get(day);
+				table.addCell(new PdfPCell(new Paragraph(day.toString(), normalFont)));
+				if(summary.isIsfull()) {
+					table.addCell(new PdfPCell(new Paragraph("Full", normalFont)));
+				}else {
+					table.addCell(new PdfPCell(new Paragraph("Not Full", normalFont)));
+				}
+				
+			}
+
+			document.add(table);
+			
+			//Bar chart
+			
+			int sum=0,count=0;
+			// Table data
+			// Assuming reportData is a LinkedHashMap or TreeMap to maintain order
+			for (Integer day : report.getReportData().keySet()) {
+				ParkFullDaySummary summary = report.getReportData().get(day);
+				sum++;
+				if(summary.isIsfull()==true)
+					count++;
+			}
+
+			
+			DefaultCategoryDataset dataset1 = new DefaultCategoryDataset();
+
+	        // Add values for the bars
+	        dataset1.addValue(sum-count, "Not Full Capacity", "0");
+	        dataset1.addValue(count, "Full Capacity", "1");
+
+	        // Create the bar chart
+	        JFreeChart barChart = ChartFactory.createBarChart(
+	                "", // chart title
+	                "Category",              // domain axis label
+	                "Amount of Days",                 // range axis label
+	                dataset1);
+	        CategoryPlot plot1 = (CategoryPlot) barChart.getPlot();
+	        // Get the renderer and cast it to BarRenderer
+	        BarRenderer renderer = (BarRenderer) plot1.getRenderer();
+	        // Set the bar location
+	        renderer.setItemMargin(-0.1); // Adjust the margin to move the bars closer to each other  
+	        // Get the domain axis (category axis)
+	        CategoryAxis domainAxis1 = plot1.getDomainAxis();
+	        domainAxis1.setCategoryMargin(-0.2);
+	        
+	        
+	        // Create and set up the chart panel
+	        Path chartPath1 = Files.createTempFile("chart_", ".png");
+	        
+			ChartUtils.saveChartAsPNG(chartPath1.toFile(), barChart, 300, 300);
+			Image chartImage1 = Image.getInstance(chartPath1.toString());
+			PdfPTable table1 = new PdfPTable(1);
+			table1.setWidthPercentage(70); // Make table width 100% of the document
+			// Add the chart image to the table cell
+			table1.addCell(chartImage1);
+			Paragraph chartParagraph = new Paragraph();
+			
+			chartParagraph.add(table1);
+			chartParagraph.setAlignment(Element.ALIGN_CENTER); // Align the image to the center
+			document.add(chartParagraph);
+			document.add(new Paragraph("\n"));
+	
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			document.close();
+		}
+
+		// Now, read the content of the temporary file into a byte array
+		try (FileInputStream input = new FileInputStream(tempFile)) {
+			byte[] fileAsBytes = new byte[(int) tempFile.length()];
+			input.read(fileAsBytes);
+			return fileAsBytes;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+
+		}
+	}
 
 	public static byte[] generateCancellationsReportAsPdfBlob(CancellationsReport report) {
 
