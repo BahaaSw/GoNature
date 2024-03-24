@@ -60,40 +60,38 @@ public class HandleOrderScreenController implements Initializable {
 	public Button cancelButton;
 	@FXML
 	public Button confirmButton;
-	
+	@FXML
+	public Button updateButton;
+
 	private BorderPane screen;
 	private ParkNameEnum selectedPark;
 	private String selectedTime;
 	private OrderTypeEnum selectedVisitType;
 	private Order requestedOrder;
-	
+
 	@FXML
 	public ComboBox<ParkNameEnum> parksList;
 	@FXML
 	public ComboBox<String> pickTime;
 	@FXML
 	public ComboBox<OrderTypeEnum> visitType;
-	
-	private ObservableList<ParkNameEnum> parks = FXCollections.observableArrayList(
-			ParkNameEnum.Banias,
-			ParkNameEnum.Herodium,
-			ParkNameEnum.Masada
-			);
-	
-	private ObservableList<String> timeForVisits=FXCollections.observableArrayList(
-			"09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00","21:00","22:00"
-			);
-	
+
+	private ObservableList<ParkNameEnum> parks = FXCollections.observableArrayList(ParkNameEnum.Banias,
+			ParkNameEnum.Herodium, ParkNameEnum.Masada);
+
+	private ObservableList<String> timeForVisits = FXCollections.observableArrayList("09:00", "10:00", "11:00", "12:00",
+			"13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00");
+
 	private ObservableList<OrderTypeEnum> visitTypesList = FXCollections.observableArrayList();
-	
+
 	private ICustomer customer;
-	
-	public HandleOrderScreenController(BorderPane screen,Object order,ICustomer info) {
-		this.screen=screen;
-		requestedOrder =(Order) order;
-		this.customer=info;
+
+	public HandleOrderScreenController(BorderPane screen, Object order, ICustomer info) {
+		this.screen = screen;
+		requestedOrder = (Order) order;
+		this.customer = info;
 	}
-	
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		dateLabel.setText(CurrentDateAndTime.getCurrentDate("'Today' yyyy-MM-dd"));
@@ -101,16 +99,16 @@ public class HandleOrderScreenController implements Initializable {
 		parksList.setOnAction(this::onParkChangeSelection);
 		pickTime.getItems().addAll(timeForVisits);
 		pickTime.setOnAction(this::onTimeChangeSelection);
-		
-		switch(customer.getUserType()) {
+
+		switch (customer.getUserType()) {
 		case Visitor:
 			visitTypesList.add(OrderTypeEnum.Solo_PreOrder);
 			visitTypesList.add(OrderTypeEnum.Family_PreOrder);
-			customer=(Visitor)customer;
+			customer = (Visitor) customer;
 			break;
 		case Guide:
 			visitTypesList.add(OrderTypeEnum.Group_PreOrder);
-			customer=(Guide)customer;
+			customer = (Guide) customer;
 			break;
 		}
 		visitType.getItems().addAll(visitTypesList);
@@ -118,19 +116,19 @@ public class HandleOrderScreenController implements Initializable {
 		initializeAllGuiFields();
 		hideErrorMessage();
 	}
-	
+
 	private void onParkChangeSelection(ActionEvent event) {
-		selectedPark=parksList.getValue();
+		selectedPark = parksList.getValue();
 	}
-	
+
 	private void onTimeChangeSelection(ActionEvent event) {
-		selectedTime=pickTime.getValue();
+		selectedTime = pickTime.getValue();
 	}
-	
+
 	private void onVisitTypeChangeSelection(ActionEvent event) {
-		selectedVisitType=visitType.getValue();
+		selectedVisitType = visitType.getValue();
 	}
-	
+
 	private void initializeAllGuiFields() {
 		parksList.setValue(requestedOrder.getParkName());
 		firstNameField.setText(requestedOrder.getFirstName());
@@ -143,30 +141,31 @@ public class HandleOrderScreenController implements Initializable {
 		String exitTime = orderTime.toString().split("T")[1];
 		pickDate.setValue(enterTime);
 		pickTime.setValue(exitTime);
-		numberOfVisitorsField.setText(String.format("%d",requestedOrder.getNumberOfVisitors()));
+		numberOfVisitorsField.setText(String.format("%d", requestedOrder.getNumberOfVisitors()));
 		visitType.setValue(requestedOrder.getOrderType());
 		statusField.setText(requestedOrder.getStatus().toString());
 	}
-	
-	
+
 	private void hideErrorMessage() {
 		errorMessageLabel.setText("");
 		errorSection.setVisible(false);
 	}
-	
+
 	private void showErrorMessage(String error) {
 		errorSection.setVisible(true);
 		errorMessageLabel.setText(error);
 	}
-	
+
 	public void onCancelClicked() {
 		AlertPopUp alert = new AlertPopUp(AlertType.INFORMATION, "test", "test", "test");
 		alert.showAndWait();
 	}
-	
+
 	public void onConfirmClicked() {
 		AlertPopUp alert = new AlertPopUp(AlertType.INFORMATION, "test", "test", "test");
 		alert.showAndWait();
 	}
 
+	public void onUpdateClicked() {
+	}
 }

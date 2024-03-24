@@ -23,7 +23,7 @@ public class EmployeeQueries {
 	public DatabaseResponse searchForApprovedEmployee(Employee employee) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
-			PreparedStatement stmt = con.prepareStatement("SELECT * FROM users WHERE Username = ?");
+			PreparedStatement stmt = con.prepareStatement("SELECT * FROM users WHERE Username = ? AND UserType = 'Employee' ");
 			stmt.setString(1, employee.getUsername());
 			ResultSet rs = stmt.executeQuery();
 

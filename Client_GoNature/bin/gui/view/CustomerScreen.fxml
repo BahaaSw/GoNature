@@ -12,7 +12,7 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="screen" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane fx:id="screen" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
    <left>
       <VBox prefHeight="800.0" prefWidth="260.0" styleClass="landing_page_left_side" stylesheets="@appStyles.css">
          <children>
@@ -77,6 +77,18 @@
                   <Line endX="216.5" stroke="WHITE" />
                         <VBox prefHeight="200.0" prefWidth="100.0" styleClass="landing_page_left_side_logout">
                            <children>
+                              <Button fx:id="notificationButton" alignment="CENTER" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#onNotificationButtonClicked" prefHeight="62.0" prefWidth="133.0" text="Notifications">
+                                 <graphic>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../utils/resources/emailIcon.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                                 <VBox.margin>
+                                    <Insets bottom="10.0" />
+                                 </VBox.margin>
+                              </Button>
                               <Button fx:id="backButton" alignment="CENTER" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#onBackClicked" prefHeight="62.0" prefWidth="133.0" text="Back">
                                  <graphic>
                                     <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
