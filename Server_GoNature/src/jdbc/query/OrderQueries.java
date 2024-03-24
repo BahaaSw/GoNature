@@ -4,7 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 
 import javax.swing.DefaultBoundedRangeModel;
@@ -97,7 +100,7 @@ public class OrderQueries {
 				               "OrderStatus = 'Confirmed' OR " +
 				               "OrderStatus = 'In Park') " +
 				               "AND parkId = ?) AS Count, " +
-				        "p.MaxCapacity " +
+				        "p.MaxCapacity,p.ReservedSpots " +
 				    "FROM parks p " +
 				    "WHERE p.parkId = ?;"
 				);
@@ -109,12 +112,12 @@ public class OrderQueries {
 			ResultSet rs = stmt.executeQuery();
 			if (!rs.next()) {
 				amountAndCapacity[0] = null;
-				amountAndCapacity[1]=rs.getInt(2);
+				amountAndCapacity[1]=rs.getInt(2)-rs.getInt(3);
 				return amountAndCapacity;
 			}
 
 			amountAndCapacity[0] = rs.getInt(1);
-			amountAndCapacity[1]=rs.getInt(2);
+			amountAndCapacity[1]=rs.getInt(2)-rs.getInt(3);
 			return amountAndCapacity;
 
 		} catch (SQLException ex) {
@@ -260,6 +263,7 @@ public class OrderQueries {
 			LocalDateTime enterTime = order.getEnterDate();
 			LocalDateTime exitTime = enterTime.plusHours(estimatedVisitTimeInHours);
 			order.setExitDate(exitTime);
+			order.setPrice(requestedPark.getPrice());
 			
 			// Assuming a check every hour
 			long frequencyInHours = 1;
@@ -292,39 +296,53 @@ public class OrderQueries {
 	 *         on Failure: returns Failed
 	 *         exception: returns Exception_Was_Thrown
 	 */
-	public synchronized DatabaseResponse insertOrderIntoDB(Order order) {
+	public synchronized boolean insertOrderIntoDB(Order order) {
 
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
 			PreparedStatement stmt = con.prepareStatement(
-					"INSERT INTO preorders (OrderId, ParkId, OwnerId, OwnerType, EnterDate, ExitDate, PayStatus, OrderStatus, Email, Phone, FirstName, LastName, OrderType, Amount, Price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
-			int newOrderId = ReturnTotalPreOrders()+1;
-			stmt.setInt(1, newOrderId);
-			stmt.setInt(2, order.getParkName().getParkId());
-			stmt.setString(3, order.getUserId());
-			stmt.setString(4, order.getOwnerType().name());
-			stmt.setString(5, order.getEnterDate().toString());
-			stmt.setString(6, order.getExitDate().toString());
+					"INSERT INTO preorders (ParkId, OwnerId, OwnerType, EnterDate, ExitDate, PayStatus, OrderStatus, Email, Phone, FirstName, LastName, OrderType, Amount, Price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",Statement.RETURN_GENERATED_KEYS);
+			
+			
+			stmt.setInt(1, order.getParkName().getParkId());
+			stmt.setString(2, order.getUserId());
+			stmt.setString(3, order.getOwnerType().name());
+			stmt.setString(4, order.getEnterDate().toString());
+			LocalDate date = order.getEnterDate().toLocalDate();
+			LocalTime time = order.getExitDate().toLocalTime();
+			LocalDateTime newExitTime = date.atTime(time);
+			order.setExitDate(newExitTime);;
+			stmt.setString(5, order.getExitDate().toString());
 			int isPaid = order.isPaid() ? 1 : 0;
-			stmt.setInt(7, isPaid); // insert as not paid yet
-			stmt.setString(8, "Wait Notify");
-			stmt.setString(9, order.getEmail());
-			stmt.setString(10, order.getTelephoneNumber());
-			stmt.setString(11, order.getFirstName());
-			stmt.setString(12, order.getLastName());
-			stmt.setString(13, order.getOrderType().toString());
-			stmt.setInt(14, order.getNumberOfVisitors());
-			stmt.setDouble(15, order.getPrice());
+			stmt.setInt(6, isPaid); // insert as not paid yet
+			stmt.setString(7, order.getStatus().name());
+			stmt.setString(8, order.getEmail());
+			stmt.setString(9, order.getTelephoneNumber());
+			stmt.setString(10, order.getFirstName());
+			stmt.setString(11, order.getLastName());
+			stmt.setString(12, order.getOrderType().toString());
+			stmt.setInt(13, order.getNumberOfVisitors());
+			stmt.setDouble(14, order.getPrice());
 			int rs = stmt.executeUpdate();
 
 			// if the query ran successfully, but returned as empty table.
 			if (rs == 0) {
-				return DatabaseResponse.Failed;
+				return false;
 			}
-			return DatabaseResponse.Order_Added_Into_Table;
+			
+			try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+			    if (generatedKeys.next()) {
+			        long orderId = generatedKeys.getLong(1); // Retrieve the first field in the ResultSet
+			        order.setOrderId((int)orderId);
+			    }
+			}catch(SQLException ex) {
+				return false;
+			}
+			
+			return true;
 
 		} catch (SQLException ex) {
-			return DatabaseResponse.Exception_Was_Thrown;
+			return false;
 		}
 	}
 	
@@ -487,32 +505,6 @@ public class OrderQueries {
 	
 	
 	/**
-	 *
-	 * @return returns the amount of preorders in the system
-	 */
-	public int ReturnTotalPreOrders() {
-		int ordersCount = 0;
-
-		try {
-			Connection con = MySqlConnection.getInstance().getConnection();
-			PreparedStatement stmt = con.prepareStatement("SELECT COUNT(*) AS orderCount FROM preorders");
-			ResultSet rs = stmt.executeQuery();
-
-			// if the query ran successfully, but returned as empty table.
-			if (!rs.next()) {
-				return ordersCount;
-			}
-
-			ordersCount = rs.getInt("orderCount");
-			return ordersCount;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return ordersCount;
-	}
-	
-	/**
 	 * @param status - requested order status
 	 * @return the amount of preorder made in the system which currently have the requested status
 	 */
@@ -537,5 +529,36 @@ public class OrderQueries {
 		}
 
 		return ordersCount;
+	}
+	
+	public ArrayList<Order> searchForNotifiedOrdersOfSpecificClient(String customerId){
+		ArrayList<Order> retList = new ArrayList<Order>();
+		
+		try {
+			Connection con = MySqlConnection.getInstance().getConnection();
+			PreparedStatement stmt = con.prepareStatement("SELECT OrderId,ParkId,EnterDate,PayStatus,Amount FROM preorders WHERE OrderStatus = 'Notified' AND OwnerId = ?");
+			stmt.setString(1, customerId);
+			
+			ResultSet rs = stmt.executeQuery();
+			
+			if(!rs.next())
+				return null;
+			rs.previous();
+			
+			while(rs.next()) {
+				Order orderToAdd = new Order();
+				orderToAdd.setOrderId(rs.getInt(1));
+				orderToAdd.setParkName(ParkNameEnum.fromParkId(rs.getInt(2)));
+				orderToAdd.setEnterDate(rs.getTimestamp(3).toLocalDateTime());
+				orderToAdd.setPaid((rs.getInt(4)==1?true:false));
+				orderToAdd.setNumberOfVisitors(rs.getInt(5));
+				retList.add(orderToAdd);
+			}
+			
+			return retList;
+			
+		}catch(SQLException ex) {
+			return null;
+		}
 	}
 }

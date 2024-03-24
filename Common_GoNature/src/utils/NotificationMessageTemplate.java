@@ -4,25 +4,27 @@ import utils.enums.ParkNameEnum;
 
 public class NotificationMessageTemplate {
 	
-	public static String orderConfirmMessage(String orderId,String park,String date, String time,
-			String type, int amountOfVisitors,String totalPrice) {
+	public static String orderConfirmMessage(int orderId,String park,String date,
+			String type, int amountOfVisitors,double totalPrice,boolean isPaid) {
 		StringBuilder sb= new StringBuilder();
 		sb.append("Thank you for your order!\n");
 		sb.append("We will send you a reminder one day before your visit.\n");
 		sb.append("You need to confirm your order when you receive the reminder.\n");
+		if(!isPaid)
+			sb.append("NOTICE: You'll have to pay at the entrance!\n");
 		sb.append("Your order information:\n");
-		sb.append(String.format("Order id: %s.\n", orderId));
+		sb.append(String.format("Order id: %d.\n", orderId));
 		sb.append(String.format("Park: %s.\n", park));
 		sb.append(String.format("Date And Time: %s.\n", date));
 		sb.append(String.format("Type: %s.\n", type));
 		sb.append(String.format("Visitors: %d.\n", amountOfVisitors));
-		sb.append(String.format("Total price: %s.\n\n", totalPrice));
+		sb.append(String.format("Total price: %.2f.\n\n", totalPrice));
 		sb.append("We will see you at the park,\n GoNature Group 9 !");
 
 		return sb.toString();
 	}
 	
-	public static String orderSummaryMessage(int orderId,String park,String date,
+	public static String orderSummaryMessage(String park,String date,
 			String type, int amountOfVisitors,double priceAfterDiscount, double priceBeforeDiscount) {
 		StringBuilder sb= new StringBuilder();
 		sb.append("Thank you for your order!\n");
@@ -30,7 +32,6 @@ public class NotificationMessageTemplate {
 		sb.append("You have to choose pay now or pay later.\n");
 		sb.append("NOTICE: PrePayment gives you discount\n");
 		sb.append("Your order information:\n");
-		sb.append(String.format("Order id: %d.\n", orderId));
 		sb.append(String.format("Park: %s.\n", park));
 		sb.append(String.format("Date And Time: %s.\n", date));
 		sb.append(String.format("Type: %s.\n", type));
@@ -54,19 +55,19 @@ public class NotificationMessageTemplate {
 		return sb.toString();
 	}
 	
-	public static String prePaymentReceiptMessage(ParkNameEnum parkName,int orderId, String orderDate,
-			String firstName,String lastName,double totalPrice,double estimatedTimeVisit,double discount) {
+	public static String prePaymentReceiptMessage(ParkNameEnum parkName,String orderDate, int amountOfVisitors,
+			String firstName,String lastName,double prepaidPrice,double entrancePrice,long estimatedTimeVisit) {
 		StringBuilder sb= new StringBuilder();
 		sb.append(String.format("Dear, %s %s\n\n",firstName,lastName));
 		sb.append(String.format("Thank you for choosing %s for your upcoming visit!\n", parkName.name()));
 		sb.append("We're excited to have you with us and are here to ensure your experience\n");
 		sb.append("is seamless and enjoyable. Below, you'll find a summary of your order.\n\n");
 		sb.append("Order Summary:\n");
-		sb.append(String.format("Order Number: %d\n", orderId));
 		sb.append(String.format("Order Date : %s\n",orderDate));
-		sb.append(String.format("Total Price (Pre Payment): %.2f\n",totalPrice*discount));
-		sb.append(String.format("Total Price (Pay at Entrance): %.2f\n\n", totalPrice));
-		sb.append(String.format("NOTE: Visit time duration is max %.1f hours long.\n\n",estimatedTimeVisit));
+		sb.append(String.format("Visitors: %d.\n", amountOfVisitors));
+		sb.append(String.format("Total Price (Pre Payment): %.2f\n",prepaidPrice));
+		sb.append(String.format("Total Price (Pay at Entrance): %.2f\n\n", entrancePrice));
+		sb.append(String.format("NOTE: Visit time duration is max %d hours long.\n\n",estimatedTimeVisit));
 		sb.append("Best Regards,\n");
 		sb.append("GoNature Group 9 !");
 		return sb.toString();

@@ -27,6 +27,7 @@ import logic.ClientConnection;
 import logic.ClientRequestDataContainer;
 import logic.Employee;
 import logic.Guide;
+import logic.ICustomer;
 import logic.Order;
 import logic.Park;
 import logic.Request;
@@ -128,6 +129,10 @@ public class GoNatureServer extends AbstractServer {
 		case Add_New_Order_If_Available:
 			response = handleAddNewOrderIfAvailable(data, client);
 			break;
+			
+		case Insert_New_Order_As_Wait_Notify:
+			response = handleInsertNewOrderAsWaitNotify(data,client);
+			break;
 
 		case Search_For_Available_Date:
 			response = handleSearchForAvailableDates(data, client);
@@ -194,7 +199,11 @@ public class GoNatureServer extends AbstractServer {
 		case Import_Total_Visitors_Report:
 			response = handleImportTotalAmountDivisionReport(data, client);
 			break;
-		//
+		
+		case Search_For_Notified_Orders:
+			response = handleSearchForNotifiedOrders(data,client);
+			break;
+			
 		case Logout:
 			handleUserLogoutFromApplication(data.getData(), client, clientIp);
 			break;
@@ -213,6 +222,29 @@ public class GoNatureServer extends AbstractServer {
 		}
 	}
 
+	private ServerResponseBackToClient handleSearchForNotifiedOrders(ClientRequestDataContainer data,ConnectionToClient client) {
+		String customerId = ((ICustomer)data.getData()).getCustomerId();
+		ServerResponseBackToClient response;
+		ArrayList<Order> notifiedOrders = QueryControl.orderQueries.searchForNotifiedOrdersOfSpecificClient(customerId);
+		if(notifiedOrders==null)
+			response = new ServerResponseBackToClient(ServerResponse.No_Notifications_Found, notifiedOrders);
+		else
+			response = new ServerResponseBackToClient(ServerResponse.Notifications_Found, notifiedOrders);
+		return response;
+		
+	}
+	
+	private ServerResponseBackToClient handleInsertNewOrderAsWaitNotify(ClientRequestDataContainer data,ConnectionToClient client) {
+		Order order = (Order)data.getData();
+		ServerResponseBackToClient response;
+		boolean addedToDatabase = QueryControl.orderQueries.insertOrderIntoDB(order);
+		if(addedToDatabase)
+			response = new ServerResponseBackToClient(ServerResponse.Order_Added_Successfully, order);
+		else
+			response = new ServerResponseBackToClient(ServerResponse.Order_Added_Failed, order);
+		return response;
+	}
+	
 	private ServerResponseBackToClient handleSearchForSpecificPark(ClientRequestDataContainer data,
 			ConnectionToClient client) {
 		Park park = (Park) data.getData();
@@ -699,12 +731,14 @@ public class GoNatureServer extends AbstractServer {
 			server.sendToAllClients(new ServerResponseBackToClient(ServerResponse.Server_Disconnected, ""));
 			server.stopListening();
 			server.close();
-			server = null;
 
-			MySqlConnection.getInstance().closeConnection();
 		} catch (IOException ex) {
 			System.out.println("Error while closing server");
 			ex.printStackTrace();
+		}
+		finally {
+			MySqlConnection.getInstance().closeConnection();
+			server = null;
 		}
 	}
 

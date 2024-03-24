@@ -32,6 +32,7 @@ import logic.SceneLoaderHelper;
 import logic.ServerResponseBackToClient;
 import utils.AlertPopUp;
 import utils.CurrentDateAndTime;
+import utils.ValidationRules;
 import utils.enums.ClientRequest;
 import utils.enums.OrderStatusEnum;
 import utils.enums.OrderTypeEnum;
@@ -165,7 +166,55 @@ public class MakeOrderScreenController implements Initializable {
 		selectedVisitType = visitType.getValue();
 	}
 
+	private boolean validateGuiFields() {
+		if(selectedTime.equals("") || selectedPark==ParkNameEnum.None || selectedVisitType == OrderTypeEnum.None||
+				firstNameField.getText().equals("") || lastNameField.getText().equals("")|| idField.getText().equals("")||
+				phoneNumberField.getText().equals("")|| emailField.getText().equals("")||pickDate.getValue()==null||
+				numberOfVisitorsField.getText().equals("")) {
+			showErrorMessage("All Fields must be filled!");
+			return false;
+		}
+		
+		if(ValidationRules.isValidIsraeliId(idField.getText())==false) {
+			showErrorMessage("ID is not valid israeli ID");
+			return false;
+		}
+		
+		if(ValidationRules.isValidName(firstNameField.getText())==false ||
+				ValidationRules.isValidName(lastNameField.getText())==false) {
+			showErrorMessage("Name should be only letters");
+			return false;
+		}
+		
+		if(ValidationRules.isValidEmail(emailField.getText())==false) {
+			showErrorMessage("Invalid email");
+			return false;
+		}
+		
+		if(ValidationRules.isValidPhone(phoneNumberField.getText())==false) {
+			showErrorMessage("Invalid phone, should be 10 digits");
+			return false;
+		}
+		
+		if(ValidationRules.isPositiveNumeric(numberOfVisitorsField.getText())==false) {
+			showErrorMessage("Number of Visitors should be positive number (above 0)!");
+			return false;
+		}
+		
+		if(selectedVisitType==OrderTypeEnum.Group_PreOrder && Integer.parseInt(numberOfVisitorsField.getText())>15) {
+			showErrorMessage("Group order is limited up to 15 visitors");
+			return false;
+		}
+		
+		return true;
+	}
+	
 	public void onMakeOrderClicked() {
+		
+		if(!validateGuiFields()) {
+			return;
+		}
+		
 		Order order = createOrderFromFields();
 		
 		ClientRequestDataContainer requestMessage = new ClientRequestDataContainer(ClientRequest.Add_New_Order_If_Available,order);

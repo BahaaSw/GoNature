@@ -55,6 +55,7 @@ public class CustomerScreenController implements Initializable, IScreenControlle
 	private ExternalUser customer;
 	private UserTypeEnum currentCustomer;
 	private SceneLoaderHelper GuiHelper = new SceneLoaderHelper();
+	private ICustomer customerDetails=null;
 
 	public CustomerScreenController(ExternalUser customer) {
 		this.customer = customer;
@@ -83,12 +84,14 @@ public class CustomerScreenController implements Initializable, IScreenControlle
 		userIdLabel.setText(visitor.getVisitorId());
 		accountTypeLabel.setText(visitor.getUserType().toString());
 		logoutButton.setVisible(false);
+		customerDetails=(Visitor)customer;
 	}
 
 	private void updateGuideMenu(Guide guide) {
 		userIdLabel.setText(guide.getUserId());
 		accountTypeLabel.setText(guide.getUserType().toString());
 		backButton.setVisible(false);
+		customerDetails=(Guide)customer;
 	}
 
 	private void updateNewVisitorMenu(ExternalUser newVisitor) {
@@ -115,9 +118,6 @@ public class CustomerScreenController implements Initializable, IScreenControlle
 	}
 
 	public void onMakeOrderClicked() {
-		ICustomer customerDetails = null;
-		if (!(currentCustomer == UserTypeEnum.ExternalUser))
-			customerDetails = (ICustomer) customer;
 		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,
 				"/gui/view/MakeOrderScreen.fxml", ApplicationViewType.Make_Order_Screen,
 				new EntitiesContainer(customer, customerDetails));
@@ -153,28 +153,32 @@ public class CustomerScreenController implements Initializable, IScreenControlle
 
 	public void onNotificationButtonClicked() {
 		ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Search_For_Notified_Orders,
-				customer);
+				customerDetails);
 		ClientApplication.client.accept(request);
 		ServerResponseBackToClient response = ClientCommunication.responseFromServer;
 		AlertPopUp alert;
+		
+		switch (response.getRensponse()) {
+		case No_Notifications_Found:
+			alert = new AlertPopUp(AlertType.INFORMATION, "Notification", "There is no Notifications", "");
+			alert.showAndWait();
+			return;
+			
+		case Notifications_Found:
+			StringBuilder sb =new StringBuilder();
+			ArrayList<Order> ordersWithNotification = (ArrayList<Order>)response.getMessage();
+			int line=1;
+			for(Order order : ordersWithNotification) {
+//				OrderId,ParkId,EnterDate,PayStatus,Amount
+				sb.append(String.format("%d. Order : %d, to %s at %s of %d participants wait for confirmation.\n",line,order.getOrderId(),order.getParkName().name(),order.getEnterDate().toString(),
+						order.getNumberOfVisitors()));
+			}
 
-//		switch (response.getRensponse()) {
-//		case No_Notifications_Found:
-//			alert = new AlertPopUp(AlertType.INFORMATION, "Notification", "There is no Notifications", "");
-//			alert.showAndWait();
-//			return;
-//			
-//		case Notifications_Found:
-//			StringBuilder sb =new StringBuilder();
-//			ArrayList<Order> ordersWithNotification = (ArrayList<Order>)response.getMessage();
-//			int line=1;
-//			for(Order order : ordersWithNotification) {
-//				sb.append(String.format("%d. Order : %d, ", null))
-//			}
-//			alert = new AlertPopUp(AlertType.INFORMATION, "Notification", "You have new Notification", "");
-//			alert.showAndWait();
+			alert = new AlertPopUp(AlertType.INFORMATION, "Notification", "You have new Notification",sb.toString());
+			alert.showAndWait();
+			return;
 		}
 
 	}
-
+}
 

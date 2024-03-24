@@ -7,7 +7,7 @@ public enum ClientRequest {
 	Login_As_Employee, // After select employee in landing page, and clicked login
 	Logout, // Common for all clients, after clicked logout.
 	
-	Insert_New_Order_As_WaitNotification, // After customer clicked make order, add order status as wait notification
+	Insert_New_Order_As_Wait_Notify, // After customer clicked make order, add order status as wait notification
 	Add_New_Order_If_Available,
 	Update_Order_Status_WaitNotification, // After order created successfully.
 	Update_Order_Status_SentNotification, // After sent notification to client to confirm the order.

@@ -85,6 +85,7 @@ public class MySqlConnection {
 	public void closeConnection() {
 		try {
 			this.connection.close();
+			instance=null;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
