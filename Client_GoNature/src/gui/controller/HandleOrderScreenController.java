@@ -6,6 +6,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import client.ClientApplication;
+import client.ClientCommunication;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -19,13 +21,16 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import logic.ClientRequestDataContainer;
 import logic.ExternalUser;
 import logic.Guide;
 import logic.ICustomer;
 import logic.Order;
+import logic.ServerResponseBackToClient;
 import logic.Visitor;
 import utils.AlertPopUp;
 import utils.CurrentDateAndTime;
+import utils.enums.ClientRequest;
 import utils.enums.OrderTypeEnum;
 import utils.enums.ParkNameEnum;
 import utils.enums.UserTypeEnum;
@@ -156,9 +161,25 @@ public class HandleOrderScreenController implements Initializable {
 		errorMessageLabel.setText(error);
 	}
 
+	private void createOrderFromFields() {
+		
+	}
+	
 	public void onCancelClicked() {
 		AlertPopUp alert = new AlertPopUp(AlertType.INFORMATION, "test", "test", "test");
 		alert.showAndWait();
+		
+		createOrderFromFields();
+		
+		ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Update_Order_Status_Canceled,requestedOrder);
+		ClientApplication.client.accept(request);
+		ServerResponseBackToClient response = ClientCommunication.responseFromServer;
+		switch(response.getRensponse()){
+		case Order_Cancelled_Successfully:
+			return;
+		case Order_Cancelled_Failed:
+			return;
+		}
 	}
 
 	public void onConfirmClicked() {

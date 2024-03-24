@@ -28,6 +28,7 @@ import logic.Visitor;
 import utils.AlertPopUp;
 import utils.CurrentWindow;
 import utils.enums.ClientRequest;
+import utils.enums.OrderStatusEnum;
 import utils.enums.UserTypeEnum;
 
 public class CustomerScreenController implements Initializable, IScreenController {
@@ -169,9 +170,13 @@ public class CustomerScreenController implements Initializable, IScreenControlle
 			ArrayList<Order> ordersWithNotification = (ArrayList<Order>)response.getMessage();
 			int line=1;
 			for(Order order : ordersWithNotification) {
-//				OrderId,ParkId,EnterDate,PayStatus,Amount
-				sb.append(String.format("%d. Order : %d, to %s at %s of %d participants wait for confirmation.\n",line,order.getOrderId(),order.getParkName().name(),order.getEnterDate().toString(),
-						order.getNumberOfVisitors()));
+				if(order.getStatus()==OrderStatusEnum.Notified_Waiting_List) {
+					sb.append(String.format("%d. Order : %d, to %s at %s of %d, have available spot from waiting list. wait for confirmation\n",line++,order.getOrderId(),order.getParkName().name(),order.getEnterDate().toString(),order.getNumberOfVisitors()));
+				}
+				else
+	//				OrderId,ParkId,EnterDate,PayStatus,Amount
+					sb.append(String.format("%d. Order : %d, to %s at %s of %d participants wait for confirmation.\n",line++,order.getOrderId(),order.getParkName().name(),order.getEnterDate().toString(),
+							order.getNumberOfVisitors()));
 			}
 
 			alert = new AlertPopUp(AlertType.INFORMATION, "Notification", "You have new Notification",sb.toString());

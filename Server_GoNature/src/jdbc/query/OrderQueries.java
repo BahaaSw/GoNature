@@ -96,6 +96,7 @@ public class OrderQueries {
 				        "WHERE EnterDate <= ? AND " +
 				              "ExitDate > ? AND " +
 				              "(OrderStatus = 'Wait Notify' OR " +
+				              "OrderStatus = 'Notified Waiting List' OR "+
 				               "OrderStatus = 'Notified' OR " +
 				               "OrderStatus = 'Confirmed' OR " +
 				               "OrderStatus = 'In Park') " +
@@ -315,7 +316,7 @@ public class OrderQueries {
 			stmt.setString(5, order.getExitDate().toString());
 			int isPaid = order.isPaid() ? 1 : 0;
 			stmt.setInt(6, isPaid); // insert as not paid yet
-			stmt.setString(7, order.getStatus().name());
+			stmt.setString(7, order.getStatus().toString());
 			stmt.setString(8, order.getEmail());
 			stmt.setString(9, order.getTelephoneNumber());
 			stmt.setString(10, order.getFirstName());
@@ -536,7 +537,7 @@ public class OrderQueries {
 		
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
-			PreparedStatement stmt = con.prepareStatement("SELECT OrderId,ParkId,EnterDate,PayStatus,Amount FROM preorders WHERE OrderStatus = 'Notified' AND OwnerId = ?");
+			PreparedStatement stmt = con.prepareStatement("SELECT OrderId,ParkId,EnterDate,PayStatus,Amount,OrderStatus FROM preorders WHERE (OrderStatus = 'Notified' OR OrderStatus = 'Notified Waiting List') AND OwnerId = ?");
 			stmt.setString(1, customerId);
 			
 			ResultSet rs = stmt.executeQuery();
@@ -552,6 +553,7 @@ public class OrderQueries {
 				orderToAdd.setEnterDate(rs.getTimestamp(3).toLocalDateTime());
 				orderToAdd.setPaid((rs.getInt(4)==1?true:false));
 				orderToAdd.setNumberOfVisitors(rs.getInt(5));
+				orderToAdd.setStatus(OrderStatusEnum.fromString(rs.getString(6)));
 				retList.add(orderToAdd);
 			}
 			
@@ -561,4 +563,41 @@ public class OrderQueries {
 			return null;
 		}
 	}
+	
+	public ArrayList<Order> notifyTheNextOrdersInWaitingList(LocalDateTime enterDate,int parkId) {
+		ArrayList<Order> ordersInWaitingList=new ArrayList<Order>();
+		try {
+			Connection con = MySqlConnection.getInstance().getConnection();
+			PreparedStatement stmt = con.prepareStatement("SELECT p.OrderId, p.ParkId, w.enterListTime, p.EnterDate,p.Amount "
+					+ "FROM preorders p "
+					+ "JOIN waitinglist w ON p.OrderId = w.orderId "
+					+ "WHERE p.ParkId = ? AND p.EnterDate = ? AND p.OrderStatus = 'In Waiting List'"
+					+ "ORDER BY w.enterListTime");
+			
+			stmt.setInt(1, parkId);
+			stmt.setString(2, enterDate.toString());
+			ResultSet rs = stmt.executeQuery();
+			
+			if(!rs.next())
+				return null;
+			
+			rs.previous();
+			while(rs.next()) {
+				Order orderToAdd = new Order();
+				orderToAdd.setOrderId(rs.getInt(1));
+				orderToAdd.setParkName(ParkNameEnum.fromParkId(rs.getInt(2)));
+				orderToAdd.setEnterDate(rs.getTimestamp(4).toLocalDateTime());
+				orderToAdd.setNumberOfVisitors(rs.getInt(5));
+				ordersInWaitingList.add(orderToAdd);
+			}
+			
+			return ordersInWaitingList;
+			
+		}catch(SQLException ex) {
+			return null;
+		}
+	}
+	
+	
+	
 }
