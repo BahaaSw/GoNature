@@ -61,6 +61,7 @@ public enum ClientRequest {
 	Import_Usage_Report,// After park manager request view usage reports.
 	
 	
+	Search_For_Notified_Orders,
 	Search_For_Available_Date, // gal - added
 	Search_For_Specific_Park,
 }

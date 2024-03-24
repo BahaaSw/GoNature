@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 
 import gui.controller.ServerScreenController;
+import javafx.application.Platform;
 import jdbc.DBConnectionDetails;
 import jdbc.QueryType;
 import jdbc.query.QueryControl;
@@ -38,11 +39,7 @@ import jdbc.MySqlConnection;
 import ocsf.AbstractServer;
 import ocsf.ConnectionToClient;
 import utils.enums.ClientRequest;
-import utils.enums.EmployeeTypeEnum;
-import utils.enums.ParkNameEnum;
 import utils.enums.ServerResponse;
-import utils.enums.UserStatus;
-import utils.enums.UserTypeEnum;
 
 /**
  * 
@@ -64,6 +61,9 @@ public class GoNatureServer extends AbstractServer {
 	// Use Singleton DesignPattern -> only 1 server may be running in our system.
 	private static GoNatureServer server = null;
 	private ServerScreenController serverController;
+	private static Thread sendNotifications24HoursBefore = null;
+	private static Thread cancelOrdersNotConfirmedWithin2Hours = null;
+	private static Thread cancelTimePassedWaitingListOrders = null;
 
 	/**
 	 * Constructor
@@ -76,6 +76,7 @@ public class GoNatureServer extends AbstractServer {
 	private GoNatureServer(int port, ServerScreenController serverController) {
 		super(port);
 		this.serverController = serverController;
+		initializeThreadsAndStartRun();
 	}
 
 	/**
@@ -120,8 +121,6 @@ public class GoNatureServer extends AbstractServer {
 			serverController.addToConnected(client, "Visitor " + ((Visitor) response.getMessage()).getCustomerId());
 			break;
 
-
-
 		case Search_For_Relevant_Order:
 			response = handleSearchForRelevantOrder(data, client);
 			break;
@@ -129,73 +128,73 @@ public class GoNatureServer extends AbstractServer {
 		case Add_New_Order_If_Available:
 			response = handleAddNewOrderIfAvailable(data, client);
 			break;
-			
+
 		case Search_For_Available_Date:
-			response = handleSearchForAvailableDates(data,client);
+			response = handleSearchForAvailableDates(data, client);
 			break;
-		
+
 		// Service Employee Section
 		case Update_Guide_As_Approved:
-			response = handleUpdateGuideAsApproved(data,client);
+			response = handleUpdateGuideAsApproved(data, client);
 			break;
 		case Search_For_Guides_Status_Pending:
 			response = handleSearchForGuidesWithStatusPending(data, client);
 			break;
-			
+
 		// Park Section
 		case Search_For_Specific_Park:
-			response = handleSearchForSpecificPark(data,client);
+			response = handleSearchForSpecificPark(data, client);
 			break;
-			
+
 		// Requests Section
 		case Make_New_Park_Estimated_Visit_Time_Request:
-			response = handleMakeNewParkEstimatedVisitTimeRequest(data,client);
+			response = handleMakeNewParkEstimatedVisitTimeRequest(data, client);
 			break;
 		case Make_New_Park_Reserved_Entries_Request:
-			response = handleMakeNewParkReservedEntriesRequest(data,client);
+			response = handleMakeNewParkReservedEntriesRequest(data, client);
 			break;
 		case Make_New_Park_Capacity_Request:
-			response = handleMakeNewParkCapacityRequest(data,client);
+			response = handleMakeNewParkCapacityRequest(data, client);
 			break;
 		case Import_All_Pending_Requests:
-			response = handleImportAllPendingRequests(data,client);
+			response = handleImportAllPendingRequests(data, client);
 			break;
 		case Update_Request_In_Database:
-			response = handleUpdateRequestInDatabase(data,client);
+			response = handleUpdateRequestInDatabase(data, client);
 			break;
-			
-		//Reports Section
+
+		// Reports Section
 		case Create_Visits_Report:
-			response = handleCreateVisitsReport(data,client);
+			response = handleCreateVisitsReport(data, client);
 			break;
 		case Import_Visits_Report:
-			response = handleImportVisitsReport(data,client);
+			response = handleImportVisitsReport(data, client);
 			break;
-			
+
 		case Create_Cancellations_Report:
-			response = handleCreateCancellationsReport(data,client);
+			response = handleCreateCancellationsReport(data, client);
 			break;
-			
+
 		case Import_Cancellations_Report:
-			response = handleImportCancellationsReport(data,client);
+			response = handleImportCancellationsReport(data, client);
 			break;
-			
+
 		case Create_Usage_Report:
-			response = handleCreateUsageReport(data,client);
+			response = handleCreateUsageReport(data, client);
 			break;
 		case Import_Usage_Report:
-			response = handleImportUsageReport(data,client);
+			response = handleImportUsageReport(data, client);
 			break;
-			
-		//added by nadav	
+
+		// added by nadav
 		case Create_Total_Visitors_Report:
-			response = handleCreateTotalAmountDivisionReport(data,client);
+			response = handleCreateTotalAmountDivisionReport(data, client);
 			break;
-			
+
 		case Import_Total_Visitors_Report:
-			response = handleImportTotalAmountDivisionReport(data,client);
+			response = handleImportTotalAmountDivisionReport(data, client);
 			break;
-		//	
+		//
 		case Logout:
 			handleUserLogoutFromApplication(data.getData(), client, clientIp);
 			break;
@@ -212,39 +211,40 @@ public class GoNatureServer extends AbstractServer {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}	
-	
+	}
+
 	private ServerResponseBackToClient handleSearchForSpecificPark(ClientRequestDataContainer data,
 			ConnectionToClient client) {
-		Park park = (Park)data.getData();
+		Park park = (Park) data.getData();
 		ServerResponseBackToClient response;
 		boolean foundPark = QueryControl.parkQueries.getParkById(park);
-		if(foundPark)
+		if (foundPark)
 			response = new ServerResponseBackToClient(ServerResponse.Fetched_Park_Details_Successfully, park);
 		else
 			response = new ServerResponseBackToClient(ServerResponse.Fetched_Park_Details_Failed, park);
 		return response;
-		
+
 	}
-	
+
 	private ServerResponseBackToClient handleMakeNewParkEstimatedVisitTimeRequest(ClientRequestDataContainer data,
 			ConnectionToClient client) {
-		Request request = (Request)data.getData();
+		Request request = (Request) data.getData();
 		ServerResponseBackToClient response;
 		boolean success = QueryControl.requestsQueries.InsertNewRequest(request);
-		if(success)
+		if (success)
 			response = new ServerResponseBackToClient(ServerResponse.Request_Sent_To_Department_Successfully, request);
 		else
-			response = new ServerResponseBackToClient(ServerResponse.Last_Request_With_Same_Type_Still_Pending,request);
+			response = new ServerResponseBackToClient(ServerResponse.Last_Request_With_Same_Type_Still_Pending,
+					request);
 		return response;
 	}
-	
+
 	private ServerResponseBackToClient handleImportAllPendingRequests(ClientRequestDataContainer data,
 			ConnectionToClient client) {
-		ArrayList<Request> requestList = (ArrayList<Request>)data.getData();
-		ServerResponseBackToClient response=null;
+		ArrayList<Request> requestList = (ArrayList<Request>) data.getData();
+		ServerResponseBackToClient response = null;
 		DatabaseResponse dbResponse = QueryControl.requestsQueries.ShowAllParkManagerRequests(requestList);
-		switch(dbResponse) {
+		switch (dbResponse) {
 		case No_Pending_Request_Exists:
 			response = new ServerResponseBackToClient(ServerResponse.There_Are_Not_Pending_Requests, requestList);
 			break;
@@ -255,157 +255,160 @@ public class GoNatureServer extends AbstractServer {
 		return response;
 
 	}
-	
+
 	private ServerResponseBackToClient handleUpdateRequestInDatabase(ClientRequestDataContainer data,
 			ConnectionToClient client) {
-		ArrayList<Request> requestList = (ArrayList<Request>)data.getData();
+		ArrayList<Request> requestList = (ArrayList<Request>) data.getData();
 		DatabaseResponse dbResponse;
-		for(int i=0;i<requestList.size();i++) {
-			dbResponse = QueryControl.requestsQueries.UpdateStatusRequest(requestList.get(i), requestList.get(i).getRequestStatus().name());
-			if(dbResponse==DatabaseResponse.No_Request_Exists || dbResponse==DatabaseResponse.Failed)
+		for (int i = 0; i < requestList.size(); i++) {
+			dbResponse = QueryControl.requestsQueries.UpdateStatusRequest(requestList.get(i),
+					requestList.get(i).getRequestStatus().name());
+			if (dbResponse == DatabaseResponse.No_Request_Exists || dbResponse == DatabaseResponse.Failed)
 				return new ServerResponseBackToClient(ServerResponse.Updated_Requests_Failed, null);
 		}
 		return new ServerResponseBackToClient(ServerResponse.Updated_Requests_Successfully, null);
 	}
-	
+
 	private ServerResponseBackToClient handleMakeNewParkReservedEntriesRequest(ClientRequestDataContainer data,
 			ConnectionToClient client) {
-		Request request = (Request)data.getData();
+		Request request = (Request) data.getData();
 		ServerResponseBackToClient response;
 		boolean success = QueryControl.requestsQueries.InsertNewRequest(request);
-		if(success)
+		if (success)
 			response = new ServerResponseBackToClient(ServerResponse.Request_Sent_To_Department_Successfully, request);
 		else
-			response = new ServerResponseBackToClient(ServerResponse.Last_Request_With_Same_Type_Still_Pending,request);
+			response = new ServerResponseBackToClient(ServerResponse.Last_Request_With_Same_Type_Still_Pending,
+					request);
 		return response;
 	}
 
-	
 	private ServerResponseBackToClient handleMakeNewParkCapacityRequest(ClientRequestDataContainer data,
 			ConnectionToClient client) {
-		Request request = (Request)data.getData();
+		Request request = (Request) data.getData();
 		ServerResponseBackToClient response;
 		boolean success = QueryControl.requestsQueries.InsertNewRequest(request);
-		if(success)
+		if (success)
 			response = new ServerResponseBackToClient(ServerResponse.Request_Sent_To_Department_Successfully, request);
 		else
-			response = new ServerResponseBackToClient(ServerResponse.Last_Request_With_Same_Type_Still_Pending,request);
+			response = new ServerResponseBackToClient(ServerResponse.Last_Request_With_Same_Type_Still_Pending,
+					request);
 		return response;
 	}
-	
-	
-	
-	//added by nadav
+
+	// added by nadav
 	private ServerResponseBackToClient handleCreateTotalAmountDivisionReport(ClientRequestDataContainer data,
-				ConnectionToClient client) {
-			AmountDivisionReport report = (AmountDivisionReport)data.getData();
-			ServerResponseBackToClient response;
-			boolean result = QueryControl.reportsQueries.generateTotalAmountDivisionReport(report);
-			if(result)
-				response = new ServerResponseBackToClient(ServerResponse.Report_Generated_Successfully, report);
-			else
-				response = new ServerResponseBackToClient(ServerResponse.Report_Failed_Generate, report);
-			
-			return response;
-		}
-		//TODO change 
+			ConnectionToClient client) {
+		AmountDivisionReport report = (AmountDivisionReport) data.getData();
+		ServerResponseBackToClient response;
+		boolean result = QueryControl.reportsQueries.generateTotalAmountDivisionReport(report);
+		if (result)
+			response = new ServerResponseBackToClient(ServerResponse.Report_Generated_Successfully, report);
+		else
+			response = new ServerResponseBackToClient(ServerResponse.Report_Failed_Generate, report);
+
+		return response;
+	}
+
+	// TODO change
 	private ServerResponseBackToClient handleImportTotalAmountDivisionReport(ClientRequestDataContainer data,
-				ConnectionToClient client) {
-			AmountDivisionReport report = (AmountDivisionReport)data.getData();
-			ServerResponseBackToClient response;
-			byte[] blobInBytes = QueryControl.reportsQueries.getRequestedTotalAmountReport(report);
-			if(blobInBytes==null)
-				response = new ServerResponseBackToClient(ServerResponse.Such_Report_Not_Found, blobInBytes);
-			else {
-				response = new ServerResponseBackToClient(ServerResponse.Cancellations_Report_Found, blobInBytes);
-			}
-			return response;
+			ConnectionToClient client) {
+		AmountDivisionReport report = (AmountDivisionReport) data.getData();
+		ServerResponseBackToClient response;
+		byte[] blobInBytes = QueryControl.reportsQueries.getRequestedTotalAmountReport(report);
+		if (blobInBytes == null)
+			response = new ServerResponseBackToClient(ServerResponse.Such_Report_Not_Found, blobInBytes);
+		else {
+			response = new ServerResponseBackToClient(ServerResponse.Cancellations_Report_Found, blobInBytes);
 		}
-	
+		return response;
+	}
+
 	private ServerResponseBackToClient handleImportVisitsReport(ClientRequestDataContainer data,
 			ConnectionToClient client) {
-		VisitsReport report = (VisitsReport)data.getData();
+		VisitsReport report = (VisitsReport) data.getData();
 		ServerResponseBackToClient response;
 		byte[] blobInBytes = QueryControl.reportsQueries.getRequestedVisitsReport(report);
-		if(blobInBytes==null)
+		if (blobInBytes == null)
 			response = new ServerResponseBackToClient(ServerResponse.Such_Report_Not_Found, blobInBytes);
 		else {
 			response = new ServerResponseBackToClient(ServerResponse.Cancellations_Report_Found, blobInBytes);
 		}
 		return response;
 	}
-	
+
 	private ServerResponseBackToClient handleCreateVisitsReport(ClientRequestDataContainer data,
 			ConnectionToClient client) {
-		VisitsReport report = (VisitsReport)data.getData();
+		VisitsReport report = (VisitsReport) data.getData();
 		ServerResponseBackToClient response;
 		boolean result = QueryControl.reportsQueries.generateVisitsReport(report);
-		if(result)
+		if (result)
 			response = new ServerResponseBackToClient(ServerResponse.Report_Generated_Successfully, report);
 		else
 			response = new ServerResponseBackToClient(ServerResponse.Report_Failed_Generate, report);
-		
+
 		return response;
 	}
-	
+
 	private ServerResponseBackToClient handleCreateCancellationsReport(ClientRequestDataContainer data,
 			ConnectionToClient client) {
-		CancellationsReport report = (CancellationsReport)data.getData();
+		CancellationsReport report = (CancellationsReport) data.getData();
 		ServerResponseBackToClient response;
 		boolean result = QueryControl.reportsQueries.generateCancellationsReport(report);
-		if(result)
+		if (result)
 			response = new ServerResponseBackToClient(ServerResponse.Report_Generated_Successfully, report);
 		else
 			response = new ServerResponseBackToClient(ServerResponse.Report_Failed_Generate, report);
-		
+
 		return response;
 	}
-	
+
 	private ServerResponseBackToClient handleImportCancellationsReport(ClientRequestDataContainer data,
 			ConnectionToClient client) {
-		CancellationsReport report = (CancellationsReport)data.getData();
+		CancellationsReport report = (CancellationsReport) data.getData();
 		ServerResponseBackToClient response;
 		byte[] blobInBytes = QueryControl.reportsQueries.getRequestedCancellationsReport(report);
-		if(blobInBytes==null)
+		if (blobInBytes == null)
 			response = new ServerResponseBackToClient(ServerResponse.Such_Report_Not_Found, blobInBytes);
 		else {
 			response = new ServerResponseBackToClient(ServerResponse.Cancellations_Report_Found, blobInBytes);
 		}
 		return response;
 	}
-	
-	///Added by siso tamir and nadav
-	
-	private ServerResponseBackToClient handleCreateUsageReport(ClientRequestDataContainer data,ConnectionToClient client) {
-		UsageReport report = (UsageReport)data.getData();
+
+	/// Added by siso tamir and nadav
+
+	private ServerResponseBackToClient handleCreateUsageReport(ClientRequestDataContainer data,
+			ConnectionToClient client) {
+		UsageReport report = (UsageReport) data.getData();
 		ServerResponseBackToClient response;
 		boolean result = QueryControl.reportsQueries.generateUsageReport(report);
-		if(result)
+		if (result)
 			response = new ServerResponseBackToClient(ServerResponse.Report_Generated_Successfully, report);
 		else
 			response = new ServerResponseBackToClient(ServerResponse.Report_Failed_Generate, report);
-		
+
 		return response;
 	}
-	
-	private ServerResponseBackToClient handleImportUsageReport(ClientRequestDataContainer data,ConnectionToClient client) {
-		UsageReport report = (UsageReport)data.getData();
+
+	private ServerResponseBackToClient handleImportUsageReport(ClientRequestDataContainer data,
+			ConnectionToClient client) {
+		UsageReport report = (UsageReport) data.getData();
 		ServerResponseBackToClient response;
 		byte[] blobInBytes = QueryControl.reportsQueries.getRequestedUsageReport(report);
-		if(blobInBytes==null)
+		if (blobInBytes == null)
 			response = new ServerResponseBackToClient(ServerResponse.Such_Report_Not_Found, blobInBytes);
 		else {
 			response = new ServerResponseBackToClient(ServerResponse.Cancellations_Report_Found, blobInBytes);
 		}
 		return response;
 	}
-	
+
 	private ServerResponseBackToClient handleSearchForGuidesWithStatusPending(ClientRequestDataContainer data,
 			ConnectionToClient client) {
-		ArrayList<Guide> guidesList = (ArrayList<Guide>)data.getData();
-		ServerResponseBackToClient response=null;
+		ArrayList<Guide> guidesList = (ArrayList<Guide>) data.getData();
+		ServerResponseBackToClient response = null;
 		DatabaseResponse dbResponse = QueryControl.employeeQueries.ShowAllGuidesWithPendingStatus(guidesList);
-		switch(dbResponse) {
+		switch (dbResponse) {
 		case No_Pending_Request_Exists:
 			response = new ServerResponseBackToClient(ServerResponse.Guides_With_Status_Pending_Not_Found, guidesList);
 			break;
@@ -416,33 +419,33 @@ public class GoNatureServer extends AbstractServer {
 		return response;
 
 	}
-	
-	private ServerResponseBackToClient handleUpdateGuideAsApproved(ClientRequestDataContainer data, ConnectionToClient client) {
-		ArrayList<Guide> guidesList = (ArrayList<Guide>)data.getData();
+
+	private ServerResponseBackToClient handleUpdateGuideAsApproved(ClientRequestDataContainer data,
+			ConnectionToClient client) {
+		ArrayList<Guide> guidesList = (ArrayList<Guide>) data.getData();
 		DatabaseResponse dbResponse;
-		for(int i=0;i<guidesList.size();i++) {
+		for (int i = 0; i < guidesList.size(); i++) {
 			dbResponse = QueryControl.employeeQueries.UpdateGuideStatusToApprove(guidesList.get(i));
-			if(dbResponse==DatabaseResponse.Failed)
+			if (dbResponse == DatabaseResponse.Failed)
 				return new ServerResponseBackToClient(ServerResponse.Updated_Guides_To_Approved_Failed, null);
 		}
 		return new ServerResponseBackToClient(ServerResponse.Updated_Guides_To_Approved_Successfully, null);
 	}
-	
-	
+
 	private ServerResponseBackToClient handleSearchForAvailableDates(ClientRequestDataContainer data,
 			ConnectionToClient client) {
-		Order order = (Order)data.getData();
+		Order order = (Order) data.getData();
 		ServerResponseBackToClient response;
 		ArrayList<LocalDateTime> availableDates = QueryControl.orderQueries.searchForAvailableDates7DaysForward(order);
-		return new ServerResponseBackToClient(null, availableDates); 
+		return new ServerResponseBackToClient(null, availableDates);
 	}
 
 	private ServerResponseBackToClient handleAddNewOrderIfAvailable(ClientRequestDataContainer data,
 			ConnectionToClient client) {
-		Order order = (Order)data.getData();
+		Order order = (Order) data.getData();
 		ServerResponseBackToClient response;
 		DatabaseResponse DbResponse = QueryControl.orderQueries.checkIfNewOrderAvailableAtRequestedDate(order);
-		switch(DbResponse) {
+		switch (DbResponse) {
 		case Such_Park_Does_Not_Exists:
 		case Failed:
 			return null;
@@ -453,9 +456,9 @@ public class GoNatureServer extends AbstractServer {
 			response = new ServerResponseBackToClient(ServerResponse.Requested_Order_Date_Is_Available, order);
 			break;
 		case Number_Of_Visitors_More_Than_Max_Capacity:
-			response = new ServerResponseBackToClient(ServerResponse.Too_Many_Visitors,order);
+			response = new ServerResponseBackToClient(ServerResponse.Too_Many_Visitors, order);
 			break;
-		default :
+		default:
 			return null;
 		}
 		return response;
@@ -692,14 +695,34 @@ public class GoNatureServer extends AbstractServer {
 
 		try {
 			// first tell all the clients to disconnect.
+			closeAllThreads();
 			server.sendToAllClients(new ServerResponseBackToClient(ServerResponse.Server_Disconnected, ""));
 			server.stopListening();
 			server.close();
 			server = null;
+
 			MySqlConnection.getInstance().closeConnection();
 		} catch (IOException ex) {
 			System.out.println("Error while closing server");
 			ex.printStackTrace();
+		}
+	}
+
+	private static void closeAllThreads() {
+//		private static Thread sendNotifications24HoursBefore = null;
+//		private static Thread cancelOrdersNotConfirmedWithin2Hours = null;
+		// Stop the searchAvailableDates thread if it's running
+		try {
+			if (sendNotifications24HoursBefore != null && sendNotifications24HoursBefore.isAlive())
+				sendNotifications24HoursBefore.interrupt();
+
+			if (cancelOrdersNotConfirmedWithin2Hours != null && cancelOrdersNotConfirmedWithin2Hours.isAlive())
+				cancelOrdersNotConfirmedWithin2Hours.interrupt();
+
+			sendNotifications24HoursBefore.join(); // Wait for the thread to stop
+			cancelOrdersNotConfirmedWithin2Hours.join();
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt(); // Restore interrupted status
 		}
 	}
 
@@ -737,6 +760,9 @@ public class GoNatureServer extends AbstractServer {
 			server.listen();
 			// update connection in server gui.
 			serverController.connectionSuccessfull();
+			// Run the 2 relevant threads
+			sendNotifications24HoursBefore.start();
+			cancelOrdersNotConfirmedWithin2Hours.start();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			serverController.printToLogConsole("Error - could not listen for clients!");
@@ -745,4 +771,102 @@ public class GoNatureServer extends AbstractServer {
 		}
 	}
 
+	private void initializeThreadsAndStartRun() {
+		if (sendNotifications24HoursBefore != null && sendNotifications24HoursBefore.isAlive()) {
+			sendNotifications24HoursBefore.interrupt();
+			try {
+				sendNotifications24HoursBefore.join();
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
+		}
+		
+		if(cancelOrdersNotConfirmedWithin2Hours!=null && cancelOrdersNotConfirmedWithin2Hours.isAlive()) {
+			cancelOrdersNotConfirmedWithin2Hours.interrupt();
+			try {
+				cancelOrdersNotConfirmedWithin2Hours.join();	
+			}catch(InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
+		}
+		
+		if(cancelTimePassedWaitingListOrders!=null && cancelTimePassedWaitingListOrders.isAlive()) {
+			cancelTimePassedWaitingListOrders.interrupt();
+			try {
+				cancelTimePassedWaitingListOrders.join();	
+			}catch(InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
+		}
+
+		sendNotifications24HoursBefore = new Thread(() -> {
+			while (!Thread.interrupted()) {
+				try {
+					Thread.sleep(1000);
+					LocalDateTime currentTime = LocalDateTime.now();
+					LocalDateTime relevantTimeTomorrow = currentTime.plusDays(1);
+					ArrayList<Order> ordersToNotify = QueryControl.notificationQueries
+							.CheckAllOrdersAndChangeToNotifedfNeeded(relevantTimeTomorrow);
+
+					if (ordersToNotify != null && !ordersToNotify.isEmpty()) {
+						Platform.runLater(() -> serverController.printToLogConsole("Confirmation Notification was sent to all order 24 before time"));
+						for (Order order : ordersToNotify) {
+							QueryControl.notificationQueries.UpdateAllWaitNotifyOrdersToNotify(order);
+							String message = String.format("Order: %d, Notification was sent by mail to %s and sms to %s",order.getOrderId(),order.getEmail(),order.getTelephoneNumber());
+							Platform.runLater(() -> serverController.printToLogConsole(message));
+						}
+					}
+
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+					break;
+				}
+			}
+		});
+		
+		cancelOrdersNotConfirmedWithin2Hours = new Thread(()->{
+			while (!Thread.interrupted()) {
+				try {
+					Thread.sleep(1000);
+					LocalDateTime currentTime = LocalDateTime.now();
+					LocalDateTime relevantTimeTomorrowMinus2Hours = currentTime.plusHours(22);
+					ArrayList<Order> ordersToNotify = QueryControl.notificationQueries
+							.CheckAllOrdersAndChangeToCancelledIfNeeded(relevantTimeTomorrowMinus2Hours);
+
+					if (ordersToNotify != null && !ordersToNotify.isEmpty()) {
+						for (Order order : ordersToNotify) {
+							QueryControl.notificationQueries.automaticallyCancelAllNotifiedOrders(order);
+							Platform.runLater(() -> serverController.printToLogConsole("Notification On Cancel Sent"));
+						}
+					}
+
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+					break;
+				}
+			}
+		});
+
+//		cancelTimePassedWaitingListOrders = new Thread(()->{
+//			while (!Thread.interrupted()) {
+//				try {
+//					Thread.sleep(1000);
+//					LocalDateTime currentTime = LocalDateTime.now();
+//					ArrayList<Order> ordersToNotify = QueryControl.notificationQueries
+//							.CheckWaitingListAndRemoveAllIrrelcantOrders(currentTime);
+//
+//					if (ordersToNotify != null && !ordersToNotify.isEmpty()) {
+//						for (Order order : ordersToNotify) {
+//							QueryControl.notificationQueries.automaticallyCancelAllNotifiedOrders(order);
+//							Platform.runLater(() -> serverController.printToLogConsole("Notification On Cancel Sent"));
+//						}
+//					}
+//
+//				} catch (InterruptedException e) {
+//					Thread.currentThread().interrupt();
+//					break;
+//				}
+//			}
+//		});
+	}
 }
