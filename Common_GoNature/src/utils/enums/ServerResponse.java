@@ -22,6 +22,8 @@ public enum ServerResponse {
 	Order_Found,
 	Order_Added_Successfully,
 	Order_Added_Failed,
+	Order_Cancelled_Successfully,
+	Order_Cancelled_Failed,
 	Requested_Order_Date_Unavaliable,
 	Requested_Order_Date_Is_Available,
 	Too_Many_Visitors,

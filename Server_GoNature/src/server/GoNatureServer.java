@@ -40,6 +40,7 @@ import jdbc.MySqlConnection;
 import ocsf.AbstractServer;
 import ocsf.ConnectionToClient;
 import utils.enums.ClientRequest;
+import utils.enums.OrderStatusEnum;
 import utils.enums.ServerResponse;
 
 /**
@@ -129,13 +130,17 @@ public class GoNatureServer extends AbstractServer {
 		case Add_New_Order_If_Available:
 			response = handleAddNewOrderIfAvailable(data, client);
 			break;
-			
+
 		case Insert_New_Order_As_Wait_Notify:
-			response = handleInsertNewOrderAsWaitNotify(data,client);
+			response = handleInsertNewOrderAsWaitNotify(data, client);
 			break;
 
 		case Search_For_Available_Date:
 			response = handleSearchForAvailableDates(data, client);
+			break;
+
+		case Update_Order_Status_Canceled:
+			response = handleUpdateOrderStatusCanceled(data, client);
 			break;
 
 		// Service Employee Section
@@ -199,11 +204,11 @@ public class GoNatureServer extends AbstractServer {
 		case Import_Total_Visitors_Report:
 			response = handleImportTotalAmountDivisionReport(data, client);
 			break;
-		
+
 		case Search_For_Notified_Orders:
-			response = handleSearchForNotifiedOrders(data,client);
+			response = handleSearchForNotifiedOrders(data, client);
 			break;
-			
+
 		case Logout:
 			handleUserLogoutFromApplication(data.getData(), client, clientIp);
 			break;
@@ -222,29 +227,65 @@ public class GoNatureServer extends AbstractServer {
 		}
 	}
 
-	private ServerResponseBackToClient handleSearchForNotifiedOrders(ClientRequestDataContainer data,ConnectionToClient client) {
-		String customerId = ((ICustomer)data.getData()).getCustomerId();
+	private ServerResponseBackToClient handleUpdateOrderStatusCanceled(ClientRequestDataContainer data,
+			ConnectionToClient client) {
+		Order order = (Order) data.getData();
+		ServerResponseBackToClient response;
+		DatabaseResponse isUpdated = QueryControl.orderQueries.updateOrderStatus(order, OrderStatusEnum.Cancelled);
+		if (isUpdated == DatabaseResponse.Order_Status_Updated) {
+			response = new ServerResponseBackToClient(ServerResponse.Order_Cancelled_Successfully, order);
+			// TODO: notify next in waiting list.
+			notifyOrdersFromWaitingList(order.getEnterDate(), order.getParkName().getParkId());
+
+		} else
+			response = new ServerResponseBackToClient(ServerResponse.Order_Cancelled_Failed, order);
+
+		return response;
+	}
+
+	private void notifyOrdersFromWaitingList(LocalDateTime time, int parkId) {
+		ArrayList<Order> ordersFromWaitingList = QueryControl.orderQueries.notifyTheNextOrdersInWaitingList(time,
+				parkId);
+		if (ordersFromWaitingList == null || ordersFromWaitingList.isEmpty())
+			return;
+
+		for (Order order : ordersFromWaitingList) {
+			boolean canAdd = QueryControl.orderQueries.isThisDateAvailable(parkId, time, order.getNumberOfVisitors());
+			if (canAdd) {
+				QueryControl.orderQueries.updateOrderStatus(order, OrderStatusEnum.Notified_Waiting_List);
+				serverController.printToLogConsole(String
+						.format("Order :%d, notified about available spots from waiting list", order.getOrderId()));
+			}
+		}
+
+		return;
+	}
+
+	private ServerResponseBackToClient handleSearchForNotifiedOrders(ClientRequestDataContainer data,
+			ConnectionToClient client) {
+		String customerId = ((ICustomer) data.getData()).getCustomerId();
 		ServerResponseBackToClient response;
 		ArrayList<Order> notifiedOrders = QueryControl.orderQueries.searchForNotifiedOrdersOfSpecificClient(customerId);
-		if(notifiedOrders==null)
+		if (notifiedOrders == null)
 			response = new ServerResponseBackToClient(ServerResponse.No_Notifications_Found, notifiedOrders);
 		else
 			response = new ServerResponseBackToClient(ServerResponse.Notifications_Found, notifiedOrders);
 		return response;
-		
+
 	}
-	
-	private ServerResponseBackToClient handleInsertNewOrderAsWaitNotify(ClientRequestDataContainer data,ConnectionToClient client) {
-		Order order = (Order)data.getData();
+
+	private ServerResponseBackToClient handleInsertNewOrderAsWaitNotify(ClientRequestDataContainer data,
+			ConnectionToClient client) {
+		Order order = (Order) data.getData();
 		ServerResponseBackToClient response;
 		boolean addedToDatabase = QueryControl.orderQueries.insertOrderIntoDB(order);
-		if(addedToDatabase)
+		if (addedToDatabase)
 			response = new ServerResponseBackToClient(ServerResponse.Order_Added_Successfully, order);
 		else
 			response = new ServerResponseBackToClient(ServerResponse.Order_Added_Failed, order);
 		return response;
 	}
-	
+
 	private ServerResponseBackToClient handleSearchForSpecificPark(ClientRequestDataContainer data,
 			ConnectionToClient client) {
 		Park park = (Park) data.getData();
@@ -735,8 +776,7 @@ public class GoNatureServer extends AbstractServer {
 		} catch (IOException ex) {
 			System.out.println("Error while closing server");
 			ex.printStackTrace();
-		}
-		finally {
+		} finally {
 			MySqlConnection.getInstance().closeConnection();
 			server = null;
 		}
@@ -814,21 +854,21 @@ public class GoNatureServer extends AbstractServer {
 				Thread.currentThread().interrupt();
 			}
 		}
-		
-		if(cancelOrdersNotConfirmedWithin2Hours!=null && cancelOrdersNotConfirmedWithin2Hours.isAlive()) {
+
+		if (cancelOrdersNotConfirmedWithin2Hours != null && cancelOrdersNotConfirmedWithin2Hours.isAlive()) {
 			cancelOrdersNotConfirmedWithin2Hours.interrupt();
 			try {
-				cancelOrdersNotConfirmedWithin2Hours.join();	
-			}catch(InterruptedException e) {
+				cancelOrdersNotConfirmedWithin2Hours.join();
+			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 			}
 		}
-		
-		if(cancelTimePassedWaitingListOrders!=null && cancelTimePassedWaitingListOrders.isAlive()) {
+
+		if (cancelTimePassedWaitingListOrders != null && cancelTimePassedWaitingListOrders.isAlive()) {
 			cancelTimePassedWaitingListOrders.interrupt();
 			try {
-				cancelTimePassedWaitingListOrders.join();	
-			}catch(InterruptedException e) {
+				cancelTimePassedWaitingListOrders.join();
+			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 			}
 		}
@@ -843,10 +883,13 @@ public class GoNatureServer extends AbstractServer {
 							.CheckAllOrdersAndChangeToNotifedfNeeded(relevantTimeTomorrow);
 
 					if (ordersToNotify != null && !ordersToNotify.isEmpty()) {
-						Platform.runLater(() -> serverController.printToLogConsole("Confirmation Notification was sent to all order 24 before time"));
+						Platform.runLater(() -> serverController
+								.printToLogConsole("Confirmation Notification was sent to all order 24 before time"));
 						for (Order order : ordersToNotify) {
 							QueryControl.notificationQueries.UpdateAllWaitNotifyOrdersToNotify(order);
-							String message = String.format("Order: %d, Notification was sent by mail to %s and sms to %s",order.getOrderId(),order.getEmail(),order.getTelephoneNumber());
+							String message = String.format(
+									"Order: %d, Notification was sent by mail to %s and sms to %s", order.getOrderId(),
+									order.getEmail(), order.getTelephoneNumber());
 							Platform.runLater(() -> serverController.printToLogConsole(message));
 						}
 					}
@@ -857,8 +900,8 @@ public class GoNatureServer extends AbstractServer {
 				}
 			}
 		});
-		
-		cancelOrdersNotConfirmedWithin2Hours = new Thread(()->{
+
+		cancelOrdersNotConfirmedWithin2Hours = new Thread(() -> {
 			while (!Thread.interrupted()) {
 				try {
 					Thread.sleep(1000);
