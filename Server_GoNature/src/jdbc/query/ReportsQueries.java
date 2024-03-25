@@ -74,31 +74,33 @@ public class ReportsQueries {
 
 	}
 	
-	public ParkFullDaySummary getIfParkWasFullEachDay(int day,int month, int year, ParkNameEnum park) //added by tamir
+	public ParkFullDaySummary getIfParkWasFullEachDay(int month,int hour, int year, ParkNameEnum park) //added by tamir
 	{
 		ParkFullDaySummary currentDaySummary = new ParkFullDaySummary();
 		String parkColumnName = park.name();
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
-			PreparedStatement stmt = con.prepareStatement("SELECT " + parkColumnName +" FROM parkfulldates WHERE day(Date)=? AND month(Date)=? AND year(Date)=?");
-	        stmt.setInt(1, day);
-	        stmt.setInt(2, month);
+			
+			PreparedStatement stmt = con.prepareStatement("SELECT " +parkColumnName +" FROM parkfulldatetime WHERE Month=? AND Hour(Hour)=? AND year=?;");
+	        stmt.setInt(1, month);
+	        stmt.setInt(2, hour);
 	        stmt.setInt(3, year);
 	        ResultSet rs = stmt.executeQuery();
 	        
 	        if(!rs.next())
 	        {
 	             currentDaySummary = new ParkFullDaySummary();
-	             currentDaySummary.setDay(day);
-	             currentDaySummary.setIsfull(false); // assuming default is not full
+	             currentDaySummary.setHour(hour);
+	             currentDaySummary.setTimesFullInSpecificHour(0);
 	             currentDaySummary.setPark(park);
 	             return currentDaySummary;
 	        }
 	        
-            boolean isFull = rs.getInt(parkColumnName) == 1; //if condition that compares rs.getInt(parkColumnName) == 1
-            currentDaySummary.setDay(day);
-            currentDaySummary.setIsfull(isFull);
+            currentDaySummary = new ParkFullDaySummary();
+            currentDaySummary.setHour(hour);
+            currentDaySummary.setTimesFullInSpecificHour(rs.getInt(1));
             currentDaySummary.setPark(park);
+         
 		}
 		catch(Exception e)
 		{
@@ -117,12 +119,12 @@ public class ReportsQueries {
 
 		HashMap<Integer, ParkFullDaySummary> parkSummaryByDays = new HashMap<Integer, ParkFullDaySummary>();
 
-		for (int day = 1; day <= daysInMonth; day++) 
+		for (int hour = 8; hour < 21; hour++) 
 		{
-			ParkFullDaySummary temp = getIfParkWasFullEachDay(day,month,year,report.getRequestedPark());
+			ParkFullDaySummary temp = getIfParkWasFullEachDay(month,hour,year,report.getRequestedPark());
 			if (temp != null)
 			{
-				parkSummaryByDays.put(day, temp);
+				parkSummaryByDays.put(hour, temp);
 			}
 		}
 		if (parkSummaryByDays.isEmpty())
@@ -137,6 +139,7 @@ public class ReportsQueries {
 		return false;
 
 	}
+	
 	
 	private boolean insertGeneratedUsageReportToDatabase(UsageReport report) {
 		try {
