@@ -130,7 +130,7 @@ public class ViewReportsScreenController implements Initializable {
 			case VisitsReports:
 				report = new VisitsReport(Integer.parseInt(selectedMonth),
 						Integer.parseInt(selectedYear), selectedPark);
-				reportToOpen=ClientRequest.Import_Usage_Report;
+				reportToOpen=ClientRequest.Import_Visits_Report;
 				break;
 			default:
 				return;

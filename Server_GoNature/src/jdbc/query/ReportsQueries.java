@@ -346,26 +346,28 @@ public class ReportsQueries {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
 			PreparedStatement stmt = con.prepareStatement(
-				    "SELECT " +
-				    "OrderType, " +
-				    "SUM(CASE WHEN TIME(EnterDate) >= '08:00:00' AND TIME(EnterDate) < '09:00:00' THEN Amount ELSE 0 END) AS Visitors_08_09, " +
-				    "SUM(CASE WHEN TIME(EnterDate) >= '09:00:00' AND TIME(EnterDate) < '10:00:00' THEN Amount ELSE 0 END) AS Visitors_09_10, " +
-				    "SUM(CASE WHEN TIME(EnterDate) >= '10:00:00' AND TIME(EnterDate) < '11:00:00' THEN Amount ELSE 0 END) AS Visitors_10_11, " +
-				    "SUM(CASE WHEN TIME(EnterDate) >= '11:00:00' AND TIME(EnterDate) < '12:00:00' THEN Amount ELSE 0 END) AS Visitors_11_12, " +
-				    "SUM(CASE WHEN TIME(EnterDate) >= '12:00:00' AND TIME(EnterDate) < '13:00:00' THEN Amount ELSE 0 END) AS Visitors_12_13, " +
-				    "SUM(CASE WHEN TIME(EnterDate) >= '13:00:00' AND TIME(EnterDate) < '14:00:00' THEN Amount ELSE 0 END) AS Visitors_13_14, " +
-				    "SUM(CASE WHEN TIME(EnterDate) >= '14:00:00' AND TIME(EnterDate) < '15:00:00' THEN Amount ELSE 0 END) AS Visitors_14_15, " +
-				    "SUM(CASE WHEN TIME(EnterDate) >= '15:00:00' AND TIME(EnterDate) <= '16:00:00' THEN Amount ELSE 0 END) AS Visitors_15_16 " +
-				    "FROM ( " +
-				    "SELECT EnterDate, ExitDate, Amount, OrderType " +
-				    "FROM occasionalvisits " +
-				    "WHERE parkId = ? AND MONTH(EnterDate) = ? AND YEAR(EnterDate) = ? " +
-				    "UNION ALL " +
-				    "SELECT EnterDate, ExitDate, Amount, OrderType " +
-				    "FROM preorders " +
-				    "WHERE parkId = ? AND MONTH(EnterDate) = ? AND YEAR(EnterDate) = ?" +
-				    ") AS combined " +
-				    "GROUP BY OrderType;"
+				"SELECT OrderTypes.OrderType, " +
+                "COALESCE(SUM(CASE WHEN TIME(combined.EnterDate) >= '08:00:00' AND TIME(combined.EnterDate) <= '08:59:59' THEN combined.Amount ELSE 0 END), 0) AS Visitors_08_09, " +
+                "COALESCE(SUM(CASE WHEN TIME(combined.EnterDate) >= '09:00:00' AND TIME(combined.EnterDate) <= '09:59:59' THEN combined.Amount ELSE 0 END), 0) AS Visitors_09_10, " +
+                "COALESCE(SUM(CASE WHEN TIME(combined.EnterDate) >= '10:00:00' AND TIME(combined.EnterDate) <= '10:59:59' THEN combined.Amount ELSE 0 END), 0) AS Visitors_10_11, " +
+                "COALESCE(SUM(CASE WHEN TIME(combined.EnterDate) >= '11:00:00' AND TIME(combined.EnterDate) <= '11:59:59' THEN combined.Amount ELSE 0 END), 0) AS Visitors_11_12, " +
+                "COALESCE(SUM(CASE WHEN TIME(combined.EnterDate) >= '12:00:00' AND TIME(combined.EnterDate) <= '12:59:59' THEN combined.Amount ELSE 0 END), 0) AS Visitors_12_13, " +
+                "COALESCE(SUM(CASE WHEN TIME(combined.EnterDate) >= '13:00:00' AND TIME(combined.EnterDate) <= '13:59:59' THEN combined.Amount ELSE 0 END), 0) AS Visitors_13_14, " +
+                "COALESCE(SUM(CASE WHEN TIME(combined.EnterDate) >= '14:00:00' AND TIME(combined.EnterDate) <= '14:59:59' THEN combined.Amount ELSE 0 END), 0) AS Visitors_14_15, " +
+                "COALESCE(SUM(CASE WHEN TIME(combined.EnterDate) >= '15:00:00' AND TIME(combined.EnterDate) <= '15:59:59' THEN combined.Amount ELSE 0 END), 0) AS Visitors_15_16 " +
+                "FROM (SELECT 'Solo' AS OrderType " +
+                "UNION ALL SELECT 'Family' " +
+                "UNION ALL SELECT 'Group' " +
+                "UNION ALL SELECT 'Group Preorder' " +
+                "UNION ALL SELECT 'Family Preorder' " +
+                "UNION ALL SELECT 'Solo Preorder') AS OrderTypes " +
+                "LEFT JOIN (SELECT EnterDate, ExitDate, Amount, OrderType " +
+                "FROM occasionalvisits WHERE parkId = ? AND MONTH(EnterDate) = ? AND YEAR(EnterDate) = ? " +
+                "UNION ALL " +
+                "SELECT EnterDate, ExitDate, Amount, OrderType " +
+                "FROM preorders WHERE parkId = ? AND MONTH(EnterDate) = ? AND YEAR(EnterDate) = ?) AS combined " +
+                "ON OrderTypes.OrderType = combined.OrderType " +
+                "GROUP BY OrderTypes.OrderType"
 				);
 
 			stmt.setInt(1, report.getRequestedPark().getParkId());
