@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -29,6 +30,7 @@ import logic.Employee;
 import logic.Guide;
 import logic.ICustomer;
 import logic.Order;
+import logic.OrderInTable;
 import logic.Park;
 import logic.Request;
 import logic.ServerResponseBackToClient;
@@ -156,6 +158,25 @@ public class GoNatureServer extends AbstractServer {
 			response = handleSearchForSpecificPark(data, client);
 			break;
 
+		case Update_Order_Status_Completed:
+			response = handleUpdateOrderStatusCompleted(data, client);
+			break;
+
+		case Update_Order_Status_Time_Passed:
+			response = handleUpdateOrderStatusTimePassed(data, client);
+			break;
+
+		case Update_Order_Status_In_Park:
+			response = handleUpdateOrderStatusInPark(data, client);
+			break;
+
+		case Prepare_New_Occasional_Order:
+			response = handlePrepareNewOccasionalOrder(data,client);
+			break;
+			
+		case Add_Occasional_Visit_As_In_Park:
+			response = handleAddOccasionalVisitAsInPark(data,client);
+			break;
 		// Requests Section
 		case Make_New_Park_Estimated_Visit_Time_Request:
 			response = handleMakeNewParkEstimatedVisitTimeRequest(data, client);
@@ -196,6 +217,13 @@ public class GoNatureServer extends AbstractServer {
 			response = handleImportUsageReport(data, client);
 			break;
 
+		case Import_All_Orders_For_Now:
+			response = handleImportAllOrdersForNow(data, client);
+			break;
+
+		case Show_Payment_At_Entrance:
+			response = handleShowPaymentAtEntrance(data, client);
+			break;
 		// added by nadav
 		case Create_Total_Visitors_Report:
 			response = handleCreateTotalAmountDivisionReport(data, client);
@@ -227,12 +255,123 @@ public class GoNatureServer extends AbstractServer {
 		}
 	}
 
+	private ServerResponseBackToClient handlePrepareNewOccasionalOrder(ClientRequestDataContainer data,ConnectionToClient client) {
+		Order order = (Order)data.getData();
+		Park requestedPark = new Park(order.getParkName().getParkId());
+		ServerResponseBackToClient response;
+		boolean foundPark  = QueryControl.parkQueries.getParkById(requestedPark);
+		if(foundPark) {
+			double estimatedVisitTime = requestedPark.getCurrentEstimatedStayTime();
+			// Split the estimatedVisitTime into whole days and fractional day components
+			long estimatedVisitTimeInHours = (long) (estimatedVisitTime);
+			
+			LocalDateTime enterTime = order.getEnterDate();
+			LocalDateTime exitTime = enterTime.plusHours(estimatedVisitTimeInHours);
+			order.setExitDate(exitTime);
+			order.setPrice(requestedPark.getPrice());
+			response = new ServerResponseBackToClient(ServerResponse.Occasional_Visit_Order_Ready, order);
+		}
+		else
+			response = new ServerResponseBackToClient(ServerResponse.Query_Failed,order);
+		return response;
+	}
+	
+	private ServerResponseBackToClient handleAddOccasionalVisitAsInPark(ClientRequestDataContainer data,ConnectionToClient client) {
+		Order order = (Order)data.getData();
+		ServerResponseBackToClient response;
+		
+		QueryControl.occasionalQueries.insertOccasionalOrder(order);
+		response = new ServerResponseBackToClient(ServerResponse.Occasional_Visit_Added_Successfully, order);
+		return response;
+	}
+	
+	private ServerResponseBackToClient handleShowPaymentAtEntrance(ClientRequestDataContainer data,
+			ConnectionToClient client) {
+		Integer orderId = (Integer) data.getData();
+		Order order = new Order(orderId);
+		ServerResponseBackToClient response;
+		DatabaseResponse DbResponse = QueryControl.orderQueries.fetchOrderByOrderID(order);
+		if (DbResponse == DatabaseResponse.Such_Order_Does_Not_Exists) {
+			response = new ServerResponseBackToClient(ServerResponse.Order_Not_Found, order);
+		} else if (DbResponse == DatabaseResponse.Order_Found_Successfully) {
+			response = new ServerResponseBackToClient(ServerResponse.Order_Found, order);
+		} else {
+			serverController.printToLogConsole("SQL Exception was thrown during search relevant order query");
+			response = new ServerResponseBackToClient(ServerResponse.Query_Failed, null);
+		}
+		return response;
+	}
+
+	private ServerResponseBackToClient handleUpdateOrderStatusCompleted(ClientRequestDataContainer data,
+			ConnectionToClient client) {
+		ArrayList<Object> details = (ArrayList<Object>) data.getData();
+		Integer orderId = (Integer) details.get(0);
+		String orderTable = (String) details.get(1);
+		ServerResponseBackToClient response;
+		boolean isUpdated;
+		if (orderTable.equals("Occasional")) {
+			isUpdated = QueryControl.occasionalQueries.UpdateOccasionalOrderStatus(new Order(orderId),
+					OrderStatusEnum.Completed);
+			if (isUpdated)
+				response = new ServerResponseBackToClient(ServerResponse.Order_Updated_Successfully, null);
+			else
+				response = new ServerResponseBackToClient(ServerResponse.Order_Updated_Failed, null);
+		} else {
+			isUpdated = QueryControl.orderQueries.updateOrderStatus(new Order(orderId), OrderStatusEnum.Completed);
+			if (isUpdated)
+				response = new ServerResponseBackToClient(ServerResponse.Order_Updated_Successfully, null);
+			else
+				response = new ServerResponseBackToClient(ServerResponse.Order_Updated_Failed, null);
+		}
+		return response;
+
+	}
+
+	private ServerResponseBackToClient handleUpdateOrderStatusTimePassed(ClientRequestDataContainer data,
+			ConnectionToClient client) {
+		Integer orderId = (Integer) data.getData();
+		ServerResponseBackToClient response;
+		boolean isUpdated;
+		isUpdated = QueryControl.orderQueries.updateOrderStatus(new Order(orderId), OrderStatusEnum.Time_Passed);
+		if (isUpdated)
+			response = new ServerResponseBackToClient(ServerResponse.Order_Updated_Successfully, null);
+		else
+			response = new ServerResponseBackToClient(ServerResponse.Order_Updated_Failed, null);
+		return response;
+	}
+
+	private ServerResponseBackToClient handleUpdateOrderStatusInPark(ClientRequestDataContainer data,
+			ConnectionToClient client) {
+		Integer orderId = (Integer) data.getData();
+		ServerResponseBackToClient response;
+		boolean isUpdated;
+		isUpdated = QueryControl.orderQueries.updateOrderStatus(new Order(orderId), OrderStatusEnum.In_Park);
+		if (isUpdated)
+			response = new ServerResponseBackToClient(ServerResponse.Order_Updated_Successfully, null);
+		else
+			response = new ServerResponseBackToClient(ServerResponse.Order_Updated_Failed, null);
+		return response;
+	}
+
+	private ServerResponseBackToClient handleImportAllOrdersForNow(ClientRequestDataContainer data,
+			ConnectionToClient client) {
+		int parkId = (int) data.getData();
+		ServerResponseBackToClient response;
+		ArrayList<Order> listOfOrders = QueryControl.orderQueries.importAllOrdersForToday(parkId);
+		if (listOfOrders == null)
+			response = new ServerResponseBackToClient(ServerResponse.Query_Failed, null);
+		else
+			response = new ServerResponseBackToClient(ServerResponse.Import_All_Orders_Successfully, listOfOrders);
+		return response;
+
+	}
+
 	private ServerResponseBackToClient handleUpdateOrderStatusCanceled(ClientRequestDataContainer data,
 			ConnectionToClient client) {
 		Order order = (Order) data.getData();
 		ServerResponseBackToClient response;
-		DatabaseResponse isUpdated = QueryControl.orderQueries.updateOrderStatus(order, OrderStatusEnum.Cancelled);
-		if (isUpdated == DatabaseResponse.Order_Status_Updated) {
+		boolean isUpdated = QueryControl.orderQueries.updateOrderStatus(order, OrderStatusEnum.Cancelled);
+		if (isUpdated) {
 			response = new ServerResponseBackToClient(ServerResponse.Order_Cancelled_Successfully, order);
 			// TODO: notify next in waiting list.
 			notifyOrdersFromWaitingList(order.getEnterDate(), order.getParkName().getParkId());

@@ -18,15 +18,15 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="940.0" styleClass="app" stylesheets="@appStyles.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Label fx:id="login_date" layoutX="10.0" layoutY="10.0" styleClass="app_date_label" text="Today 2024-06-03" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="27.0" />
-      <HBox fx:id="dateLabel" layoutX="10.0" layoutY="9.0" prefHeight="53.0" prefWidth="830.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="9.0" />
+      <Label fx:id="dateLabel" layoutX="10.0" layoutY="10.0" styleClass="app_date_label" text="Today 2024-06-03" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="27.0" />
+      <HBox layoutX="10.0" layoutY="9.0" prefHeight="53.0" prefWidth="830.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="9.0" />
       <Separator layoutX="10.0" layoutY="121.0" prefWidth="200.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="140.0" />
       <Text layoutX="259.0" layoutY="100.0" strokeType="OUTSIDE" strokeWidth="0.0" text="New Occasional Visit" textAlignment="CENTER" AnchorPane.topAnchor="62.5">
          <font>
             <Font name="Calibri" size="50.0" />
          </font>
       </Text>
-      <GridPane layoutY="133.0" prefHeight="474.0" prefWidth="770.0" styleClass="app_gridpane" AnchorPane.bottomAnchor="133.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="250.0" AnchorPane.topAnchor="180.0">
+      <GridPane layoutX="-9.0" layoutY="258.0" prefHeight="321.0" prefWidth="690.0" styleClass="app_gridpane" AnchorPane.bottomAnchor="221.0" AnchorPane.leftAnchor="-9.0" AnchorPane.rightAnchor="259.0" AnchorPane.topAnchor="258.0">
          <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" maxWidth="405.0" minWidth="10.0" prefWidth="338.0" />
             <ColumnConstraints hgrow="SOMETIMES" maxWidth="705.0" minWidth="10.0" prefWidth="312.0" />
@@ -37,8 +37,7 @@
             <RowConstraints maxHeight="50.0" minHeight="0.0" prefHeight="50.0" vgrow="SOMETIMES" />
             <RowConstraints maxHeight="50.0" minHeight="0.0" prefHeight="77.0" vgrow="SOMETIMES" />
             <RowConstraints maxHeight="50.0" minHeight="0.0" prefHeight="50.0" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="50.0" minHeight="0.0" prefHeight="50.0" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="50.0" minHeight="0.0" prefHeight="50.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES" />
          </rowConstraints>
          <children>
             <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
@@ -80,31 +79,22 @@
             <TextField fx:id="phoneNumberField" promptText="Enter Your Phone Number" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
             <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="CENTER">
                <image>
-                  <Image url="@../../utils/resources/emailIcon.png" />
-               </image>
-               <GridPane.margin>
-                  <Insets right="20.0" />
-               </GridPane.margin>
-            </ImageView>
-            <TextField fx:id="emailField" promptText="Enter Your Email" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
-            <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="5" GridPane.valignment="CENTER">
-               <image>
-                  <Image url="@../../utils/resources/dateAnimatedIcon.gif" />
-               </image>
-               <GridPane.margin>
-                  <Insets right="20.0" />
-               </GridPane.margin>
-            </ImageView>
-            <TextField fx:id="orderDateOfVisitField" editable="false" promptText="Enter Date and Time" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-            <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="6" GridPane.valignment="CENTER">
-               <image>
                   <Image url="@../../utils/resources/groupIcon.png" />
                </image>
                <GridPane.margin>
                   <Insets right="20.0" />
                </GridPane.margin>
             </ImageView>
-            <TextField fx:id="numberOfVisitorsField" promptText="Enter How Many Visitors" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="6" GridPane.valignment="CENTER" />
+            <TextField fx:id="numberOfVisitorsField" promptText="Enter How Many Visitors" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
+            <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="5" GridPane.valignment="CENTER">
+               <image>
+                  <Image url="@../../utils/resources/detailsIcon.png" />
+               </image>
+               <GridPane.margin>
+                  <Insets right="20.0" />
+               </GridPane.margin>
+            </ImageView>
+            <ComboBox fx:id="visitType" prefWidth="150.0" promptText="Select Visit Type" GridPane.columnIndex="1" GridPane.rowIndex="5" />
          </children>
       </GridPane>
       <Separator prefWidth="200.0" AnchorPane.bottomAnchor="160.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" />

@@ -16,6 +16,7 @@ import jdbc.DatabaseResponse;
 import jdbc.MySqlConnection;
 import jdbc.QueryType;
 import logic.Order;
+import logic.OrderInTable;
 import logic.Park;
 import utils.enums.EmployeeTypeEnum;
 import utils.enums.OrderStatusEnum;
@@ -227,25 +228,25 @@ public class OrderQueries {
 	 *         on failure returns Such_Order_Does_Not_Exists
 	 *         on exception returns Excpetion_Was_Thrown
 	 */
-	public DatabaseResponse updateOrderStatus(Order order, OrderStatusEnum statusToUpdate) {
+	public boolean updateOrderStatus(Order order, OrderStatusEnum statusToUpdate) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
-			PreparedStatement stmt = con.prepareStatement("UPDATE preorders SET OrderStatus = ? WHERE (OrderId = ?);");
+			PreparedStatement stmt = con.prepareStatement("UPDATE preorders SET OrderStatus = ?,PayStatus = '1' WHERE (OrderId = ?);");
 			stmt.setString(1, statusToUpdate.toString());
 			stmt.setInt(2, order.getOrderId());
 			int rs = stmt.executeUpdate();
 
 			// if the query ran successfully, but returned as empty table.
 			if (rs == 0) {
-				return DatabaseResponse.Failed;
+				return false;
 			}
 			order.setStatus(statusToUpdate);
 			order.setLastStatusUpdatedTime(LocalDateTime.now().toString());
 
-			return DatabaseResponse.Order_Status_Updated;
+			return true;
 
 		} catch (SQLException ex) {
-			return DatabaseResponse.Exception_Was_Thrown;
+			return false;
 		}
 	}
 
@@ -592,6 +593,47 @@ public class OrderQueries {
 			}
 			
 			return ordersInWaitingList;
+			
+		}catch(SQLException ex) {
+			return null;
+		}
+	}
+	
+	public ArrayList<Order> importAllOrdersForToday(int parkId){
+		ArrayList<Order> retList = new ArrayList<Order>();
+		
+		try {
+			Connection con = MySqlConnection.getInstance().getConnection();
+			PreparedStatement stmt = con.prepareStatement("SELECT OrderId AS orderId, 1 AS isPaid, Amount AS amountOfVisitors, Phone AS ownerPhone, EnterDate AS EnterTime, ExitDate AS ExitTime, OrderStatus, OrderType "
+														+ "FROM occasionalvisits "
+														+ "WHERE DATE(EnterDate) = CURDATE() AND (OrderStatus = 'Confirmed' OR OrderStatus = 'In Park') AND ParkId = ? "
+														+ "UNION ALL "
+														+ "SELECT OrderId, PayStatus AS isPaid, Amount, Phone, EnterDate, ExitDate, OrderStatus,OrderType "
+														+ "FROM preorders "
+														+ "WHERE DATE(EnterDate) = CURDATE() AND (OrderStatus = 'Confirmed' OR OrderStatus = 'In Park') AND ParkId = ?");
+			stmt.setInt(1, parkId);
+			stmt.setInt(2, parkId);
+			
+			ResultSet rs = stmt.executeQuery();
+			if(!rs.next())
+				return null;
+			
+			rs.previous();
+			
+			while(rs.next()) {
+				Order orderToAdd = new Order();
+				orderToAdd.setOrderId(rs.getInt(1));
+				orderToAdd.setPaid(rs.getBoolean(2));
+				orderToAdd.setNumberOfVisitors(rs.getInt(3));
+				orderToAdd.setTelephoneNumber(rs.getString(4));
+				orderToAdd.setEnterDate(rs.getTimestamp(5).toLocalDateTime());
+				orderToAdd.setExitDate(rs.getTimestamp(6).toLocalDateTime());
+				orderToAdd.setStatus(OrderStatusEnum.fromString(rs.getString(7)));
+				orderToAdd.setOrderType(OrderTypeEnum.fromString(rs.getString(8)));
+				retList.add(orderToAdd);
+			}
+			
+			return retList;
 			
 		}catch(SQLException ex) {
 			return null;

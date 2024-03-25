@@ -26,24 +26,16 @@
       <Separator layoutX="20.0" layoutY="20.0" prefWidth="200.0" AnchorPane.bottomAnchor="160.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" />
       <AnchorPane layoutX="13.0" layoutY="291.0" prefHeight="342.0" prefWidth="910.0" styleClass="park_parameters">
          <children>
-            <AnchorPane layoutX="42.0" layoutY="59.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="275.0" styleClass="park_parameters_left">
+            <AnchorPane layoutX="101.0" layoutY="59.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="275.0" styleClass="park_parameters_left">
                <children>
-                  <Label fx:id="checking_bal" layoutX="14.0" layoutY="14.0" styleClass="account_balance" text="Current In Park" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="14.0" />
+                  <Label layoutX="15.0" layoutY="23.0" styleClass="account_balance" text="Current In Park" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="23.0" />
                   <Label fx:id="currentInParkLabel" layoutX="107.0" layoutY="91.0" styleClass="park_parameters_number" text="50" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="107.0" />
                </children>
             </AnchorPane>
-            <AnchorPane layoutX="328.0" layoutY="59.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="275.0" styleClass="park_parameters_right">
+            <AnchorPane layoutX="531.0" layoutY="59.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="275.0" styleClass="park_parameters_right">
                <children>
-                  <Label fx:id="savings_bal" layoutX="11.0" prefHeight="57.0" prefWidth="255.0" styleClass="account_balance" text="Available Spot" wrapText="true" AnchorPane.leftAnchor="11.0" AnchorPane.topAnchor="0.0" />
-                  <Label fx:id="availableSpotsLabel" layoutX="107.0" layoutY="100.0" styleClass="park_parameters_number" text="40" />
-                  <Label fx:id="savings_bal2" layoutX="53.0" layoutY="44.0" prefHeight="57.0" prefWidth="170.0" styleClass="account_balance" text="Pre-Order" wrapText="true" />
-               </children>
-            </AnchorPane>
-            <AnchorPane layoutX="621.0" layoutY="59.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="275.0" styleClass="park_parameters_right">
-               <children>
-                  <Label fx:id="savings_bal3" layoutX="14.0" prefHeight="57.0" prefWidth="255.0" styleClass="account_balance" text="Available Spot" wrapText="true" />
-                  <Label fx:id="savings_bal21" layoutX="45.0" layoutY="43.0" prefHeight="57.0" prefWidth="186.0" styleClass="account_balance" text="Occasional" wrapText="true" />
-                  <Label fx:id="availableSpotsLabel1" layoutX="107.0" layoutY="100.0" styleClass="park_parameters_number" text="40" />
+                  <Label layoutX="23.0" layoutY="14.0" prefHeight="57.0" prefWidth="229.0" styleClass="account_balance" text="Max Capacity" wrapText="true" />
+                  <Label fx:id="maxCapacityLabel" layoutX="107.0" layoutY="100.0" styleClass="park_parameters_number" text="40" />
                </children>
             </AnchorPane>
          </children>

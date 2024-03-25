@@ -5,6 +5,7 @@ import java.util.Map;
 
 public enum UserTypeEnum {
 	ExternalUser ("External User"),
+	Occasional ("Occasional"),
 	Employee ("Employee"),
 	Visitor ("Visitor"),
 	Guide ("Guide");

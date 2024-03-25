@@ -27,6 +27,8 @@ public enum ServerResponse {
 	Requested_Order_Date_Unavaliable,
 	Requested_Order_Date_Is_Available,
 	Too_Many_Visitors,
+	Occasional_Visit_Order_Ready,
+	Occasional_Visit_Added_Successfully,
 	
 	Such_Report_Not_Found,
 	Cancellations_Report_Found,
@@ -36,6 +38,9 @@ public enum ServerResponse {
 	//Park Section
 	Fetched_Park_Details_Successfully,
 	Fetched_Park_Details_Failed,
+	
+	Order_Updated_Successfully,
+	Order_Updated_Failed,
 	
 	// Request Section
 	Last_Request_With_Same_Type_Still_Pending,
@@ -47,7 +52,7 @@ public enum ServerResponse {
 	
 	No_Notifications_Found,
 	Notifications_Found,
-	
+	Import_All_Orders_Successfully,
 	
 	Exception_Was_Thrown, // when the server catch an exception
 	Server_Closed, // when server is closing itself, he should send to all clients

@@ -1,5 +1,6 @@
 package utils;
 
+import utils.enums.OrderTypeEnum;
 import utils.enums.ParkNameEnum;
 
 public class NotificationMessageTemplate {
@@ -43,11 +44,16 @@ public class NotificationMessageTemplate {
 		return sb.toString();
 	}
 	
-	public static String entrancePaymentReceiptMessage(ParkNameEnum parkName,String firstName,String lastName,double totalPrice,double estimatedTimeVisit) {
+	public static String entrancePaymentReceiptMessage(ParkNameEnum parkName,OrderTypeEnum type,String firstName,String lastName,int amountOfVisitors,double totalPrice,long estimatedTimeVisit) {
 		StringBuilder sb= new StringBuilder();
 		sb.append(String.format("Welcome To %s\n",parkName.toString()));
-		sb.append(String.format("Dear, %s %s",firstName,lastName));
-		sb.append(String.format("Your order total price (after discount) is: %.2f\n\n",totalPrice));
+		sb.append(String.format("Dear, %s %s \n",firstName,lastName));
+		if(type.toString().contains("Group")) {
+			sb.append(String.format("Your order total price (after discount) is: %.2f\n\n",totalPrice));
+		}
+		else
+			sb.append(String.format("Your order total price (no discount) is: %.2f\n\n",totalPrice));
+		sb.append(String.format("Total amount : %d\n", amountOfVisitors));
 		sb.append("Pay at entrance.\n");
 		sb.append(String.format("NOTE: Visit time duration is %d hours long.\n\n",estimatedTimeVisit));
 		sb.append("Best Regards,\n");

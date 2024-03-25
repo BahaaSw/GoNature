@@ -1,34 +1,42 @@
 package logic;
 
+import java.io.Serializable;
+
 import javafx.beans.property.SimpleStringProperty;
 
-public class OrderInTable {
+public class OrderInTable implements Serializable{
 	private SimpleStringProperty orderId;
+	private SimpleStringProperty isPaid;
 	private SimpleStringProperty amountOfVisitors;
 	private SimpleStringProperty ownerPhone;
 	private SimpleStringProperty estimatedEnterTime;
 	private SimpleStringProperty estimatedExitTime;
-	private SimpleStringProperty actualEnterTime;
-	private SimpleStringProperty timeLeftInPark;
+	private SimpleStringProperty status;
+	private SimpleStringProperty orderTable;
 
-	public OrderInTable(String orderId, String amountOfVisitors, String ownerPhone, String estimatedEnterTime,
-			String estimatedExitTime, String actualEnterTime, String timeLeftInPark) {
+	public OrderInTable(String orderId, String amountOfVisitors,boolean isPaid, String ownerPhone, String estimatedEnterTime,
+			String estimatedExitTime, String status) {
 		this.orderId = new SimpleStringProperty(orderId);
 		this.amountOfVisitors =  new SimpleStringProperty(amountOfVisitors);
+		this.isPaid=((isPaid) ? new SimpleStringProperty("Yes") : new SimpleStringProperty("No"));
 		this.ownerPhone =  new SimpleStringProperty(ownerPhone);
 		this.estimatedEnterTime =  new SimpleStringProperty(estimatedEnterTime);
 		this.estimatedExitTime =  new SimpleStringProperty(estimatedExitTime);
-		this.actualEnterTime =  new SimpleStringProperty(actualEnterTime);
-		this.timeLeftInPark =  new SimpleStringProperty(timeLeftInPark);
+		this.status = new SimpleStringProperty(status);
 	}
-
-	public String getTimeLeftInPark() {
-		return timeLeftInPark.get();
+	
+	public OrderInTable(Order order) {
+		this.orderId = new SimpleStringProperty(String.valueOf(order.getOrderId()));
+		this.amountOfVisitors =  new SimpleStringProperty(String.valueOf(order.getNumberOfVisitors()));
+		this.isPaid=((order.isPaid()) ? new SimpleStringProperty("Yes") : new SimpleStringProperty("No"));
+		this.ownerPhone =  new SimpleStringProperty(order.getTelephoneNumber());
+		this.estimatedEnterTime =  new SimpleStringProperty(order.getEnterDate().toString());
+		this.estimatedExitTime =  new SimpleStringProperty(order.getExitDate().toString());
+		this.status = new SimpleStringProperty(order.getStatus().toString());
+		this.orderTable= new SimpleStringProperty((order.getOrderType().toString().contains("Occasional")?"Occasional" : "Preorder"));
 	}
-
-	public void setTimeLeftInPark(String timeLeftInPark) {
-		this.timeLeftInPark.set(timeLeftInPark);
-	}
+	
+	public OrderInTable() {}
 
 	public String getOrderId() {
 		return orderId.get();
@@ -70,17 +78,34 @@ public class OrderInTable {
 		this.estimatedExitTime.set(estimatedExitTime);
 	}
 
-	public String getActualEnterTime() {
-		return actualEnterTime.get();
-	}
-
-	public void setActualEnterTime(String actualEnterTime) {
-		this.actualEnterTime.set(actualEnterTime);
-	}
 	
 	@Override
 	public boolean equals(Object obj) {
 		return this.getOrderId().equals(((OrderInTable)obj).getOrderId());
+	}
+
+	public String getIsPaid() {
+		return isPaid.get();
+	}
+
+	public void setIsPaid(String isPaid) {
+		this.isPaid.set(isPaid);
+	}
+
+	public String getStatus() {
+		return status.get();
+	}
+
+	public void setStatus(String status) {
+		this.status.set(status);
+	}
+
+	public String getOrderTable() {
+		return orderTable.get();
+	}
+
+	public void setOrderTable(String orderTable) {
+		this.orderTable.set(orderTable);
 	}
 
 }

@@ -116,7 +116,7 @@ public class OccasionalQueries {
 	 *         on Failure: returns Failed
 	 *         exception: returns Exception_Was_Thrown
 	 */
-	public DatabaseResponse UpdateOccasionalOrderStatus(Order order, OrderStatusEnum status) {
+	public boolean UpdateOccasionalOrderStatus(Order order, OrderStatusEnum status) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
 			PreparedStatement stmt = con
@@ -127,14 +127,14 @@ public class OccasionalQueries {
 
 			// if the query ran successfully, but returned as empty table.
 			if (rs == 0) {
-				return DatabaseResponse.Failed;
+				return false;
 			}
 			
-			return DatabaseResponse.Order_Status_Updated;
+			return true;
 
 		} catch (SQLException ex) {
 //			serverController.printToLogConsole("Query search for user failed");
-			return DatabaseResponse.Exception_Was_Thrown;
+			return false;
 		}
 	}
 	
