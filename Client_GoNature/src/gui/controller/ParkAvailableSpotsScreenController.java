@@ -3,6 +3,8 @@ package gui.controller;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import client.ClientApplication;
+import client.ClientCommunication;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -10,9 +12,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import logic.ClientRequestDataContainer;
 import logic.Employee;
 import logic.Park;
+import logic.ServerResponseBackToClient;
 import utils.CurrentDateAndTime;
+import utils.enums.ClientRequest;
 import utils.enums.ParkNameEnum;
 
 public class ParkAvailableSpotsScreenController implements Initializable {
@@ -23,7 +28,7 @@ public class ParkAvailableSpotsScreenController implements Initializable {
 	@FXML
 	public Label currentInParkLabel;
 	@FXML
-	public Label availableSpotsLabel;
+	public Label maxCapacityLabel;
 	
 	private ObservableList<ParkNameEnum> parks = FXCollections.observableArrayList();
 	
@@ -51,25 +56,28 @@ public class ParkAvailableSpotsScreenController implements Initializable {
 			break;
 		}
 		
+		currentInParkLabel.setText("?");
+		maxCapacityLabel.setText("?");
+		
 		parkSelect.getItems().addAll(parks);
 		parkSelect.setOnAction(this::onChangeParkSelection);
-//		parkSelect.setValue(defaultPark.getParkName());
-		
 		
 	}
 	
 	private void onChangeParkSelection(ActionEvent event) {
-		if(parkSelect.getValue() instanceof ParkNameEnum)
-			selectedParkName=parkSelect.getValue();
-		else
+		if(!(parkSelect.getValue() instanceof ParkNameEnum))
 			return;
+
+		selectedParkName=parkSelect.getValue();
+		Park selectedPark = new Park(selectedParkName.getParkId());
+		ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Search_For_Specific_Park,selectedPark);
+		ClientApplication.client.accept(request);
+		ServerResponseBackToClient response = ClientCommunication.responseFromServer;
+		selectedPark = (Park)response.getMessage();
+		
 		currentInParkLabel.setText(String.format("%d", selectedPark.getCurrentInPark()));
-		int availableSpots = (selectedPark.getCurrentMaxCapacity()-selectedPark.getCurrentEstimatedReservedSpots())-selectedPark.getCurrentInPark();
-		availableSpotsLabel.setText(String.format("%d", availableSpots));
-		//TODO: update the gui from database.
-		//TODO: update selectedPark as server response
-//		currentInParkLabel.setText(selectedPark.getCurrentInPark());
-//		availableSpotsLabel.setText(selectedPark.getAvailableSpots());
+		maxCapacityLabel.setText(String.format("%d", selectedPark.getCurrentMaxCapacity()));
+
 	}
 
 }

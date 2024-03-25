@@ -16,6 +16,7 @@ public enum ApplicationViewType {
 	Park_Available_Spots_Screen, // Employee (Department Manager/Park Manager/Park Employee) : See current in Park and available spots
 	Park_Entrance_Screen, // Park Employee : Handle Entrance To Park.HandleOccasionalVisitScreen, // Park Employee: Handle Visitor who arrived at the park
 	Payment_Receipt_Screen, // Park Employee : Show Receipts to Visitors
+	HandleOccasionalVisitScreen,
 	
 	Manage_Guides_Screen, // Service Employee : Search for guide to register.
 	Add_New_Guide_Screen, // Service Employee : Add New Guide.

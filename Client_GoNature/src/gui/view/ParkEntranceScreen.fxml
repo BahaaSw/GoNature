@@ -5,7 +5,6 @@
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -21,26 +20,7 @@
          </font>
       </Label>
       <Separator prefWidth="200.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="140.0" />
-      <TextField fx:id="orderIdField" layoutX="171.0" layoutY="174.0" promptText="Enter Ticket ID" />
-      <Button fx:id="enterParkButton" contentDisplay="RIGHT" layoutX="390.0" layoutY="170.0" mnemonicParsing="false" onAction="#onEnterParkClicked" styleClass="app_search" text="Enter Park">
-         <graphic>
-            <ImageView fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../../utils/resources/enterParkIcon.png" />
-               </image>
-            </ImageView>
-         </graphic>
-      </Button>
-      <Button fx:id="newVisitButton" contentDisplay="RIGHT" layoutX="564.0" layoutY="170.0" mnemonicParsing="false" onAction="#onNewVisitClicked" styleClass="app_search" text="New Visit">
-         <graphic>
-            <ImageView fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../../utils/resources/newVisitIcon.png" />
-               </image>
-            </ImageView>
-         </graphic>
-      </Button>
-      <HBox fx:id="errorSection" layoutX="45.0" layoutY="232.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="53.0" prefWidth="850.0" styleClass="app_error_hbox">
+      <HBox fx:id="errorSection" layoutX="45.0" layoutY="662.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="53.0" prefWidth="850.0" styleClass="app_error_hbox">
          <children>
             <ImageView fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
                <image>
@@ -51,29 +31,39 @@
             <Label fx:id="errorMessageLabel" text="..." textFill="#c60000" />
          </children>
       </HBox>
-      <TableView fx:id="inParkTable" layoutX="42.0" layoutY="326.0" prefHeight="358.0" prefWidth="874.0">
+      <TableView fx:id="inParkTable" layoutX="42.0" layoutY="192.0" prefHeight="407.0" prefWidth="874.0">
         <columns>
-          <TableColumn fx:id="orderIdCol" prefWidth="87.0" text="Order ID" />
-          <TableColumn fx:id="amountCol" prefWidth="112.0" text="Amount Of Visitors" />
-            <TableColumn fx:id="phoneCol" prefWidth="127.0" text="Owner Phone" />
+          <TableColumn fx:id="orderIdCol" prefWidth="67.0" text="Order ID" />
+            <TableColumn fx:id="fromWhichTableCol" prefWidth="119.0" text="Preorder/Occasional" />
+          <TableColumn fx:id="amountCol" prefWidth="116.0" text="Amount Of Visitors" />
+            <TableColumn fx:id="isPaidCol" prefWidth="77.0" text="Paid?" />
+            <TableColumn fx:id="phoneCol" prefWidth="138.0" text="Owner Phone" />
             <TableColumn fx:id="estimatedEnterCol" prefWidth="134.0" text="Estimated Enter Time" />
-            <TableColumn fx:id="estimatedExitCol" prefWidth="127.0" text="Estimated Exit Time" />
-            <TableColumn fx:id="actualEnterCol" prefWidth="127.0" text="Actual Enter Time" />
-            <TableColumn fx:id="timeLeftCol" prefWidth="159.0" text="Time Left In Park" />
+            <TableColumn fx:id="estimatedExitCol" prefWidth="135.0" text="Estimated Exit Time" />
+            <TableColumn fx:id="statusCol" prefWidth="87.0" text="Status" />
         </columns>
       </TableView>
-      <Label layoutX="404.0" layoutY="291.0" prefHeight="23.0" prefWidth="150.0" text="Estimated Orders" textAlignment="RIGHT" textFill="#bf2121">
+      <Label layoutX="404.0" layoutY="156.0" prefHeight="23.0" prefWidth="150.0" text="Orders For Today" textAlignment="RIGHT" textFill="#bf2121">
          <font>
             <Font size="20.0" />
          </font>
       </Label>
-      <HBox layoutX="41.0" layoutY="707.0" prefHeight="79.0" prefWidth="874.0" styleClass="manager_order">
+      <HBox layoutX="42.0" layoutY="707.0" prefHeight="79.0" prefWidth="874.0" styleClass="manager_order">
          <children>
-            <Button fx:id="cancelSelectedOrder" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#onCancelSelectedOrderClicked" styleClass="app_search" text="Not Arrived">
+            <Button fx:id="notArrivedButton" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#onNotArrivedClicked" styleClass="app_search" text="Not Arrived">
                <graphic>
                   <ImageView fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../../utils/resources/cancelOrderIcon.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Button fx:id="enterParkButton" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#onEnterParkClicked" styleClass="app_search" text="Enter Park">
+               <graphic>
+                  <ImageView fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../utils/resources/enterParkIcon.png" />
                      </image>
                   </ImageView>
                </graphic>
@@ -89,5 +79,14 @@
             </Button>
          </children>
       </HBox>
+      <Button fx:id="newVisitButton" contentDisplay="RIGHT" layoutX="45.0" layoutY="609.0" mnemonicParsing="false" onAction="#onNewVisitClicked" styleClass="app_yellow" text="New Visit">
+         <graphic>
+            <ImageView fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../utils/resources/ticketIcon.png" />
+               </image>
+            </ImageView>
+         </graphic>
+      </Button>
    </children>
 </AnchorPane>

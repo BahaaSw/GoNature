@@ -1,40 +1,53 @@
 package gui.controller;
 
 import java.net.URL;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import client.ClientApplication;
+import client.ClientCommunication;
+import gui.view.ApplicationViewType;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.TextAlignment;
-import javafx.util.Callback;
+import logic.ClientRequestDataContainer;
+import logic.Employee;
+import logic.EntitiesContainer;
 import logic.Order;
 import logic.OrderInTable;
+import logic.SceneLoaderHelper;
+import logic.ServerResponseBackToClient;
+import utils.AlertPopUp;
 import utils.CurrentDateAndTime;
+import utils.EntranceDiscount;
+import utils.EntrancePrice;
+import utils.NotificationMessageTemplate;
+import utils.enums.ClientRequest;
 
-public class ParkEntranceScreenController implements Initializable {
+public class ParkEntranceScreenController implements Initializable, IThreadController {
 	@FXML
 	public Label dateLabel;
 	@FXML
@@ -50,30 +63,40 @@ public class ParkEntranceScreenController implements Initializable {
 	@FXML
 	public TableView<OrderInTable> inParkTable;
 	@FXML
-	private TableColumn<OrderInTable,String> orderIdCol;
+	private TableColumn<OrderInTable, String> orderIdCol;
 	@FXML
-	private TableColumn<OrderInTable,String> amountCol;
+	private TableColumn<OrderInTable, String> amountCol;
 	@FXML
-	private TableColumn<OrderInTable,String> phoneCol;
+	private TableColumn<OrderInTable, String> isPaidCol;
 	@FXML
-	private TableColumn<OrderInTable,String> estimatedEnterCol;
+	private TableColumn<OrderInTable, String> phoneCol;
 	@FXML
-	private TableColumn<OrderInTable,String> estimatedExitCol;
+	private TableColumn<OrderInTable, String> estimatedEnterCol;
 	@FXML
-	private TableColumn<OrderInTable,String> actualEnterCol;
+	private TableColumn<OrderInTable, String> estimatedExitCol;
 	@FXML
-	private TableColumn<OrderInTable,String> timeLeftCol;
-	
-	private ObservableList<OrderInTable> ordersForNow= FXCollections.observableArrayList(
-	        (new OrderInTable("1", "10", "0503418900", "17:15", "20:15", "17:20", "")),
-	        (new OrderInTable("2", "15", "0503418901", "17:10", "19:00", "17:10", "")),
-	        (new OrderInTable("3", "5", "0503418902", "17:30", "18:00", "17:30", "")));
-	
+	private TableColumn<OrderInTable, String> fromWhichTableCol;
+	@FXML
+	private TableColumn<OrderInTable, String> statusCol;
+
+	private ObservableList<OrderInTable> ordersForNow = FXCollections.observableArrayList();
+	private SceneLoaderHelper GuiHelper= new SceneLoaderHelper();
+
 	@FXML
 	public HBox errorSection;
 	@FXML
 	public Label errorMessageLabel;
-	
+
+	private BorderPane screen;
+	private Employee employee;
+	private OrderInTable selectedOrder;
+	private ScheduledExecutorService scheduler;
+
+	public ParkEntranceScreenController(BorderPane screen, Object employee) {
+		this.screen = screen;
+		this.employee = (Employee) employee;
+	}
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		dateLabel.setText(CurrentDateAndTime.getCurrentDate("'Today' yyyy-MM-dd"));
@@ -85,93 +108,211 @@ public class ParkEntranceScreenController implements Initializable {
 	private void setupTable() {
 		orderIdCol.setCellValueFactory(new PropertyValueFactory<OrderInTable, String>("orderId"));
 		amountCol.setCellValueFactory(new PropertyValueFactory<OrderInTable, String>("amountOfVisitors"));
+		isPaidCol.setCellValueFactory(new PropertyValueFactory<OrderInTable, String>("isPaid"));
 		phoneCol.setCellValueFactory(new PropertyValueFactory<OrderInTable, String>("ownerPhone"));
 		estimatedEnterCol.setCellValueFactory(new PropertyValueFactory<OrderInTable, String>("estimatedEnterTime"));
 		estimatedExitCol.setCellValueFactory(new PropertyValueFactory<OrderInTable, String>("estimatedExitTime"));
-		actualEnterCol.setCellValueFactory(new PropertyValueFactory<OrderInTable, String>("actualEnterTime"));
-		timeLeftCol.setCellValueFactory(new PropertyValueFactory<OrderInTable, String>("timeLeftInPark"));
-		
-		
-	    // Your existing setup code...
+		statusCol.setCellValueFactory(new PropertyValueFactory<OrderInTable, String>("status"));
+		fromWhichTableCol.setCellValueFactory(new PropertyValueFactory<OrderInTable, String>("orderTable"));
+
+		// Your existing setup code...
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-	    actualEnterCol.setCellFactory(column -> new TableCell<OrderInTable, String>() {
-	        @Override
-	        protected void updateItem(String item, boolean empty) {
-	            super.updateItem(item, empty);
-	            if (item == null || empty) {
-	                setText(null);
-	                setStyle("");
-	            } else {
-	                setText(item);
-	                OrderInTable order = getTableView().getItems().get(getIndex());
-	                LocalTime estimatedEnter = LocalTime.parse(order.getEstimatedEnterTime(),formatter);
-	                LocalTime actualEnter = LocalTime.parse(order.getActualEnterTime(),formatter);
-	                if (ChronoUnit.MINUTES.between(estimatedEnter, actualEnter) <= 15) {
-	                    setTextFill(Color.GREEN);
-	                } else {
-	                    setTextFill(Color.RED);
-	                }
-	            }
-	        }
-	    });
-	    inParkTable.setItems(ordersForNow);
-	    hideErrorMessage();
+		statusCol.setCellFactory(column -> new TableCell<OrderInTable, String>() {
+			@Override
+			protected void updateItem(String item, boolean empty) {
+				super.updateItem(item, empty);
+				if (item == null || empty) {
+					setText(null);
+					setStyle("");
+				} else {
+					setText(item);
+					OrderInTable order = getTableView().getItems().get(getIndex());
+					if (order.getStatus().equals("In Park")) {
+						setTextFill(Color.GREEN);
+					} else {
+						setTextFill(Color.RED);
+					}
+				}
+			}
+		});
+		inParkTable.setItems(ordersForNow);
+		hideErrorMessage();
 	}
 
-	
 	private void startBackgroundUpdateTask() {
-	    ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-	    scheduler.scheduleAtFixedRate(() -> {
-	        // Fetch and update the list of orders
-	        Platform.runLater(() -> updateOrdersList());
-	    }, 0, 5, TimeUnit.SECONDS);
+		scheduler = Executors.newSingleThreadScheduledExecutor();
+		scheduler.scheduleAtFixedRate(() -> {
+			// Fetch and update the list of orders
+			Platform.runLater(() -> updateOrdersList());
+		}, 0, 5, TimeUnit.SECONDS);
 	}
 
 	private void updateOrdersList() {
-	    Platform.runLater(() -> {
-	    	//TODO: fetch all orders from the database
-	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-	        LocalDate today = LocalDate.now();
-//	        ordersForNow.clear(); // Clear the existing items
-	        for (OrderInTable order : ordersForNow) {
-	            LocalTime exitTime = LocalTime.parse(order.getEstimatedExitTime(), formatter);
-	            LocalDateTime estimatedExit = LocalDateTime.of(today, exitTime);
+		Platform.runLater(() -> {
+			LocalDate today = LocalDate.now();
+			ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Import_All_Orders_For_Now,
+					employee.getRelatedPark().getParkId());
+			ClientApplication.client.accept(request);
+			ServerResponseBackToClient response = ClientCommunication.responseFromServer;
 
-	            long minutesLeft = ChronoUnit.MINUTES.between(LocalDateTime.now(), estimatedExit);
-	            order.setTimeLeftInPark(String.valueOf(minutesLeft)); // Assuming you have a setter for this property
-	            inParkTable.refresh();
-//	            ordersForNow.add(order);
-	        }
-	    });
+			ArrayList<Order> listOfOrders = (ArrayList<Order>) response.getMessage();
+			ordersForNow.clear();
+			for (Order order : listOfOrders) {
+				ordersForNow.add(new OrderInTable(order));
+			}
+
+			inParkTable.refresh();
+		});
 	}
-	
+
 	public void onEnterParkClicked() {
-		//TODO: search for relevant order in database
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-		OrderInTable newOrder = new OrderInTable("5", "10", "0503418900","17:10" , "21:00", "17:10", "");
-		ordersForNow.add(newOrder);
+		selectedOrder = inParkTable.getSelectionModel().getSelectedItem();
+		if (selectedOrder == null) {
+			showErrorMessage("You must select order from table before clicking!");
+			return;
+		} else if (selectedOrder.getStatus().equals("In Park")) {
+			showErrorMessage("You choose order already inside park");
+			return;
+		}
+
+		Integer orderId = Integer.parseInt(selectedOrder.getOrderId());
+		if (selectedOrder.getIsPaid().equals("No")) {
+			ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Show_Payment_At_Entrance, orderId);
+			ClientApplication.client.accept(request);
+			ServerResponseBackToClient response = ClientCommunication.responseFromServer;
+			Order order = (Order)response.getMessage();
+			
+			ButtonType payNow=new ButtonType("Pay Now");
+			double price = calculatePriceByOrderType(order);
+	        Duration duration = Duration.between(order.getEnterDate(), order.getExitDate());
+	        long estimatedVisitTime = duration.toHours();
+	        
+	        //ParkNameEnum parkName,OrderTypeEnum type,String firstName,String lastName,double totalPrice,long estimatedTimeVisit
+			String paymentReceipt = NotificationMessageTemplate.entrancePaymentReceiptMessage(order.getParkName(),order.getOrderType(),order.getFirstName(), order.getLastName(),
+					order.getNumberOfVisitors(),price,estimatedVisitTime);
+			
+			AlertPopUp alert = new AlertPopUp(AlertType.CONFIRMATION,"Payment Notification", "Pay Now", paymentReceipt,payNow,ButtonType.CLOSE);
+			Optional<ButtonType> result = alert.showAndWait();
+			
+			if(result.isPresent() && result.get() == ButtonType.CLOSE) {
+				return;
+			}
+			
+		}
+		selectedOrder.setIsPaid("Yes");
 		inParkTable.refresh();
+		ClientRequestDataContainer request = new ClientRequestDataContainer(
+				ClientRequest.Update_Order_Status_In_Park, orderId);
+		ClientApplication.client.accept(request);
+		ServerResponseBackToClient response = ClientCommunication.responseFromServer;
+		hideErrorMessage();
+
+		return;
+
 	}
-	
+
 	public void onNewVisitClicked() {
-		//TODO: open handleoccasionalvisit screen
+		// TODO: open handleoccasionalvisit screen
+		// TODO : create new order and mark status as "In Park".
+		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/HandleOccasionalVisitScreen.fxml",
+				ApplicationViewType.HandleOccasionalVisitScreen,new EntitiesContainer(employee));
+		screen.setCenter(dashboard);
+
 	}
-	
-	public void onCancelSelectedOrderClicked() {
-		
+
+	public void onNotArrivedClicked() {
+		selectedOrder = inParkTable.getSelectionModel().getSelectedItem();
+		if (selectedOrder == null) {
+			showErrorMessage("You must select order from table before clicking!");
+			return;
+		} else if (selectedOrder.getStatus().equals("In Park")) {
+			showErrorMessage("You choose order already inside park");
+			return;
+		}
+
+		String enterTime = selectedOrder.getEstimatedEnterTime();
+		LocalDateTime currentTime = LocalDateTime.now();
+		LocalDateTime estimatedEnterTime = LocalDateTime.parse(enterTime);
+		if (currentTime.isBefore(estimatedEnterTime)) {
+			showErrorMessage("Too early to mark this order as not arrived");
+			return;
+		}
+
+		if (selectedOrder.getOrderTable().equals("Occasional")) {
+			showErrorMessage("Can't make occasional visits as not arrived!");
+			return;
+		}
+
+		selectedOrder.setStatus("Time Passed");
+		inParkTable.refresh();
+		Integer orderId = Integer.parseInt(selectedOrder.getOrderId());
+		ClientRequestDataContainer request = new ClientRequestDataContainer(
+				ClientRequest.Update_Order_Status_Time_Passed, orderId);
+		ClientApplication.client.accept(request);
+		ServerResponseBackToClient response = ClientCommunication.responseFromServer;
+		hideErrorMessage();
+
+		return;
+
 	}
-	
+
 	public void onExitParkClicked() {
-		
+		selectedOrder = inParkTable.getSelectionModel().getSelectedItem();
+		if (selectedOrder == null) {
+			showErrorMessage("You must select order from table before clicking!");
+			return;
+		} else if (selectedOrder.getStatus().equals("Confirmed")) {
+			showErrorMessage("You choose order which not in park yet");
+			return;
+		}
+
+		selectedOrder.setStatus("Completed");
+		inParkTable.refresh();
+		ArrayList<Object> dataForServer = new ArrayList<Object>();
+		dataForServer.add(Integer.parseInt(selectedOrder.getOrderId()));
+		dataForServer.add(selectedOrder.getOrderTable());
+		ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Update_Order_Status_Completed,
+				dataForServer);
+		ClientApplication.client.accept(request);
+		ServerResponseBackToClient response = ClientCommunication.responseFromServer;
+		hideErrorMessage();
+
+		return;
+
 	}
-	
+
 	private void hideErrorMessage() {
 		errorMessageLabel.setText("");
 		errorSection.setVisible(false);
 	}
-	
+
 	private void showErrorMessage(String error) {
 		errorSection.setVisible(true);
 		errorMessageLabel.setText(error);
+	}
+
+	private double calculatePriceByOrderType(Order order) {
+		double priceAtEntrance=0;
+		
+		switch (order.getOrderType()) {
+		case Solo_PreOrder:
+		case Family_PreOrder:
+			priceAtEntrance = order.getPrice() * order.getNumberOfVisitors()*EntranceDiscount.SOLO_FAMILY_PREORDER_DISCOUNT;
+			break;
+		case Group_PreOrder:
+			priceAtEntrance = order.getPrice() * (order.getNumberOfVisitors() + 1)
+					* EntranceDiscount.GROUP_PREORDER_DISCOUNT;
+			break;
+		}
+		return priceAtEntrance;
+
+	}
+
+	@Override
+	public void cleanUp() {
+		if (scheduler != null && !scheduler.isShutdown()) {
+			scheduler.shutdownNow();
+		}
+
 	}
 }

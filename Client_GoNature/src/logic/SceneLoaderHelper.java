@@ -8,6 +8,7 @@ import gui.controller.OrderSummaryScreenController;
 import gui.controller.CreateReportsScreenController;
 import gui.controller.CustomerHomepageScreenController;
 import gui.controller.EmployeeHomepageScreenController;
+import gui.controller.HandleOccasionalVisitorScreenController;
 import gui.controller.RescheduleOrderScreenController;
 import gui.controller.HandleOrderScreenController;
 import gui.controller.IThreadController;
@@ -105,8 +106,9 @@ public class SceneLoaderHelper {
 			}
 			
 			case Park_Entrance_Screen:{
-				ParkEntranceScreenController controller = new ParkEntranceScreenController();
+				ParkEntranceScreenController controller = new ParkEntranceScreenController(screen,data.getEntity1());
 				loader.setController(controller);
+				runningController = controller;
 				break;
 			}
 			
@@ -130,6 +132,12 @@ public class SceneLoaderHelper {
 			
 			case View_Reports_Screen:{
 				ViewReportsScreenController controller = new ViewReportsScreenController(data.getEntity1());
+				loader.setController(controller);
+				break;
+			}
+			
+			case HandleOccasionalVisitScreen:{
+				HandleOccasionalVisitorScreenController controller = new HandleOccasionalVisitorScreenController(screen, data.getEntity1());
 				loader.setController(controller);
 				break;
 			}

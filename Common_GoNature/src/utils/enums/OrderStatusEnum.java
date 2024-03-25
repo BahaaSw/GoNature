@@ -11,9 +11,9 @@ public enum OrderStatusEnum {
 	Occasional_Order ("Occasional Order"), // for occasional visit, park employee creates new order
 	Cancelled ("Cancelled"), //
 	In_Waiting_List ("In Waiting List"), // order is in waiting list
-	In_Park ("In park"), // visitors entered park, and order has been done
+	In_Park ("In Park"), // visitors entered park, and order has been done
 	Completed ("Completed"), // visitors left park
-	Time_Passed ("Passed"), // visitors did not come to the order and did not cancelled it
+	Time_Passed ("Time Passed"), // visitors did not come to the order and did not cancelled it
 	Irrelevant ("Irrelevant"); //For orders in waiting list which did not get apply
 	
 	private static final Map<String, OrderStatusEnum> enumMap = new HashMap<>();

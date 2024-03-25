@@ -16,8 +16,8 @@ public enum ClientRequest {
 	Update_Order_Status_InWaitingList, // After the client entered waiting list
 	Update_Order_Status_AvailableSpot, // After a spot was released from waiting list
 	Update_Order_Status_In_Park, // After the client entered park (by park entrance of park employee)
-	Update_Order_Status_Done, // After the client leaves park (by park entrance of park employee or passed estimated visit time)
 	Update_Order_Status_Time_Passed, // After the datetime of order passed, and client didn't enter park.
+	Update_Order_Status_Completed,
 	
 //	Search_Time_Passed_Orders,
 	Search_Order_For_Enter_Park, // After the park employee click enter park or new visit (occasional visit), check if order exists.
@@ -36,7 +36,6 @@ public enum ClientRequest {
 	Update_Guide_As_Denied, // After Service Employee click on Cancel
 	
 	Import_Park_Spots_Data, // After Park Employee / Park Manager click on Park Spots, Or Department Manager select park
-	Import_All_Parks, // TODO: Don't implement yet, wait till we need it
 	
 	Make_New_Park_Capacity_Request, // After Park Manager make request
 	Make_New_Park_Reserved_Entries_Request, // After Park Manager make request
@@ -60,8 +59,10 @@ public enum ClientRequest {
 	Create_Usage_Report, // After park manager generate usage reports.
 	Import_Usage_Report,// After park manager request view usage reports.
 	
-	
+	Show_Payment_At_Entrance,
 	Search_For_Notified_Orders,
 	Search_For_Available_Date, // gal - added
 	Search_For_Specific_Park,
+	Import_All_Orders_For_Now,
+	Prepare_New_Occasional_Order,
 }
