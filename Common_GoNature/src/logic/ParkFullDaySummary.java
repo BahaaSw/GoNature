@@ -6,37 +6,39 @@ import utils.enums.ParkNameEnum;
 
 public class ParkFullDaySummary implements Serializable {
 
-	private int day;
-	private boolean isfull;
+	private int hour;
+	private int timesFullInSpecificHour;
 	private ParkNameEnum park;
 	
 	public ParkFullDaySummary() {};
 
-	public ParkFullDaySummary(int day, boolean isfull, ParkNameEnum park) {
+
+	public ParkFullDaySummary(int hour, int timesFullInSpecificHour, ParkNameEnum park) {
 		super();
-		this.day = day;
-		this.isfull = isfull;
+		this.hour = hour;
+		this.timesFullInSpecificHour = timesFullInSpecificHour;
 		this.park = park;
 	}
 
-	public int getDay() {
-		return day;
-	}
-
-	public void setDay(int day) {
-		this.day = day;
-	}
-
-	public boolean isIsfull() {
-		return isfull;
-	}
-
-	public void setIsfull(boolean isfull) {
-		this.isfull = isfull;
-	}
 
 	public ParkNameEnum getPark() {
 		return park;
+	}
+
+	public int getHour() {
+		return hour;
+	}
+
+	public void setHour(int hour) {
+		this.hour = hour;
+	}
+
+	public int getTimesFullInSpecificHour() {
+		return timesFullInSpecificHour;
+	}
+
+	public void setTimesFullInSpecificHour(int timesFullInSpecificHour) {
+		this.timesFullInSpecificHour = timesFullInSpecificHour;
 	}
 
 	public void setPark(ParkNameEnum park) {

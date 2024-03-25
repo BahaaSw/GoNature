@@ -46,7 +46,8 @@ public class CustomerScreenController implements Initializable, IScreenControlle
 	public Button backButton;
 	@FXML
 	public Button logoutButton;
-	
+	@FXML
+    public Button notificationButton;
 //	private Customer customer;
 	private ExternalUser customer;
 	private UserTypeEnum currentCustomer;
@@ -76,6 +77,7 @@ public class CustomerScreenController implements Initializable, IScreenControlle
 		
 	}
 	
+	
 	private void updateVisitorMenu(Visitor visitor) {
 		userIdLabel.setText(visitor.getVisitorId());
 		accountTypeLabel.setText(visitor.getUserType().toString());
@@ -102,6 +104,11 @@ public class CustomerScreenController implements Initializable, IScreenControlle
 		else
 			onLogoutClicked();
 	}
+	
+	public void onNotificationButtonClicked() {
+        AlertPopUp alert = new AlertPopUp(AlertType.INFORMATION, "Notification", "There is no Notifications", "");
+        alert.showAndWait();
+    }
 	
 	public void onHomeClicked() {
 		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/CustomerHomepageScreen.fxml",

@@ -3,6 +3,7 @@ package jdbc.query;
 import java.sql.Connection;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -87,9 +88,29 @@ public class NotificationQueries {
 			ex.printStackTrace();
 			return;
 		}
-	    
-	    
 	}
-	
-	
+	    
+    public Boolean CheckNotifiedFromServer24Hours(int OrderId)
+	{
+	    
+	    try {
+			Connection con = MySqlConnection.getInstance().getConnection();
+			PreparedStatement stmt = con.prepareStatement("SELECT OrderStatus WHERE OrderId=?");
+			
+			stmt.setInt(1, OrderId);
+			ResultSet rs = stmt.executeQuery();
+
+			// if the query ran successfully, but returned as empty table.
+			if (!rs.next()) {
+				return false;
+			}else if(rs.getString(1).equals("Notified"))
+				return true;
+			return false;
+		} catch (SQLException ex) 
+		{
+			ex.printStackTrace();
+			return false;
+		}
+    
+	}
 }
