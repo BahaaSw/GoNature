@@ -162,6 +162,9 @@ public class ClientRequestHandler {
 			response = handleSearchForNotifiedOrders(data, client);
 			break;
 
+		case Delete_Old_Order:
+			response = handleDeleteOldOrder(data,client);
+			break;
 
 		default:
 			// TODO: implement all relevant actions
@@ -170,6 +173,15 @@ public class ClientRequestHandler {
 		return response;
 	}
 
+	private ServerResponseBackToClient handleDeleteOldOrder(ClientRequestDataContainer data, ConnectionToClient client) {
+		Order order = (Order)data.getData();
+		boolean isDeleted = QueryControl.orderQueries.deleteOrderFromTable(order);
+		if(isDeleted)
+			return new ServerResponseBackToClient(ServerResponse.Order_Deleted_Successfully, order);
+		else
+			return new ServerResponseBackToClient(ServerResponse.Order_Deleted_Failed, order);
+	}
+	
 	private ServerResponseBackToClient handlePrepareNewOccasionalOrder(ClientRequestDataContainer data,
 			ConnectionToClient client) {
 		Order order = (Order) data.getData();

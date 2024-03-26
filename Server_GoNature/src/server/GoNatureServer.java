@@ -258,8 +258,12 @@ public class GoNatureServer extends AbstractServer {
 			if (cancelOrdersNotConfirmedWithin2Hours != null && cancelOrdersNotConfirmedWithin2Hours.isAlive())
 				cancelOrdersNotConfirmedWithin2Hours.interrupt();
 
+			if (cancelTimePassedWaitingListOrders != null && cancelTimePassedWaitingListOrders.isAlive())
+				cancelTimePassedWaitingListOrders.interrupt();
+			
 			sendNotifications24HoursBefore.join(); // Wait for the thread to stop
 			cancelOrdersNotConfirmedWithin2Hours.join();
+			cancelTimePassedWaitingListOrders.join();
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt(); // Restore interrupted status
 		}
@@ -302,6 +306,7 @@ public class GoNatureServer extends AbstractServer {
 			// Run the 2 relevant threads
 			sendNotifications24HoursBefore.start();
 			cancelOrdersNotConfirmedWithin2Hours.start();
+			cancelTimePassedWaitingListOrders.start();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			serverController.printToLogConsole("Error - could not listen for clients!");
@@ -389,26 +394,26 @@ public class GoNatureServer extends AbstractServer {
 			}
 		});
 
-//		cancelTimePassedWaitingListOrders = new Thread(()->{
-//			while (!Thread.interrupted()) {
-//				try {
-//					Thread.sleep(1000);
-//					LocalDateTime currentTime = LocalDateTime.now();
-//					ArrayList<Order> ordersToNotify = QueryControl.notificationQueries
-//							.CheckWaitingListAndRemoveAllIrrelcantOrders(currentTime);
-//
-//					if (ordersToNotify != null && !ordersToNotify.isEmpty()) {
-//						for (Order order : ordersToNotify) {
-//							QueryControl.notificationQueries.automaticallyCancelAllNotifiedOrders(order);
-//							Platform.runLater(() -> serverController.printToLogConsole("Notification On Cancel Sent"));
-//						}
-//					}
-//
-//				} catch (InterruptedException e) {
-//					Thread.currentThread().interrupt();
-//					break;
-//				}
-//			}
-//		});
+		cancelTimePassedWaitingListOrders = new Thread(()->{
+			while (!Thread.interrupted()) {
+				try {
+					Thread.sleep(1000);
+					LocalDateTime currentTime = LocalDateTime.now();
+					ArrayList<Order> ordersToNotify = QueryControl.notificationQueries
+							.CheckWaitingListAndRemoveAllIrrelcantOrders(currentTime);
+
+					if (ordersToNotify != null && !ordersToNotify.isEmpty()) {
+						Platform.runLater(() -> serverController.printToLogConsole(String.format("All orders in waiting list for %s marked as irrelevant", currentTime.toString())));
+						for (Order order : ordersToNotify) {
+							QueryControl.notificationQueries.automaticallyMarkOrdersAsIrrelevant(order);
+						}
+					}
+
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+					break;
+				}
+			}
+		});
 	}
 }

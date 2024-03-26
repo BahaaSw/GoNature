@@ -48,7 +48,7 @@ public enum ClientRequest {
 	Update_Park_Estimated_Visit_Time_Request_Denied, // After department manager deny request.
 	Import_All_Pending_Requests,
 	Update_Request_In_Database,
-	
+	Delete_Old_Order,
 	
 	Create_Visits_Report, // After department manager generate visits report
 	Import_Visits_Report, // After department manager request view visits report
