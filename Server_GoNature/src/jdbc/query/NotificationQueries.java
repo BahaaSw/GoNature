@@ -145,6 +145,7 @@ public class NotificationQueries {
 		
 }
 	
+	//TODO: USE THIS QUERY
 	public void CheckWaitingListAndRemoveAllIrrelcantOrders(LocalDateTime localDateTime)
 	{
 	    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -170,6 +171,7 @@ public class NotificationQueries {
 	    
 	}
 	
+	//NOTICE : NOT USED THAT QUERY!!
 	public boolean CheckNotifiedFromServer24Hours(int OrderId)
     {
 

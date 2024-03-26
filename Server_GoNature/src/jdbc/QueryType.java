@@ -3,7 +3,6 @@ package jdbc;
 import java.util.HashMap;
 import java.util.Map;
 
-import utils.enums.OrderStatusEnum;
 
 public enum QueryType {
 	Insert ("Insert"),

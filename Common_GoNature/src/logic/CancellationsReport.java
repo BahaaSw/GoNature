@@ -9,6 +9,10 @@ import utils.enums.ParkNameEnum;
 import utils.enums.ReportType;
 
 public class CancellationsReport extends Report implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4085720282255848226L;
 	private HashMap<Integer, ParkDailySummary> reportData;
 	private double averageCancels = 0;
 	private double medianCancels = 0;

@@ -1,7 +1,6 @@
 package logic;
 
 import java.io.Serializable;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -10,6 +9,10 @@ import utils.enums.ReportType;
 
 public class VisitsReport extends Report implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8835433837087468966L;
 	private HashMap<Integer, ArrayList<Integer>> totalVisitsByEnterTime;
 	private HashMap<Integer,ArrayList<Integer>> totalIdleTimeByGap;
 	

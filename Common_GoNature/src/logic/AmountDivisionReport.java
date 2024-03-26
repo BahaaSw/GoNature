@@ -7,6 +7,10 @@ import utils.enums.ReportType;
 
 public class AmountDivisionReport extends Report implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5951223164371041856L;
 	private ParkAmountSummary reportData;
 	private byte[] blobPdfContent;
 

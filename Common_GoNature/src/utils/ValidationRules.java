@@ -11,6 +11,7 @@ public class ValidationRules {
 		try {
 			if(ip.equals(""))
 				return false;
+			@SuppressWarnings("unused")
 			InetAddress inetAddress = InetAddress.getByName(ip);
 			return true;
 		}catch(UnknownHostException e) {

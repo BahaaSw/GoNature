@@ -7,6 +7,10 @@ import utils.enums.ParkNameEnum;
 public class ParkDailySummary implements Serializable{
 
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -932253738615990688L;
 	private int day;
 	private int cancelsOrders;
 	private int timePassedOrders;

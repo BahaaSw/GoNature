@@ -1,10 +1,12 @@
 package gui.controller;
 
-import java.util.ArrayList;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -13,7 +15,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import jdbc.DBConnectionDetails;
 import logic.ClientConnection;
-import logic.User;
 import ocsf.ConnectionToClient;
 import server.GoNatureServer;
 
@@ -33,13 +34,15 @@ import server.GoNatureServer;
  * The ServerGuiController class is the controller which connect the Server Gui Screen 
  * with the GoNatureServer instance (and the user who click on the buttons)
  */
-public class ServerScreenController {
+public class ServerScreenController implements Initializable {
 	
 	//javaFX binding elements
 	@FXML
 	private Button connectServer;
 	@FXML
 	private Button disconnectServer;
+	@FXML
+	private Button importData;
 	@FXML
 	private TextField portField;
 	@FXML
@@ -68,6 +71,12 @@ public class ServerScreenController {
 	// Empty Constructor
 	public ServerScreenController() 
 	{
+		
+	}
+	
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		importData.setVisible(false);
 		
 	}
 	
@@ -108,6 +117,7 @@ public class ServerScreenController {
 			GoNatureServer.startServer(database, portNumber, this);
 			logLine=1;
 			serverLog.clear();
+			importData.setVisible(true);
 			// initialize the table view
 			initializeViewTable();
 			
@@ -128,8 +138,13 @@ public class ServerScreenController {
 		disconnectServer.setDisable(true);
 		connectServer.setDisable(false);
 		disableFields(false);
+		importData.setVisible(false);
 		connectedClientsList.clear();
 
+	}
+	
+	public void onImportDataClicked() {
+		
 	}
 	
 	/**
@@ -183,6 +198,8 @@ public class ServerScreenController {
 		dbUsernameField.setEditable(flag);
 		dbPasswordField.setEditable(flag);
 	}
+
+
 	
 	
 }

@@ -6,6 +6,10 @@ import utils.enums.ParkNameEnum;
 
 public class ParkFullDaySummary implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4838116767497819824L;
 	private int hour;
 	private int timesFullInSpecificHour;
 	private ParkNameEnum park;

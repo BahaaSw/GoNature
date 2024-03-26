@@ -6,6 +6,10 @@ import utils.enums.ClientRequest;
 
 public class ClientRequestDataContainer implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1429099659854753004L;
 	private ClientRequest request;
 	private Object data;
 	

@@ -2,11 +2,14 @@ package logic;
 
 import java.io.Serializable;
 
-import utils.enums.ParkNameEnum;
 import utils.enums.UserStatus;
 import utils.enums.UserTypeEnum;
 
 public class User extends ExternalUser implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3069940714226102732L;
 	protected String userId;
 	protected String username;
 	protected String password;

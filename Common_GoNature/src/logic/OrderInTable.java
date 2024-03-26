@@ -1,10 +1,8 @@
 package logic;
 
-import java.io.Serializable;
-
 import javafx.beans.property.SimpleStringProperty;
 
-public class OrderInTable implements Serializable{
+public class OrderInTable {
 	private SimpleStringProperty orderId;
 	private SimpleStringProperty isPaid;
 	private SimpleStringProperty amountOfVisitors;

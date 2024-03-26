@@ -9,7 +9,6 @@ import java.time.YearMonth;
 import java.util.ArrayList;
 
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
@@ -311,7 +310,6 @@ public class ReportGenerator {
 			// Header Font
 			Font headerFont = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD);
 			Font boldFont = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
-			Font normalFont = new Font(Font.FontFamily.HELVETICA, 12, Font.NORMAL);
 
 			// Header
 			Paragraph header = new Paragraph("Visits Report", headerFont);
@@ -475,7 +473,7 @@ public class ReportGenerator {
 			// Add the second grouped bar chart
 			dataset = new DefaultCategoryDataset();
 			for (int j=0;j<8;j++) {
-				ArrayList<Integer> data = report.getEnterTimeData(j);
+//				ArrayList<Integer> data = report.getEnterTimeData(j);
 				String column = String.format("%s:00-%s:59",8+j,8+j+1);
 			    Integer totalSolo = solo.get(j)+soloPreorder.get(j);
 			    Integer totalFamily = familyPreorder.get(j);
@@ -514,6 +512,7 @@ public class ReportGenerator {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static byte[] generateTotalVisitorsAmountReportAsPdf(AmountDivisionReport report) {
 		Document document = new Document();
 		// Create a temporary file
@@ -546,6 +545,7 @@ public class ReportGenerator {
 			document.add(new Paragraph("\n"));
 
 			// pie Chart
+			@SuppressWarnings("rawtypes")
 			DefaultPieDataset dataset = new DefaultPieDataset();
 			dataset.setValue("Solo", report.getReportData().getAmountSolo());
 	        dataset.setValue("Family", report.getReportData().getAmountFamily());
@@ -586,10 +586,6 @@ public class ReportGenerator {
 		}
 
 
-	}
-	
-	public static byte[] generateUsageReportAsPdf() {
-		return null;
 	}
 	
 	private static JFreeChart createBarChart(final CategoryDataset dataset,String charTitle, String xAxis,

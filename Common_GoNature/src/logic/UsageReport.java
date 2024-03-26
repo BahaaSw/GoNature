@@ -8,6 +8,10 @@ import utils.enums.ReportType;
 
 public class UsageReport extends Report implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5930390679218481702L;
 	private HashMap<Integer, ParkFullDaySummary> reportData;
 	private ParkFullDaySummary currentDaySummary;
 

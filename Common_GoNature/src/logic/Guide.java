@@ -5,6 +5,11 @@ import utils.enums.UserTypeEnum;
 
 public class Guide extends User implements ICustomer {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -469349474445294552L;
+
 	public Guide() {}
 	
 	public Guide(String userId) {
