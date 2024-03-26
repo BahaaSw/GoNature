@@ -651,5 +651,24 @@ public class OrderQueries {
 	}
 	
 	
+	public boolean deleteOrderFromTable(Order order) {
+		try {
+			Connection con = MySqlConnection.getInstance().getConnection();
+			PreparedStatement stmt = con.prepareStatement("DELETE FROM preorders WHERE OrderId = ?");
+			
+			stmt.setInt(1,order.getOrderId());
+			
+			int rs = stmt.executeUpdate();
+			if(rs==0)
+				return false;
+			
+			return true;
+			
+			
+		}catch(SQLException ex) {
+			return false;
+		}
+	}
+	
 	
 }

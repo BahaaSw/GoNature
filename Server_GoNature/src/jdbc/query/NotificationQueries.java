@@ -81,6 +81,26 @@ public class NotificationQueries {
 		}
 	}
 	
+	public void automaticallyMarkOrdersAsIrrelevant(Order order) {
+		try {
+			Connection con = MySqlConnection.getInstance().getConnection();
+			PreparedStatement stmt = con.prepareStatement("UPDATE preorders SET OrderStatus = 'Irrelevant' WHERE OrderId = ?");
+			
+			stmt.setInt(1, order.getOrderId());
+			int rs = stmt.executeUpdate();
+
+			// if the query ran successfully, but returned as empty table.
+			if (rs==0) {
+				return;
+			}
+	
+		} catch (SQLException ex) 
+		{
+			ex.printStackTrace();
+			return;
+		}
+	}
+	
 	public ArrayList<Order> CheckAllOrdersAndChangeToNotifedfNeeded(LocalDateTime localDateTime)
 	{
 		Connection con = MySqlConnection.getInstance().getConnection();
@@ -146,29 +166,47 @@ public class NotificationQueries {
 }
 	
 	//TODO: USE THIS QUERY
-	public void CheckWaitingListAndRemoveAllIrrelcantOrders(LocalDateTime localDateTime)
-	{
-	    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	public ArrayList<Order> CheckWaitingListAndRemoveAllIrrelcantOrders(LocalDateTime localDateTime)
+	{   
+		ArrayList<Order> irrelevantOrders = new ArrayList<Order>();
+	    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:00");
 	    String dateTimeString = localDateTime.format(formatter);
-	    try {
+		
+		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
-			PreparedStatement stmt = con.prepareStatement("UPDATE waitinglist SET status = 'irrelevant' WHERE OrderStatus = 'Wait Notify' AND ? > EnterDate");
+			PreparedStatement stmt = con.prepareStatement("SELECT OrderId,ParkId,OwnerId,OwnerType,Email,Phone,FirstName,LastName,Amount FROM preorders WHERE (OrderStatus = 'In Waiting List' OR OrderStatus = 'Notified Waiting List') AND EnterDate < ?");
 			
 			stmt.setString(1, dateTimeString);
-			int rs = stmt.executeUpdate();
+			ResultSet rs= stmt.executeQuery();
 
 			// if the query ran successfully, but returned as empty table.
-			if (rs==0) {
-				return;
+			if (!rs.next()) {
+				return null;
 			}
+			
+			rs.previous();
+			
+			while(rs.next()) {
+				Order orderToAdd = new Order();
+				orderToAdd.setOrderId(rs.getInt(1));
+				orderToAdd.setParkName(ParkNameEnum.fromParkId(rs.getInt(2)));
+				orderToAdd.setUserId(String.valueOf(rs.getInt(3)));
+				orderToAdd.setOwnerType(UserTypeEnum.fromString(rs.getString(4)));
+				orderToAdd.setEmail(rs.getString(5));
+				orderToAdd.setTelephoneNumber(rs.getString(6));
+				orderToAdd.setFirstName(rs.getString(7));
+				orderToAdd.setLastName(rs.getString(8));
+				orderToAdd.setNumberOfVisitors(rs.getInt(9));
+				irrelevantOrders.add(orderToAdd);
+			}
+			
+			return irrelevantOrders;
 	
 		} catch (SQLException ex) 
 		{
 			ex.printStackTrace();
-			return;
+			return null;
 		}
-	    
-	    
 	}
 	
 	//NOTICE : NOT USED THAT QUERY!!

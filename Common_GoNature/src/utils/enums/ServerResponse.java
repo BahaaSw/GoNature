@@ -41,6 +41,8 @@ public enum ServerResponse {
 	
 	Order_Updated_Successfully,
 	Order_Updated_Failed,
+	Order_Deleted_Successfully,
+	Order_Deleted_Failed,
 	
 	// Request Section
 	Last_Request_With_Same_Type_Still_Pending,

@@ -138,23 +138,40 @@ public class HandleOrderScreenController implements Initializable {
 		case Notified_Waiting_List:
 			updateButton.setDisable(true);
 			break;
+		case Wait_Notify:
+			confirmButton.setDisable(true);
+			break;
 		}
 	}
 
 	private void onParkChangeSelection(ActionEvent event) {
-		selectedPark = parksList.getValue();
+		if (parksList.getValue() instanceof ParkNameEnum) {
+		    selectedPark = parksList.getValue();
+		} else {
+		    // Handle the error scenario, maybe log a warning or throw a custom exception
+		}
 	}
 
 	private void onTimeChangeSelection(ActionEvent event) {
-		selectedTime = pickTime.getValue();
+		if (pickTime.getValue() instanceof String) {
+			selectedTime = pickTime.getValue();
+		} else {
+		    // Handle the error scenario, maybe log a warning or throw a custom exception
+		}
 	}
 
 	private void onVisitTypeChangeSelection(ActionEvent event) {
-		selectedVisitType = visitType.getValue();
+		if (visitType.getValue() instanceof OrderTypeEnum) {
+			selectedVisitType = visitType.getValue();
+		} else {
+		    // Handle the error scenario, maybe log a warning or throw a custom exception
+		}
+		
 	}
 
 	private void initializeAllGuiFields() {
 		parksList.setValue(requestedOrder.getParkName());
+		selectedPark = requestedOrder.getParkName();
 		firstNameField.setText(requestedOrder.getFirstName());
 		lastNameField.setText(requestedOrder.getLastName());
 		idField.setText(requestedOrder.getUserId());
@@ -162,11 +179,13 @@ public class HandleOrderScreenController implements Initializable {
 		emailField.setText(requestedOrder.getEmail());
 		LocalDateTime orderTime = requestedOrder.getEnterDate();
 		LocalDate enterTime = orderTime.toLocalDate();
-		String exitTime = orderTime.toString().split("T")[1];
+		String time = orderTime.toString().split("T")[1];
 		pickDate.setValue(enterTime);
-		pickTime.setValue(exitTime);
+		pickTime.setValue(time);
+		selectedTime = time;
 		numberOfVisitorsField.setText(String.format("%d", requestedOrder.getNumberOfVisitors()));
 		visitType.setValue(requestedOrder.getOrderType());
+		selectedVisitType = requestedOrder.getOrderType();
 		statusField.setText(requestedOrder.getStatus().toString());
 	}
 
@@ -307,23 +326,29 @@ public class HandleOrderScreenController implements Initializable {
 
 	@SuppressWarnings("incomplete-switch")
 	public void onUpdateClicked() {
+		AlertPopUp alert;
 		if(!validateGuiFields()) {
 			return;
 		}
 		
-		ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Update_Order_Status_Canceled,
-				requestedOrder);
+		Order newOrder = createOrderFromFields();
+		ClientRequestDataContainer request= new ClientRequestDataContainer(ClientRequest.Add_New_Order_If_Available,newOrder);
 		ClientApplication.client.accept(request);
 		ServerResponseBackToClient response = ClientCommunication.responseFromServer;
-		
-		Order newOrder = createOrderFromFields();
-		request= new ClientRequestDataContainer(ClientRequest.Add_New_Order_If_Available,newOrder);
-		ClientApplication.client.accept(request);
-		response = ClientCommunication.responseFromServer;
 		AnchorPane view;
+		
+		alert = new AlertPopUp(AlertType.CONFIRMATION, "Manage Order", "Update Order", "Your old order will be deleted, Are you sure?",ButtonType.YES,ButtonType.CLOSE);
+		Optional<ButtonType> result = alert.showAndWait();
+		
+		if(result.isPresent() && result.get() == ButtonType.CLOSE) {
+			return;
+		}
 		
 		switch(response.getRensponse()) {
 		case Requested_Order_Date_Is_Available:
+			request = new ClientRequestDataContainer(ClientRequest.Delete_Old_Order,
+					requestedOrder);
+			ClientApplication.client.accept(request);
 			view = GuiHelper.loadRightScreenToBorderPaneWithController(screen,
 					"/gui/view/OrderSummaryScreen.fxml", ApplicationViewType.Order_Summary_Screen,
 					new EntitiesContainer(response.getMessage()));
@@ -331,15 +356,16 @@ public class HandleOrderScreenController implements Initializable {
 			break;
 			
 		case Requested_Order_Date_Unavaliable:
-			view = GuiHelper.loadRightScreenToBorderPaneWithController(screen,
-					"/gui/view/RescheduleOrderScreen.fxml", ApplicationViewType.Reschedule_Order_Screen,
-					new EntitiesContainer(response.getMessage()));
-			screen.setCenter(view);
+			alert = new AlertPopUp(AlertType.INFORMATION, "Notification","Date Unavailable","Sorry, this date is unavailable");
+			alert.showAndWait();
 			break;
 		case Too_Many_Visitors:
-			AlertPopUp alert = new AlertPopUp(AlertType.INFORMATION, "Notification","Order Limit","This are too many visitors for our park");
+			
+			alert = new AlertPopUp(AlertType.INFORMATION, "Notification","Order Limit","This are too many visitors for our park");
 			alert.showAndWait();
 			break;
 		}
+		
+
 	}
 }
