@@ -10,19 +10,13 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
-import javax.swing.DefaultBoundedRangeModel;
-
 import jdbc.DatabaseResponse;
 import jdbc.MySqlConnection;
-import jdbc.QueryType;
 import logic.Order;
-import logic.OrderInTable;
 import logic.Park;
-import utils.enums.EmployeeTypeEnum;
 import utils.enums.OrderStatusEnum;
 import utils.enums.OrderTypeEnum;
 import utils.enums.ParkNameEnum;
-import utils.enums.UserStatus;
 import utils.enums.UserTypeEnum;
 
 public class OrderQueries {
@@ -44,7 +38,7 @@ public class OrderQueries {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
 			PreparedStatement stmt = con
-					.prepareStatement("SELECT * FROM preorders WHERE orderId = ? AND OrderStatus!='Cancelled'");
+					.prepareStatement("SELECT * FROM preorders WHERE orderId = ? AND OrderStatus!='Cancelled' AND OrderStatus!='Completed' AND OrderStatus!='Time Passed'");
 			stmt.setInt(1, order.getOrderId());
 			ResultSet rs = stmt.executeQuery();
 
@@ -182,6 +176,8 @@ public class OrderQueries {
 	 *         on failure returns Such_Order_Does_Not_Exists 
 	 *         exception: returns Excpetion_Was_Thrown
 	 */
+	
+	//NOTICE : NOT USED THAT QUERY!!
 	public DatabaseResponse fetchOrderByOwnerID(Order order) {
 
 		try {
@@ -355,6 +351,8 @@ public class OrderQueries {
 	 *  	   on Failure: returns Failed
 	 *         exception: returns Exception_Was_Thrown
 	 */
+	
+	//NOTICE : NOT USED THAT QUERY!!
 	public DatabaseResponse updateOrderPhoneNumber(Order order) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -380,6 +378,8 @@ public class OrderQueries {
 	 *  	   on Failure: returns Failed
 	 *         exception: returns Exception_Was_Thrown
 	 */
+	
+	//NOTICE : NOT USED THAT QUERY!!
 	public DatabaseResponse updateOrderEmail(Order order) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -405,6 +405,7 @@ public class OrderQueries {
 	 *  	   on Failure: returns Failed
 	 *         exception: returns Exception_Was_Thrown
 	 */
+	//NOTICE : NOT USED THAT QUERY!!
 	public DatabaseResponse updateOrderNumberOfVisitors(Order order) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -435,6 +436,8 @@ public class OrderQueries {
 	 * @param requestedType
 	 * @return
 	 */
+	
+	//NOTICE : NOT USED THAT QUERY!!
 	public DatabaseResponse updateOrderType(Order order, OrderTypeEnum requestedType) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -461,6 +464,8 @@ public class OrderQueries {
 	 *  	   on Failure: returns Failed
 	 *         exception: returns Exception_Was_Thrown
 	 */
+	
+	//NOTICE : NOT USED THAT QUERY!!
 	public DatabaseResponse updateOrderEnterDate(Order order, LocalDateTime enterDate) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -487,6 +492,8 @@ public class OrderQueries {
 	 *  	   on Failure: returns Failed
 	 *         exception: returns Exception_Was_Thrown
 	 */
+	
+	//NOTICE : NOT USED THAT QUERY!!
 	public DatabaseResponse updateOrderExitDate(Order order, LocalDateTime exitDate) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -510,6 +517,8 @@ public class OrderQueries {
 	 * @param status - requested order status
 	 * @return the amount of preorder made in the system which currently have the requested status
 	 */
+	
+	//NOTICE : NOT USED THAT QUERY!!
 	public int returnTotalPreOrdersWithStatus(OrderStatusEnum status) {
 		int ordersCount = 0;
 
@@ -532,6 +541,7 @@ public class OrderQueries {
 
 		return ordersCount;
 	}
+	
 	
 	public ArrayList<Order> searchForNotifiedOrdersOfSpecificClient(String customerId){
 		ArrayList<Order> retList = new ArrayList<Order>();

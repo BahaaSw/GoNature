@@ -2,12 +2,10 @@ package client;
 
 import gui.controller.IScreenController;
 import gui.controller.LandingPageScreenController;
-import gui.controller.MakeOrderScreenController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 public class ClientApplication extends Application {
@@ -20,7 +18,6 @@ public class ClientApplication extends Application {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/view/LandingPageScreen.fxml"));
 			landingPageController = new LandingPageScreenController();
 			loader.setController(landingPageController);
-			landingPageController.setStage(primaryStage);
 			runningController=landingPageController;
 			loader.load();
 			Parent p = loader.getRoot();

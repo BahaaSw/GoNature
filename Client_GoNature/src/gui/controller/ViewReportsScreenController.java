@@ -51,7 +51,7 @@ public class ViewReportsScreenController implements Initializable {
 	private ObservableList<String> monthsList = FXCollections.observableArrayList("1", "2", "3", "4", "5", "6", "7",
 			"8", "9", "10", "11", "12");
 
-	private Report requestedReport;
+	private Report requestedReport=null;
 	private ReportType selectedReport = ReportType.Unsupported;
 	private ParkNameEnum selectedPark = ParkNameEnum.None;
 	private String selectedYear = "";
@@ -102,9 +102,10 @@ public class ViewReportsScreenController implements Initializable {
 		selectedMonth = monthSelector.getValue();
 	}
 
+	@SuppressWarnings("incomplete-switch")
 	public void onViewReportClicked() {
 
-		Report report=null;
+		requestedReport=null;
 		ClientRequest reportToOpen=null;
 		if (selectedReport == null) {
 			// TODO: Alert
@@ -112,31 +113,31 @@ public class ViewReportsScreenController implements Initializable {
 		} else {
 			switch (selectedReport) {
 			case CancellationsReport:
-				report = new CancellationsReport(Integer.parseInt(selectedMonth),
+				requestedReport = new CancellationsReport(Integer.parseInt(selectedMonth),
 						Integer.parseInt(selectedYear), selectedPark);
 				reportToOpen=ClientRequest.Import_Cancellations_Report;
 				break;
 			case TotalVisitorsReport:
-				report = new AmountDivisionReport(Integer.parseInt(selectedMonth),
+				requestedReport = new AmountDivisionReport(Integer.parseInt(selectedMonth),
 						Integer.parseInt(selectedYear), selectedPark);
 				reportToOpen=ClientRequest.Import_Total_Visitors_Report;
 				break;
 			case UsageReport:
-				report = new UsageReport(Integer.parseInt(selectedMonth),
+				requestedReport = new UsageReport(Integer.parseInt(selectedMonth),
 				Integer.parseInt(selectedYear), selectedPark);
 				reportToOpen=ClientRequest.Import_Usage_Report;
 				
 				break;
 			case VisitsReports:
-				report = new VisitsReport(Integer.parseInt(selectedMonth),
+				requestedReport = new VisitsReport(Integer.parseInt(selectedMonth),
 						Integer.parseInt(selectedYear), selectedPark);
-				reportToOpen=ClientRequest.Import_Usage_Report;
+				reportToOpen=ClientRequest.Import_Visits_Report;
 				break;
 			default:
 				return;
 			}
 
-			ClientRequestDataContainer request = new ClientRequestDataContainer(reportToOpen, report);
+			ClientRequestDataContainer request = new ClientRequestDataContainer(reportToOpen, requestedReport);
 			ClientApplication.client.accept(request);
 			ServerResponseBackToClient response = ClientCommunication.responseFromServer;
 

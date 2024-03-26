@@ -24,6 +24,8 @@ public class OccasionalQueries {
 	 *         on Failure: returns Such_Order_Does_Not_Exists
 	 *         exception: returns Exception_Was_Thrown
 	 */
+	
+	//NOTICE : NOT USED THAT QUERY!!
 	public DatabaseResponse FetchOccasioanlOrderById(Order order) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -85,6 +87,8 @@ public class OccasionalQueries {
 	 *
 	 * @return returns the amount of occasional visits in park at the moment
 	 */
+	
+	//NOTICE : NOT USED THAT QUERY!!
 	public int ReturnTotalOccasionalVisitsInPark() {
 		int occasionalInPark = 0;
 		try {
@@ -148,6 +152,8 @@ public class OccasionalQueries {
 	 *         on Failure: returns Failed
 	 *         exception: returns Exception_Was_Thrown
 	 */
+	
+	//NOTICE : NOT USED THAT QUERY!!
 	public DatabaseResponse UpdateOrderExitDate(Order order, LocalDateTime exitDate) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -201,6 +207,7 @@ public class OccasionalQueries {
 		}
 	}
 
+	//NOTICE : NOT USED THAT QUERY!!
 	public ArrayList<Order> getAllOccasionalOrdersInPark(int parkId) {
 		LocalDate today = LocalDateTime.now().toLocalDate();
 		ArrayList<Order> foundOrders = new ArrayList<>();

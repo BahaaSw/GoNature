@@ -1,17 +1,5 @@
 package jdbc.query;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
-import gui.controller.ServerScreenController;
-import logic.User;
-import utils.enums.ParkNameEnum;
-import utils.enums.UserTypeEnum;
-
 
 /**
  * 
@@ -30,7 +18,6 @@ import utils.enums.UserTypeEnum;
  */
 public class QueryControl {
 	
-	private ServerScreenController serverController;
 	
 	public static OrderQueries orderQueries = new OrderQueries();
 	public static CustomerQueries customerQueries = new CustomerQueries();
@@ -42,8 +29,7 @@ public class QueryControl {
 	public static OccasionalQueries occasionalQueries = new OccasionalQueries();
 	
 	
-	public QueryControl(ServerScreenController serverController) {
-		this.serverController=serverController;
+	public QueryControl() {
 	}
 	
 }

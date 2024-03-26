@@ -54,6 +54,7 @@ public class EmployeeQueries {
 		}
 	}
 	
+	//NOTICE : NOT USED THAT QUERY!!
 	public DatabaseResponse checkIfVisitorPaidAndConfirmed(int orderId) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -83,27 +84,6 @@ public class EmployeeQueries {
 		}
 	}
 	
-//	public DatabaseResponse UpdateCurrentInPark(Park park,int amount,boolean direction)// dynamically update the number of visitors in the park
-//	{
-//		try {
-//			Connection con = MySqlConnection.getInstance().getConnection();
-//			PreparedStatement stmt = con.prepareStatement("UPDATE parks SET CurrentInPark = ? WHERE ParkId = ?");
-//			stmt.setInt(1, request.getNewValue());
-//			stmt.setInt(2,request.getParkId());
-//			int rs = stmt.executeUpdate();
-//
-//			// if the query ran successfully, but returned as empty table.
-//			if (rs==0) {
-//				return DatabaseResponse.Such_Park_Does_Not_Exists;
-//			}
-//			
-//			return DatabaseResponse.Park_ReservedSpots_Was_Updated;
-//			
-//		} catch (SQLException ex) {
-////			serverController.printToLogConsole("Query search for user failed");
-//			return DatabaseResponse.Failed;
-//		}
-//
 
 	public DatabaseResponse UpdateGuideStatusToApprove(Guide guide) //Update guide permission from Pending to Approve (Tamir/Siso)
 	{

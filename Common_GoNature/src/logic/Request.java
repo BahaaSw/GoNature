@@ -4,11 +4,14 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import utils.enums.RequestTypeEnum;
-import utils.enums.ParkNameEnum;
 import utils.enums.RequestStatusEnum;
 
 public class Request implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1609797016982160699L;
 	private int requestId;
 	private int parkId;
 	private RequestTypeEnum requestType;

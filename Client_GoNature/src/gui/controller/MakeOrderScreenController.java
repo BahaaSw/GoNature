@@ -118,6 +118,7 @@ public class MakeOrderScreenController implements Initializable {
 		hideErrorMessage();
 	}
 
+	@SuppressWarnings("incomplete-switch")
 	private void initializeGuiByCustomerType() {
 		switch (customerType) {
 		case Visitor:
@@ -209,6 +210,7 @@ public class MakeOrderScreenController implements Initializable {
 		return true;
 	}
 	
+	@SuppressWarnings("incomplete-switch")
 	public void onMakeOrderClicked() {
 		
 		if(!validateGuiFields()) {
@@ -237,7 +239,7 @@ public class MakeOrderScreenController implements Initializable {
 			screen.setCenter(view);
 			break;
 		case Too_Many_Visitors:
-			AlertPopUp alert = new AlertPopUp(AlertType.INFORMATION, "", "", "");
+			AlertPopUp alert = new AlertPopUp(AlertType.INFORMATION, "Notification","Order Limit","This are too many visitors for our park");
 			alert.showAndWait();
 			break;
 		}

@@ -19,7 +19,6 @@ public enum ApplicationViewType {
 	HandleOccasionalVisitScreen,
 	
 	Manage_Guides_Screen, // Service Employee : Search for guide to register.
-	Add_New_Guide_Screen, // Service Employee : Add New Guide.
 	
 	Park_Settings_Screen, // Park Manager : Change Park Settings Requests.
 	Create_Reports_Screen, // Employee (Department Manager/Park Manager) : Can Create Reports.

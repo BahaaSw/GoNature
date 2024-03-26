@@ -2,10 +2,13 @@ package logic;
 
 import java.io.Serializable;
 
-import utils.EntrancePrice;
 import utils.enums.ParkNameEnum;
 
 public class Park implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6759762004224132621L;
 	private int parkId;
 	private ParkNameEnum parkName;
 	private int currentMaxCapacity;

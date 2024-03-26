@@ -2,16 +2,13 @@ package gui.controller;
 
 import java.net.URL;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
 import client.ClientApplication;
 import client.ClientCommunication;
 import gui.view.ApplicationViewType;
@@ -43,7 +40,6 @@ import logic.ServerResponseBackToClient;
 import utils.AlertPopUp;
 import utils.CurrentDateAndTime;
 import utils.EntranceDiscount;
-import utils.EntrancePrice;
 import utils.NotificationMessageTemplate;
 import utils.enums.ClientRequest;
 
@@ -115,8 +111,6 @@ public class ParkEntranceScreenController implements Initializable, IThreadContr
 		statusCol.setCellValueFactory(new PropertyValueFactory<OrderInTable, String>("status"));
 		fromWhichTableCol.setCellValueFactory(new PropertyValueFactory<OrderInTable, String>("orderTable"));
 
-		// Your existing setup code...
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 		statusCol.setCellFactory(column -> new TableCell<OrderInTable, String>() {
 			@Override
 			protected void updateItem(String item, boolean empty) {
@@ -149,12 +143,12 @@ public class ParkEntranceScreenController implements Initializable, IThreadContr
 
 	private void updateOrdersList() {
 		Platform.runLater(() -> {
-			LocalDate today = LocalDate.now();
 			ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Import_All_Orders_For_Now,
 					employee.getRelatedPark().getParkId());
 			ClientApplication.client.accept(request);
 			ServerResponseBackToClient response = ClientCommunication.responseFromServer;
 
+			@SuppressWarnings("unchecked")
 			ArrayList<Order> listOfOrders = (ArrayList<Order>) response.getMessage();
 			ordersForNow.clear();
 			for (Order order : listOfOrders) {
@@ -204,6 +198,7 @@ public class ParkEntranceScreenController implements Initializable, IThreadContr
 		ClientRequestDataContainer request = new ClientRequestDataContainer(
 				ClientRequest.Update_Order_Status_In_Park, orderId);
 		ClientApplication.client.accept(request);
+		@SuppressWarnings("unused")
 		ServerResponseBackToClient response = ClientCommunication.responseFromServer;
 		hideErrorMessage();
 
@@ -249,6 +244,7 @@ public class ParkEntranceScreenController implements Initializable, IThreadContr
 		ClientRequestDataContainer request = new ClientRequestDataContainer(
 				ClientRequest.Update_Order_Status_Time_Passed, orderId);
 		ClientApplication.client.accept(request);
+		@SuppressWarnings("unused")
 		ServerResponseBackToClient response = ClientCommunication.responseFromServer;
 		hideErrorMessage();
 
@@ -274,6 +270,7 @@ public class ParkEntranceScreenController implements Initializable, IThreadContr
 		ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Update_Order_Status_Completed,
 				dataForServer);
 		ClientApplication.client.accept(request);
+		@SuppressWarnings("unused")
 		ServerResponseBackToClient response = ClientCommunication.responseFromServer;
 		hideErrorMessage();
 
@@ -291,6 +288,7 @@ public class ParkEntranceScreenController implements Initializable, IThreadContr
 		errorMessageLabel.setText(error);
 	}
 
+	@SuppressWarnings("incomplete-switch")
 	private double calculatePriceByOrderType(Order order) {
 		double priceAtEntrance=0;
 		

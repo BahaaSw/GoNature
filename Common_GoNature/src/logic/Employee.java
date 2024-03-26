@@ -6,6 +6,10 @@ import utils.enums.UserStatus;
 import utils.enums.UserTypeEnum;
 
 public class Employee extends User {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4509648140746139466L;
 	ParkNameEnum relatedPark;
 	EmployeeTypeEnum employeeType;
 	
@@ -20,7 +24,7 @@ public class Employee extends User {
 		super(userId,username,password,firstName,lastName,phoneNumber,emailAddress);
 		this.relatedPark=relatedPark;
 		this.employeeType=employeeType;
-		userStatus=userStatus.Approved;
+		userStatus=UserStatus.Approved;
 	}
 	
 	public Employee(String username,String password) {

@@ -48,6 +48,7 @@ public class CreateReportsScreenController implements Initializable {
 	@FXML
 	public Label errorMessageLabel;
 	
+	@SuppressWarnings("unused")
 	private ObservableList<ReportType> reportsList = FXCollections.observableArrayList(ReportType.UsageReport,
 			ReportType.VisitsReports, ReportType.CancellationsReport, ReportType.TotalVisitorsReport);
 	private ObservableList<ParkNameEnum> parksList = FXCollections.observableArrayList(ParkNameEnum.Banias,
@@ -76,6 +77,7 @@ public class CreateReportsScreenController implements Initializable {
 		}
 	}
 	
+	@SuppressWarnings("incomplete-switch")
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		dateLabel.setText(CurrentDateAndTime.getCurrentDate("'Today' yyyy-MM-dd"));
@@ -123,6 +125,7 @@ public class CreateReportsScreenController implements Initializable {
 		selectedReportType=selectReportComboBox.getValue();
 	}
 	
+	@SuppressWarnings("incomplete-switch")
 	public void onGenerateReportClicked() {
 		//TODO: implement generation of report
 		//TODO: the client thinks it should always succeed.
@@ -174,6 +177,7 @@ public class CreateReportsScreenController implements Initializable {
 		errorSection.setVisible(false);
 	}
 	
+	@SuppressWarnings("unused")
 	private void showErrorMessage(String error) {
 		errorSection.setVisible(true);
 		errorMessageLabel.setText(error);

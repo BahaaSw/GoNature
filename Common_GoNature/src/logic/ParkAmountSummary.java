@@ -7,6 +7,10 @@ import utils.enums.ParkNameEnum;
 
 public class ParkAmountSummary implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8702175099372264200L;
 	private int month;
 	private int year;
 	private int amountSolo;

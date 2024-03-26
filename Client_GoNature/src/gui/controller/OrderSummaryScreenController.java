@@ -22,15 +22,12 @@ import logic.EntitiesContainer;
 import logic.Order;
 import logic.SceneLoaderHelper;
 import logic.ServerResponseBackToClient;
-import logic.User;
 import utils.AlertPopUp;
 import utils.CurrentDateAndTime;
 import utils.EntranceDiscount;
 import utils.NotificationMessageTemplate;
 import utils.enums.ClientRequest;
 import utils.enums.OrderStatusEnum;
-import utils.enums.ParkNameEnum;
-import utils.enums.ServerResponse;
 
 public class OrderSummaryScreenController implements Initializable {
 	@FXML
@@ -63,6 +60,7 @@ public class OrderSummaryScreenController implements Initializable {
 				this.order.getOrderType().name(), this.order.getNumberOfVisitors(), priceAfterDiscount, priceBeforeDiscount);
 	}
 	
+	@SuppressWarnings("incomplete-switch")
 	private void calculatePriceByOrderType() {
 		switch(order.getOrderType()) {
 		case Solo_PreOrder:
@@ -97,6 +95,7 @@ public class OrderSummaryScreenController implements Initializable {
 
 	}
 	
+	@SuppressWarnings("incomplete-switch")
 	public void onContinueClicked() {
 		//TODO: update the order in database as Confirmed-Paid
 		ButtonType payNow=new ButtonType("Pay Now");

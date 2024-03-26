@@ -57,6 +57,7 @@ public class IdenticationScreenController implements Initializable {
 
 	}
 
+	@SuppressWarnings("incomplete-switch")
 	public void onSearchClicked() {
 		if (ValidationRules.isFieldEmpty(orderIdField.getText())) {
 			showErrorMessage("Order ID cannot be empty!");

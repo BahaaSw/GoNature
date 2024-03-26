@@ -1,26 +1,18 @@
 package jdbc.query;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Paths;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartUtils;
-import org.jfree.chart.JFreeChart;
-import org.jfree.data.category.DefaultCategoryDataset;
 
-import jdbc.DatabaseResponse;
 import jdbc.MySqlConnection;
 import logic.AmountDivisionReport;
 import logic.CancellationsReport;
@@ -30,8 +22,6 @@ import logic.ParkFullDaySummary;
 import logic.UsageReport;
 import logic.VisitsReport;
 import utils.ReportGenerator;
-import utils.enums.OrderStatusEnum;
-import utils.enums.OrderTypeEnum;
 import utils.enums.ParkNameEnum;
 
 public class ReportsQueries {
@@ -113,9 +103,6 @@ public class ReportsQueries {
 
 		int year = report.getYear();
 		int month = report.getMonth();
-		
-		YearMonth yearMonth = YearMonth.of(year, month);
-		int daysInMonth = yearMonth.lengthOfMonth();
 
 		HashMap<Integer, ParkFullDaySummary> parkSummaryByDays = new HashMap<Integer, ParkFullDaySummary>();
 
@@ -303,9 +290,6 @@ public class ReportsQueries {
 	}
 
 	public boolean generateVisitsReport(VisitsReport report) {
-		int year = report.getYear();
-		int month = report.getMonth();
-		int parkId = report.getRequestedPark().getParkId();
 		boolean isQuerySucceed = getParkVisitsSummaryByEnterTime(report);
 		if (!isQuerySucceed)
 			return false;

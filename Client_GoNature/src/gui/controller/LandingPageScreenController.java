@@ -31,9 +31,7 @@ import logic.ClientRequestDataContainer;
 import logic.Employee;
 import logic.ExternalUser;
 import logic.Guide;
-import logic.SceneLoaderHelper;
 import logic.ServerResponseBackToClient;
-import logic.User;
 import logic.Visitor;
 import utils.AlertPopUp;
 import utils.CurrentWindow;
@@ -97,8 +95,6 @@ public class LandingPageScreenController implements Initializable,IScreenControl
 			);
 	
 	private UserTypeEnum currentUser;
-	private Stage stage;
-	private SceneLoaderHelper GuiHelper= new SceneLoaderHelper();
 	
 	public LandingPageScreenController() {}
 	
@@ -109,6 +105,7 @@ public class LandingPageScreenController implements Initializable,IScreenControl
 		hideErrorMessage();
 	}
 	
+	@SuppressWarnings("incomplete-switch")
 	private void onChangeSelection(ActionEvent event) {
 		UserTypeEnum account = accountTypeComboBox.getValue();
 		switch(account) {
@@ -221,6 +218,7 @@ public class LandingPageScreenController implements Initializable,IScreenControl
 
 	}
 	
+	@SuppressWarnings("incomplete-switch")
 	public void onLoginClicked() {
 		ArrayList<String> fields = new ArrayList<String>();
 		if(!validateGuiFields(fields)) {
@@ -346,9 +344,6 @@ public class LandingPageScreenController implements Initializable,IScreenControl
 	errorPane.setVisible(false);
 }
 
-	public void setStage(Stage stage) {
-		this.stage = stage;
-	}
 
 	@Override
 	public void onLogoutClicked() {}

@@ -10,7 +10,6 @@ public class CurrentDateAndTime {
 	public static String getCurrentDate(String pattern) {
 		LocalDate currentDate = LocalDate.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
-		String formattedDate = currentDate.format(formatter);
 		return currentDate.format(formatter);
 	}
 	
@@ -18,7 +17,6 @@ public class CurrentDateAndTime {
 	public static String getCurrentDateAndTime(String pattern) {
 		LocalDateTime currentDate = LocalDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
-		String formattedDate = currentDate.format(formatter);
 		return currentDate.format(formatter);
 	}
 	

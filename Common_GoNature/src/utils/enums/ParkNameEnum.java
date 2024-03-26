@@ -1,7 +1,5 @@
 package utils.enums;
 
-import java.util.HashMap;
-import java.util.Map;
 
 public enum ParkNameEnum {
 	None (0),

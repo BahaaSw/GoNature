@@ -47,6 +47,7 @@ public class ParkQueries {
 		}
 	}
 	
+	//NOTICE : NOT USED THAT QUERY!!
 	public DatabaseResponse getParkByName(Park park) {
 		
 		try {
@@ -76,6 +77,7 @@ public class ParkQueries {
 		}
 	}
 	
+	//NOTICE : NOT USED THAT QUERY!!
 	public DatabaseResponse getParksNames(ArrayList<ParkNameEnum> parkList) {
 		
 		try {
@@ -102,16 +104,8 @@ public class ParkQueries {
 		}
 	}
 	
-//	public DatabaseResponse isParkFullAtDate()
-//	{
-//		
-//	}
-//	
-//	public DatabaseResponse updateIfParkFull()
-//	{
-//		
-//	}
 	
+	//NOTICE : NOT USED THAT QUERY!!
 	public DatabaseResponse returnParkPrice(Park park)
 	{
 		try {
@@ -166,6 +160,7 @@ public class ParkQueries {
 		}
 	}
 	
+	//NOTICE : NOT USED THAT QUERY!!
 	public int[] returnCapacityCurrentInParkForPark(int parkId) {
 		int[] values = new int[2];
 
@@ -189,6 +184,7 @@ public class ParkQueries {
 		}
 
 	}
+	
 	
 	public boolean updateParkFullDateTable(QueryType operation, LocalDate date, String parkName) {
 
@@ -221,6 +217,7 @@ public class ParkQueries {
 		}
 	}
 	
+	//NOTICE : NOT USED THAT QUERY!!
 	public DatabaseResponse checkParkIsFull(int parkId, LocalDate date) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -265,6 +262,8 @@ public class ParkQueries {
 	 *                  means customer is exiting the park
 	 * @return
 	 */
+	
+	//NOTICE : NOT USED THAT QUERY!!
 	public DatabaseResponse updateCurrentInParkValue(Order order, boolean direction) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();

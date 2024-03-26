@@ -3,7 +3,6 @@ package logic;
 import java.io.IOException;
 
 import client.ClientApplication;
-import gui.controller.AddNewGuideScreenController;
 import gui.controller.OrderSummaryScreenController;
 import gui.controller.CreateReportsScreenController;
 import gui.controller.CustomerHomepageScreenController;
@@ -39,12 +38,6 @@ public class SceneLoaderHelper {
 	public AnchorPane loadRightScreenToBorderPaneWithController(BorderPane screen, String screenUrl,ApplicationViewType viewToLoad,EntitiesContainer data) {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource(screenUrl));
 		switch(viewToLoad) {
-		
-			case Add_New_Guide_Screen:{
-				AddNewGuideScreenController controller = new AddNewGuideScreenController(screen,data.getEntity1());
-				loader.setController(controller);
-				break;
-			}
 				
 			case Order_Summary_Screen:{
 				OrderSummaryScreenController controller= new OrderSummaryScreenController(screen,data.getEntity1());

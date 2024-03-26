@@ -11,6 +11,10 @@ import utils.enums.UserTypeEnum;
 
 public class Order implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4399591568409663001L;
 	private int orderId;
 	private OrderTypeEnum orderType;
 	private ParkNameEnum parkName;

@@ -8,6 +8,10 @@ import utils.enums.ReportType;
 public class Report implements Serializable {
 
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6207770687406496946L;
 	protected ReportType reportType;
 	protected ParkNameEnum requestedPark;
 	protected int month;

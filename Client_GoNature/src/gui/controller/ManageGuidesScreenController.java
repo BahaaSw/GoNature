@@ -6,7 +6,6 @@ import java.util.ResourceBundle;
 
 import client.ClientApplication;
 import client.ClientCommunication;
-import gui.view.ApplicationViewType;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -15,18 +14,14 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import logic.ClientRequestDataContainer;
-import logic.EntitiesContainer;
 import logic.Guide;
 import logic.GuideInTable;
-import logic.SceneLoaderHelper;
 import logic.ServerResponseBackToClient;
 import utils.AlertPopUp;
 import utils.CurrentDateAndTime;
@@ -107,6 +102,7 @@ public class ManageGuidesScreenController implements Initializable {
 		pendingGuidesTable.setEditable(true);
 	}
 
+	@SuppressWarnings("incomplete-switch")
 	public void onSaveClicked() {
 		AlertPopUp alert;
 		ArrayList<Guide> approvedGuides = new ArrayList<Guide>();
@@ -139,6 +135,7 @@ public class ManageGuidesScreenController implements Initializable {
 		
 	}
 
+	@SuppressWarnings({ "incomplete-switch", "unchecked" })
 	public void onSearchGuidesClicked() {
 		ArrayList<GuideInTable> observeGuides = new ArrayList<GuideInTable>();
 		guidesList.clear();
@@ -179,6 +176,7 @@ public class ManageGuidesScreenController implements Initializable {
 		errorSection.setVisible(false);
 	}
 
+	@SuppressWarnings("unused")
 	private void showErrorMessage(String error) {
 		errorSection.setVisible(true);
 		errorMessageLabel.setText(error);

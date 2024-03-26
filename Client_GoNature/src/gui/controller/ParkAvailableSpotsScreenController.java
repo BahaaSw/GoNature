@@ -41,6 +41,7 @@ public class ParkAvailableSpotsScreenController implements Initializable {
 		selectedPark=(Park)park;
 	}
 	
+	@SuppressWarnings("incomplete-switch")
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		dateLabel.setText(CurrentDateAndTime.getCurrentDate("'Today' yyyy-MM-dd"));
@@ -69,7 +70,7 @@ public class ParkAvailableSpotsScreenController implements Initializable {
 			return;
 
 		selectedParkName=parkSelect.getValue();
-		Park selectedPark = new Park(selectedParkName.getParkId());
+		selectedPark = new Park(selectedParkName.getParkId());
 		ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Search_For_Specific_Park,selectedPark);
 		ClientApplication.client.accept(request);
 		ServerResponseBackToClient response = ClientCommunication.responseFromServer;

@@ -7,11 +7,8 @@ import java.sql.SQLException;
 
 import jdbc.DatabaseResponse;
 import jdbc.MySqlConnection;
-import logic.Employee;
 import logic.Guide;
 import logic.Visitor;
-import utils.enums.EmployeeTypeEnum;
-import utils.enums.ParkNameEnum;
 import utils.enums.UserStatus;
 import utils.enums.UserTypeEnum;
 

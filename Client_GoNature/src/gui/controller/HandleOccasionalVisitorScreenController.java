@@ -2,7 +2,6 @@ package gui.controller;
 
 import java.net.URL;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -109,7 +108,6 @@ public class HandleOccasionalVisitorScreenController implements Initializable {
 		ClientRequestDataContainer requestMessage = new ClientRequestDataContainer(ClientRequest.Prepare_New_Occasional_Order,order);
 		ClientApplication.client.accept(requestMessage);
 		ServerResponseBackToClient response = ClientCommunication.responseFromServer;
-		AnchorPane view;
 		
 		order = (Order)response.getMessage();
 		
@@ -203,6 +201,7 @@ public class HandleOccasionalVisitorScreenController implements Initializable {
 		errorMessageLabel.setText(error);
 	}
 	
+	@SuppressWarnings("incomplete-switch")
 	private double calculatePriceByOrderType(Order order) {
 		double priceAtEntrance=0;
 		

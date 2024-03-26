@@ -14,18 +14,21 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="800.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="gui.controller.ServerScreenController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="769.0" prefWidth="1132.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.controller.ServerScreenController">
    <children>
-      <HBox prefHeight="450.0" prefWidth="800.0">
+      <HBox prefHeight="769.0" prefWidth="1132.0">
          <children>
-            <VBox prefHeight="450.0" prefWidth="250.0" style="-fx-alignment: center; -fx-background-color: #11463c;">
+            <VBox prefHeight="769.0" prefWidth="292.0" style="-fx-alignment: center; -fx-background-color: #11463c;">
                <children>
                   <ImageView fitHeight="150.0" fitWidth="255.0" pickOnBounds="true" preserveRatio="true" VBox.vgrow="ALWAYS">
                      <image>
                         <Image url="@../../utils/logo.png" />
                      </image>
+                     <VBox.margin>
+                        <Insets bottom="20.0" />
+                     </VBox.margin>
                   </ImageView>
-                  <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-alignment: center; -fx-spacing: 2;">
+                  <VBox prefHeight="340.0" prefWidth="289.0" style="-fx-alignment: center; -fx-spacing: 2;">
                      <children>
                         <Label text="Port" textFill="WHITE" />
                         <TextField fx:id="portField" alignment="CENTER" stylesheets="@styles.css" text="12345">
@@ -53,15 +56,16 @@
                         </TextField>
                      </children>
                   </VBox>
-                  <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-alignment: center; -fx-spacing: 10;">
+                  <VBox prefHeight="184.0" prefWidth="289.0" style="-fx-alignment: center; -fx-spacing: 10;">
                      <children>
-                        <Button fx:id="connectServer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onConnectServerClicked" prefHeight="25.0" prefWidth="200.0" style="-fx-background-color: #fac783; -fx-background-radius: 8,7,6; -fx-background-insets: 0,1,2; -fx-text-fill: #11463c; -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );" text="Open Server" />
-                        <Button fx:id="disconnectServer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onDisconnectServerClicked" prefHeight="25.0" prefWidth="200.0" style="-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 ); -fx-text-fill: #11463c; -fx-background-color: #fac783; -fx-background-radius: 8,7,6; -fx-background-insets: 0,1,2;" text="Close Server" />
+                        <Button fx:id="connectServer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onConnectServerClicked" prefHeight="41.0" prefWidth="200.0" style="-fx-background-color: #fac783; -fx-background-radius: 8,7,6; -fx-background-insets: 0,1,2; -fx-text-fill: #11463c; -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );" text="Open Server" />
+                        <Button fx:id="disconnectServer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onDisconnectServerClicked" prefHeight="41.0" prefWidth="200.0" style="-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 ); -fx-text-fill: #11463c; -fx-background-color: #fac783; -fx-background-radius: 8,7,6; -fx-background-insets: 0,1,2;" text="Close Server" />
+                        <Button fx:id="importData" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onImportDataClicked" prefHeight="38.0" prefWidth="156.0" style="-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 ); -fx-text-fill: #11463c; -fx-background-color: #fac783; -fx-background-radius: 8,7,6; -fx-background-insets: 0,1,2;" text="Import Data" />
                      </children>
                   </VBox>
                </children>
             </VBox>
-            <VBox prefHeight="400.0" prefWidth="550.0" style="-fx-background-color: #ffffff;">
+            <VBox prefHeight="769.0" prefWidth="846.0" style="-fx-background-color: #ffffff;">
                <children>
                   <VBox prefHeight="220.0" prefWidth="550.0" style="-fx-alignment: center; -fx-spacing: 5;">
                      <children>
@@ -82,14 +86,14 @@
                         </TableView>
                      </children>
                   </VBox>
-                  <VBox prefHeight="200.0" prefWidth="550.0" style="-fx-alignment: center; -fx-spacing: 5;">
+                  <VBox prefHeight="552.0" prefWidth="843.0" style="-fx-alignment: center; -fx-spacing: 5;">
                      <children>
                         <Label text="Server Log">
                            <font>
                               <Font name="Eras Demi ITC" size="23.0" />
                            </font>
                         </Label>
-                        <TextArea fx:id="serverLog" editable="false" prefHeight="200.0" prefWidth="200.0">
+                        <TextArea fx:id="serverLog" editable="false" prefHeight="480.0" prefWidth="803.0">
                            <VBox.margin>
                               <Insets bottom="10.0" left="20.0" right="20.0" />
                            </VBox.margin>
