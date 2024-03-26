@@ -26,6 +26,7 @@ import logic.Visitor;
 import utils.CurrentDateAndTime;
 import utils.ValidationRules;
 import utils.enums.ClientRequest;
+import utils.enums.OrderStatusEnum;
 import utils.enums.UserTypeEnum;
 
 public class IdenticationScreenController implements Initializable {

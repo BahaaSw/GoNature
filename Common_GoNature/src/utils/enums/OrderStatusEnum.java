@@ -6,7 +6,7 @@ import java.util.Map;
 public enum OrderStatusEnum {
 	Wait_Notify("Wait Notify"), // Order created and waiting notification to be sent 24 hours before arrive
 	Notified("Notified"), // 24 hours before arrive/leaves waiting list notification was sent, client should confirm
-	Order_Confirmed("Confirmed"),
+	Confirmed("Confirmed"),
 	Notified_Waiting_List("Notified Waiting List"),
 	Occasional_Order ("Occasional Order"), // for occasional visit, park employee creates new order
 	Cancelled ("Cancelled"), //

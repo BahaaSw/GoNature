@@ -144,6 +144,8 @@ public class GoNatureServer extends AbstractServer {
 		case Update_Order_Status_Canceled:
 			response = handleUpdateOrderStatusCanceled(data, client);
 			break;
+		case Update_Order_Status_Confirmed:
+			response = handleUpdateOrderStatusConfirmed(data,client);
 
 		// Service Employee Section
 		case Update_Guide_As_Approved:
@@ -366,6 +368,18 @@ public class GoNatureServer extends AbstractServer {
 
 	}
 
+	private ServerResponseBackToClient handleUpdateOrderStatusConfirmed(ClientRequestDataContainer data, ConnectionToClient client) {
+		Order order = (Order) data.getData();
+		ServerResponseBackToClient response;
+		boolean isUpdated = QueryControl.orderQueries.updateOrderStatus(order, OrderStatusEnum.Confirmed);
+		if (isUpdated) {
+			response = new ServerResponseBackToClient(ServerResponse.Order_Updated_Successfully, order);
+		} else
+			response = new ServerResponseBackToClient(ServerResponse.Order_Updated_Failed, order);
+
+		return response;
+	}
+	
 	private ServerResponseBackToClient handleUpdateOrderStatusCanceled(ClientRequestDataContainer data,
 			ConnectionToClient client) {
 		Order order = (Order) data.getData();

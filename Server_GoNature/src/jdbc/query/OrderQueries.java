@@ -44,7 +44,7 @@ public class OrderQueries {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
 			PreparedStatement stmt = con
-					.prepareStatement("SELECT * FROM preorders WHERE orderId = ? AND OrderStatus!='Cancelled'");
+					.prepareStatement("SELECT * FROM preorders WHERE orderId = ? AND OrderStatus!='Cancelled' AND OrderStatus!='Completed' AND OrderStatus!='Time Passed'");
 			stmt.setInt(1, order.getOrderId());
 			ResultSet rs = stmt.executeQuery();
 
