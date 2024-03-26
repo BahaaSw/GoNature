@@ -19,7 +19,6 @@ import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import logic.ClientRequestDataContainer;
-import logic.GuideInTable;
 import logic.Request;
 import logic.RequestInTable;
 import logic.ServerResponseBackToClient;
@@ -97,6 +96,7 @@ public class RequestTableScreenController implements Initializable {
 		requestsTable.setEditable(true);
 	}
 
+	@SuppressWarnings("incomplete-switch")
 	public void onSaveClicked() {
 		AlertPopUp alert;
 		ArrayList<Request> requestsToCheck = new ArrayList<Request>();
@@ -131,6 +131,7 @@ public class RequestTableScreenController implements Initializable {
 		
 	}
 
+	@SuppressWarnings({ "incomplete-switch", "unchecked" })
 	public void onRefreshClicked() {
 		ArrayList<RequestInTable> observeRequests = new ArrayList<RequestInTable>();
 		requestsList.clear();

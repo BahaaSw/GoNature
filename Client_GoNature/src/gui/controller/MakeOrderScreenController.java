@@ -118,6 +118,7 @@ public class MakeOrderScreenController implements Initializable {
 		hideErrorMessage();
 	}
 
+	@SuppressWarnings("incomplete-switch")
 	private void initializeGuiByCustomerType() {
 		switch (customerType) {
 		case Visitor:
@@ -209,6 +210,7 @@ public class MakeOrderScreenController implements Initializable {
 		return true;
 	}
 	
+	@SuppressWarnings("incomplete-switch")
 	public void onMakeOrderClicked() {
 		
 		if(!validateGuiFields()) {

@@ -1,7 +1,6 @@
 package gui.controller;
 
 import java.net.URL;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +20,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.AnchorPane;
@@ -63,12 +61,12 @@ public class RescheduleOrderScreenController implements Initializable, IThreadCo
 
 	@FXML
 	public ListView<LocalDateTime> availableDatesList;
-	private ArrayList<LocalDateTime> availableDatesFromDb;
 	private ObservableList<LocalDateTime> availableDatesToDisplay = FXCollections.observableArrayList();
 
 	private BorderPane screen;
 	private String selectedOption;
 	private Order order;
+	@SuppressWarnings("unused")
 	private LocalDateTime selectedDate = null;
 	private Thread searchAvailableDates = null;
 	private SceneLoaderHelper GuiHelper = new SceneLoaderHelper();
@@ -141,6 +139,7 @@ public class RescheduleOrderScreenController implements Initializable, IThreadCo
 						ServerResponseBackToClient response = ClientCommunication.responseFromServer;
 						if (response.getRensponse() == ServerResponse.Query_Failed)
 							Thread.currentThread().interrupt();
+						@SuppressWarnings("unchecked")
 						List<LocalDateTime> dates = (ArrayList<LocalDateTime>) response.getMessage();
 						ObservableList<LocalDateTime> observableDates = FXCollections.observableArrayList(dates);
 						availableDatesList.setItems(observableDates);
@@ -176,6 +175,7 @@ public class RescheduleOrderScreenController implements Initializable, IThreadCo
 		}
 	}
 
+	@SuppressWarnings("incomplete-switch")
 	public void onConfirmClicked() {
 		// TODO: update new order in database with it's relevant status
 		if (selectedOption.equals("Choose New Date")) {
@@ -206,6 +206,7 @@ public class RescheduleOrderScreenController implements Initializable, IThreadCo
 						orderFullDetailed.getEnterDate().toString(), orderFullDetailed.getOrderType().name(),
 						orderFullDetailed.getNumberOfVisitors(), orderFullDetailed.getPrice(),
 						orderFullDetailed.isPaid());
+				enterWaitingListMsg.setText(orderSummaryAfterPaymentMessage);
 				break;
 			case Order_Added_Failed:
 				break;

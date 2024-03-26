@@ -19,17 +19,13 @@ import logic.ClientRequestDataContainer;
 import logic.Employee;
 import logic.EntitiesContainer;
 import logic.ExternalUser;
-import logic.Guide;
 import logic.Park;
 import logic.SceneLoaderHelper;
 import logic.ServerResponseBackToClient;
-import logic.User;
-import logic.Visitor;
 import utils.AlertPopUp;
 import utils.CurrentWindow;
 import utils.enums.ClientRequest;
 import utils.enums.ParkNameEnum;
-import utils.enums.UserTypeEnum;
 
 public class EmployeeScreenController implements Initializable,IScreenController {
 	@FXML
@@ -57,6 +53,7 @@ public class EmployeeScreenController implements Initializable,IScreenController
 	@FXML
 	public Button logoutButton;
 	
+	@SuppressWarnings("unused")
 	private ExternalUser user;
 	private Employee employee;
 	private SceneLoaderHelper GuiHelper= new SceneLoaderHelper();
@@ -74,6 +71,7 @@ public class EmployeeScreenController implements Initializable,IScreenController
 		onHomeClicked();
 	}
 	
+	@SuppressWarnings("incomplete-switch")
 	private void initializeScreenAccordingToEmployeeType() {
 		switch(employee.getEmployeeType()) {
 			case Department_Manager:
@@ -127,6 +125,7 @@ public class EmployeeScreenController implements Initializable,IScreenController
 	public void onLogoutClicked() {
 		ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Logout, employee);
 		ClientApplication.client.accept(request);
+		@SuppressWarnings("unused")
 		ServerResponseBackToClient response = ClientCommunication.responseFromServer;
 		GuiHelper.setScreenAfterLogoutOrBack();
 		

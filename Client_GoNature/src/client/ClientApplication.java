@@ -18,7 +18,6 @@ public class ClientApplication extends Application {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/view/LandingPageScreen.fxml"));
 			landingPageController = new LandingPageScreenController();
 			loader.setController(landingPageController);
-			landingPageController.setStage(primaryStage);
 			runningController=landingPageController;
 			loader.load();
 			Parent p = loader.getRoot();

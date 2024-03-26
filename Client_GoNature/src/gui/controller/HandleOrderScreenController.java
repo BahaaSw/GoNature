@@ -3,7 +3,6 @@ package gui.controller;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -27,7 +26,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import logic.ClientRequestDataContainer;
 import logic.EntitiesContainer;
-import logic.ExternalUser;
 import logic.Guide;
 import logic.ICustomer;
 import logic.Order;
@@ -41,7 +39,6 @@ import utils.enums.ClientRequest;
 import utils.enums.OrderStatusEnum;
 import utils.enums.OrderTypeEnum;
 import utils.enums.ParkNameEnum;
-import utils.enums.UserTypeEnum;
 
 public class HandleOrderScreenController implements Initializable {
 	@FXML
@@ -106,6 +103,7 @@ public class HandleOrderScreenController implements Initializable {
 		this.customer = info;
 	}
 
+	@SuppressWarnings("incomplete-switch")
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		dateLabel.setText(CurrentDateAndTime.getCurrentDate("'Today' yyyy-MM-dd"));
@@ -132,6 +130,7 @@ public class HandleOrderScreenController implements Initializable {
 		hideErrorMessage();
 	}
 
+	@SuppressWarnings("incomplete-switch")
 	private void enableGuiAccordingToStatus() {
 		switch (requestedOrder.getStatus()) {
 		case In_Waiting_List:
@@ -245,6 +244,7 @@ public class HandleOrderScreenController implements Initializable {
 		return true;
 	}
 	
+	@SuppressWarnings("incomplete-switch")
 	public void onCancelClicked() {
 		AlertPopUp alert = new AlertPopUp(AlertType.CONFIRMATION, "Manage Order", "Cancel Order", "Are you sure?",ButtonType.YES,ButtonType.CLOSE);
 		Optional<ButtonType> result = alert.showAndWait();
@@ -275,6 +275,7 @@ public class HandleOrderScreenController implements Initializable {
 		
 	}
 
+	@SuppressWarnings("incomplete-switch")
 	public void onConfirmClicked() {
 		AlertPopUp alert = new AlertPopUp(AlertType.CONFIRMATION, "Manage Order", "Confirm Order", "Are you sure?",ButtonType.YES,ButtonType.CLOSE);
 		Optional<ButtonType> result = alert.showAndWait();
@@ -304,6 +305,7 @@ public class HandleOrderScreenController implements Initializable {
 		
 	}
 
+	@SuppressWarnings("incomplete-switch")
 	public void onUpdateClicked() {
 		if(!validateGuiFields()) {
 			return;

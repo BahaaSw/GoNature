@@ -54,6 +54,7 @@ public class CustomerScreenController implements Initializable, IScreenControlle
 
 //	private Customer customer;
 	private ExternalUser customer;
+	@SuppressWarnings("unused")
 	private UserTypeEnum currentCustomer;
 	private SceneLoaderHelper GuiHelper = new SceneLoaderHelper();
 	private ICustomer customerDetails=null;
@@ -63,6 +64,7 @@ public class CustomerScreenController implements Initializable, IScreenControlle
 		currentCustomer = customer.getUserType();
 	}
 
+	@SuppressWarnings("incomplete-switch")
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		// TODO: hide buttons according to user type
@@ -135,6 +137,7 @@ public class CustomerScreenController implements Initializable, IScreenControlle
 	public void onLogoutClicked() {
 		ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Logout, customer);
 		ClientApplication.client.accept(request);
+		@SuppressWarnings("unused")
 		ServerResponseBackToClient response = ClientCommunication.responseFromServer;
 		GuiHelper.setScreenAfterLogoutOrBack();
 	}
@@ -152,6 +155,7 @@ public class CustomerScreenController implements Initializable, IScreenControlle
 		}
 	}
 
+	@SuppressWarnings("incomplete-switch")
 	public void onNotificationButtonClicked() {
 		ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Search_For_Notified_Orders,
 				customerDetails);
@@ -167,6 +171,7 @@ public class CustomerScreenController implements Initializable, IScreenControlle
 			
 		case Notifications_Found:
 			StringBuilder sb =new StringBuilder();
+			@SuppressWarnings("unchecked") 
 			ArrayList<Order> ordersWithNotification = (ArrayList<Order>)response.getMessage();
 			int line=1;
 			for(Order order : ordersWithNotification) {

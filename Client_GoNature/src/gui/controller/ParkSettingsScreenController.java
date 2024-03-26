@@ -50,6 +50,7 @@ public class ParkSettingsScreenController implements Initializable{
 	@FXML
 	public Button changeCapacityRequest;
 	
+	@SuppressWarnings("unused")
 	private Employee employee;
 	private Park park;
 	private AlertPopUp alert;
@@ -73,6 +74,7 @@ public class ParkSettingsScreenController implements Initializable{
 		oldEstimatedVisitTimeField.setText(String.format("%d", park.getCurrentEstimatedStayTime()));
 	}
 	
+	@SuppressWarnings("incomplete-switch")
 	public void onChangeEstimatedVisitTimeRequest() {
 //		public Request(int parkId,RequestTypeEnum requestType, int oldValue, int newValue, LocalDateTime requestDate )
 		Request parametersRequest = new Request(park.getParkId(),RequestTypeEnum.EstimatedVisitTime,Integer.parseInt(oldEstimatedVisitTimeField.getText()),
@@ -94,6 +96,7 @@ public class ParkSettingsScreenController implements Initializable{
 
 	}
 	
+	@SuppressWarnings("incomplete-switch")
 	public void onChangeReservedEntriesRequest() {
 		Request parametersRequest = new Request(park.getParkId(),RequestTypeEnum.ReservedSpots,Integer.parseInt(oldReservedEntriesField.getText()),
 				Integer.parseInt(newReservedEntriesField.getText()),LocalDateTime.now());
@@ -113,6 +116,7 @@ public class ParkSettingsScreenController implements Initializable{
 		}
 	}
 	
+	@SuppressWarnings("incomplete-switch")
 	public void onChangeCapacityRequest() {
 		Request parametersRequest = new Request(park.getParkId(),RequestTypeEnum.MaxCapacity,Integer.parseInt(oldCapacityField.getText()),
 				Integer.parseInt(newCapacityField.getText()),LocalDateTime.now());
