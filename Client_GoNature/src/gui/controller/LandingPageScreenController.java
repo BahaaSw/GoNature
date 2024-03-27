@@ -39,7 +39,15 @@ import utils.ValidationRules;
 import utils.enums.ClientRequest;
 import utils.enums.UserTypeEnum;
 
+
+/**
+* LandingPageScreenController is a controller class that handles the landing page screen of the GUI application.
+* It implements the Initializable and IScreenController interfaces.
+*/
 public class LandingPageScreenController implements Initializable,IScreenController {
+	
+	 // FXML fields for various UI components
+	
 	@FXML
 	public ImageView icon;
 	@FXML
@@ -98,6 +106,13 @@ public class LandingPageScreenController implements Initializable,IScreenControl
 	
 	public LandingPageScreenController() {}
 	
+	
+   /**
+    * Initializes the controller class and sets up the necessary components.
+    *
+    * @param location  The location used to resolve relative paths for the root object, or null if the location is not known.
+    * @param resources The resources used to localize the root object, or null if the root object was not localized.
+    */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		accountTypeComboBox.getItems().addAll(accountTypes);
@@ -105,6 +120,11 @@ public class LandingPageScreenController implements Initializable,IScreenControl
 		hideErrorMessage();
 	}
 	
+	/**
+    * Handles the action when the user selects an account type from the combo box.
+    *
+    * @param event The action event triggered by the combo box selection.
+    */
 	@SuppressWarnings("incomplete-switch")
 	private void onChangeSelection(ActionEvent event) {
 		UserTypeEnum account = accountTypeComboBox.getValue();
@@ -123,6 +143,9 @@ public class LandingPageScreenController implements Initializable,IScreenControl
 		}
 	}
 	
+	/**
+    * Handles the action when the user clicks the "Connect to Server" button.
+    */
 	public void onConnectToServerClicked() {
 		String message="";
 		boolean isValidIp=ValidationRules.isValidIp(serverIpField.getText());
@@ -148,16 +171,27 @@ public class LandingPageScreenController implements Initializable,IScreenControl
 		hideErrorMessage();
 	}
 	
+	/**
+    * Hides the error message on the GUI.
+    */
 	private void hideErrorMessage() {
 		errorMessageLabel.setText("");
 		errorPane.setVisible(false);
 	}
 	
+	/**
+    * Shows the error message on the GUI.
+    *
+    * @param error The error message to be displayed.
+    */
 	private void showErrorMessage(String error) {
 		errorPane.setVisible(true);
 		errorMessageLabel.setText(error);
 	}
 	
+	/**
+    * Handles the action when the user clicks the "Login" option.
+    */
 	public void onOptionLoginClicked() {
 		clearLoginFields();
 		optionsVbox.setVisible(false);
@@ -166,12 +200,21 @@ public class LandingPageScreenController implements Initializable,IScreenControl
 		hideErrorMessage();
 	}
 	
+	/**
+    * Handles the action when the user clicks the "Make Order" option.
+    */
 	public void onOptionMakeOrderClicked() {
 		//open screen for new visitor
 		currentUser=UserTypeEnum.ExternalUser;
 		switchMainScreenAccordingToUserLogin(new ExternalUser());
 	}
 	
+	/**
+    * Validates the input fields on the GUI.
+    *
+    * @param fields An ArrayList to store the input field values.
+    * @return true if the input fields are valid, false otherwise.
+    */
 	private boolean validateGuiFields(ArrayList<String> fields) {
 		String message="";
 		boolean areFieldsEmpty=true;
@@ -218,6 +261,9 @@ public class LandingPageScreenController implements Initializable,IScreenControl
 
 	}
 	
+	/**
+    * Handles the action when the user clicks the "Login" button.
+    */
 	@SuppressWarnings("incomplete-switch")
 	public void onLoginClicked() {
 		ArrayList<String> fields = new ArrayList<String>();
@@ -278,6 +324,11 @@ public class LandingPageScreenController implements Initializable,IScreenControl
 		
 	}
 
+	/**
+    * Switches the main screen based on the user's login credentials.
+    *
+    * @param client The ExternalUser object representing the logged-in user.
+    */
 	private void switchMainScreenAccordingToUserLogin(ExternalUser client) {
 		try {
 			CurrentWindow.setCurrentWindow((Stage) icon.getScene().getWindow());
@@ -311,6 +362,7 @@ public class LandingPageScreenController implements Initializable,IScreenControl
 			CurrentWindow.getCurrentWindow().setTitle("GoNature - Client Screen");
 			CurrentWindow.getCurrentWindow().setScene(new Scene(p));
 			CurrentWindow.getCurrentWindow().setResizable(false);
+			CurrentWindow.getCurrentWindow().setOnCloseRequest(e->controller.onCloseApplication());
 			ClientApplication.runningController=controller;
 			CurrentWindow.getCurrentWindow().show();
 
@@ -322,7 +374,9 @@ public class LandingPageScreenController implements Initializable,IScreenControl
 		}
 	}
 	
-	
+	/**
+    * Handles the action when the user clicks the "Back" button.
+    */
 	public void onBackClicked() {
 		loginVbox.setVisible(false);
 		optionsVbox.setVisible(true);
@@ -331,12 +385,18 @@ public class LandingPageScreenController implements Initializable,IScreenControl
 		errorPane.setVisible(false);
 	}
 	
+   /**
+    * Clears the login fields on the GUI.
+    */
 	private void clearLoginFields() {
 		usernameField.clear();
 		passwordField.clear();
 		visitorField.clear();
 	}
 	
+	/**
+    * Sets the screen after the user logs out.
+    */
 	public void setScreenAfterLogout() {
 	connectToServerVbox.setVisible(false);
 	optionsVbox.setVisible(true);
@@ -345,18 +405,42 @@ public class LandingPageScreenController implements Initializable,IScreenControl
 }
 
 
+	/**
+    * Handles the action when the user clicks the "Logout" button.
+    * This method is implemented from the IScreenController interface.
+    */
 	@Override
-	public void onLogoutClicked() {}
+	public void onLogoutClicked() {
+		ClientRequestDataContainer request;
+		if(!connectToServerVbox.isVisible()) {
+			request = new ClientRequestDataContainer(ClientRequest.Logout, null);
+			ClientApplication.client.accept(request);
+		}
+	}
 	
-//	public void onCloseApplication() {
-//		ClientRequestDataContainer request;
-//		if(!connectToServerVbox.isVisible()) {
-//			request = new ClientRequestDataContainer(ClientRequest.Logout, customer);
-//			ClientApplication.client.accept(request);
-//			ServerResponseBackToClient response = ClientCommunication.responseFromServer;
-//		}
-//	}
+	/**
+    * Handles the action when the user close the Application by "X" button.
+    * This method is implemented from the IScreenController interface
+    */
+	@Override
+	public void onCloseApplication() {
+		ClientRequestDataContainer request;
+		if(!connectToServerVbox.isVisible()) {
+			request = new ClientRequestDataContainer(ClientRequest.Logout, null);
+			ClientApplication.client.accept(request);
+			try {
+				ClientApplication.client.getClient().closeConnection();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
 
+	/**
+    * Handles the situation when the server crashes.
+    * This method is implemented from the IScreenController interface.
+    */
 	@Override
 	public void onServerCrashed() {
 		AlertPopUp alert = new AlertPopUp(AlertType.ERROR,"FATAL ERROR","Server is Down","Server Crashed - The application will be closed.");

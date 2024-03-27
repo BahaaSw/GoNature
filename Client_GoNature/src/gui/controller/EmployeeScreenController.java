@@ -5,7 +5,6 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import client.ClientApplication;
-import client.ClientCommunication;
 import gui.view.ApplicationViewType;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -21,7 +20,6 @@ import logic.EntitiesContainer;
 import logic.ExternalUser;
 import logic.Park;
 import logic.SceneLoaderHelper;
-import logic.ServerResponseBackToClient;
 import utils.AlertPopUp;
 import utils.CurrentWindow;
 import utils.enums.ClientRequest;
@@ -125,8 +123,6 @@ public class EmployeeScreenController implements Initializable,IScreenController
 	public void onLogoutClicked() {
 		ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Logout, employee);
 		ClientApplication.client.accept(request);
-		@SuppressWarnings("unused")
-		ServerResponseBackToClient response = ClientCommunication.responseFromServer;
 		GuiHelper.setScreenAfterLogoutOrBack();
 		
 	}
@@ -191,6 +187,18 @@ public class EmployeeScreenController implements Initializable,IScreenController
 		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/ParkAvailableSpotsScreen.fxml",
 				ApplicationViewType.Park_Available_Spots_Screen,new EntitiesContainer(employee,park));
 		screen.setCenter(dashboard);
+	}
+
+
+	@Override
+	public void onCloseApplication() {
+		ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Logout, employee);
+		ClientApplication.client.accept(request);
+		try {
+			ClientApplication.client.getClient().closeConnection();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
