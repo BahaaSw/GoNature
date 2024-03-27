@@ -12,11 +12,28 @@ import logic.Visitor;
 import utils.enums.UserStatus;
 import utils.enums.UserTypeEnum;
 
+/**
+ * Handles database queries related to customers, including both guides and visitors,
+ * providing functionality to search for approved guides and check access for visitors.
+ * Authors: Nadav Reubens, Gal Bitton, Tamer Amer, Rabea Lahham, Bahaldeen Swied, Ron Sisso
+ */
 public class CustomerQueries {
 	
 	public CustomerQueries() {
 	}
-
+	
+    /**
+     * Searches for an approved guide in the database using the guide's username.
+     * Verifies the password and checks the approval status of the guide.
+     * 
+     * @param guide A Guide object containing the username and password to verify.
+     * @return A DatabaseResponse indicating the result of the search and verification process.
+     *         Returns Guide_Connected_Successfully if the guide is found and approved,
+     *         Such_Guide_Not_Found if no guide matches the username,
+     *         Password_Incorrect if the password does not match,
+     *         Guide_Not_Approve_Yet if the guide's status is still pending, or
+     *         Failed if an SQL exception occurs.
+     */
 	public DatabaseResponse searchForApprovedGuide(Guide guide) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -53,6 +70,16 @@ public class CustomerQueries {
 		}
 	}
 	
+    /**
+     * Searches for an active preorder associated with a visitor's ID, excluding orders
+     * that are cancelled or have passed their visit time.
+     * 
+     * @param visitor A Visitor object containing the customer ID to search for.
+     * @return A DatabaseResponse indicating whether the visitor has an active preorder.
+     *         Returns Visitor_Connected_Successfully if an active order is found,
+     *         Doesnt_Have_Active_Order if no active order exists for the visitor, or
+     *         Failed if an SQL exception occurs.
+     */
 	public DatabaseResponse searchAccessForVisitor(Visitor visitor) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();

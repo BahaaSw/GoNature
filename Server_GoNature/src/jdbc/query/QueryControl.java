@@ -18,7 +18,6 @@ package jdbc.query;
  */
 public class QueryControl {
 	
-	
 	public static OrderQueries orderQueries = new OrderQueries();
 	public static CustomerQueries customerQueries = new CustomerQueries();
 	public static EmployeeQueries employeeQueries = new EmployeeQueries();

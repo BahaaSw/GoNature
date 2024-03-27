@@ -4,6 +4,14 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+
+/**
+ * Manages the connection to a MySQL database using JDBC. This class implements the Singleton pattern
+ * to ensure that only one connection instance is used throughout the application. It provides methods
+ * to connect to the database, get the instance of the connection, and close the connection when necessary.
+ * Authors: Nadav Reubens, Gal Bitton, Tamer Amer, Rabea Lahham, Bahaldeen Swied, Ron Sisso
+ */
+
 public class MySqlConnection {
 
 	private Connection connection = null;
@@ -81,7 +89,11 @@ public class MySqlConnection {
 	public Connection getConnection() {
 		return this.connection;
 	}
-
+	
+    /**
+     * Closes the current database connection and nullifies the Singleton instance.
+     * This method should be called to release the database resources explicitly when they are no longer needed.
+     */
 	public void closeConnection() {
 		try {
 			this.connection.close();
@@ -91,7 +103,13 @@ public class MySqlConnection {
 			e.printStackTrace();
 		}
 	}
-
+	
+    /**
+     * Sets the database connection details used by MySqlConnection to establish the database connection.
+     * This method should be called before obtaining the MySqlConnection instance for the first time.
+     *
+     * @param details The DBConnectionDetails object containing the database name, username, and password.
+     */
 	public static void setDBConnectionDetails(DBConnectionDetails details) {
 		dbDetails = details;
 	}

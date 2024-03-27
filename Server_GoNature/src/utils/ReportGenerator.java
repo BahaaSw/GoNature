@@ -37,8 +37,25 @@ import logic.ParkFullDaySummary;
 import logic.UsageReport;
 import logic.VisitsReport;
 
+/**
+ * The {@code ReportGenerator} class provides functionalities to generate and export different types of reports
+ * as PDF files, including usage reports, cancellations reports, visits reports, and total visitors amount reports.
+ * These reports are generated based on the provided data from logic entities such as {@link UsageReport},
+ * {@link CancellationsReport}, {@link VisitsReport}, and {@link AmountDivisionReport}. The class utilizes the
+ * iTextPDF library for PDF generation and manipulation, and JFreeChart for creating charts within the PDF documents.
+ * Authors: Nadav Reubens, Gal Bitton, Tamer Amer, Rabea Lahham, Bahaldeen Swied, Ron Sisso
+ */
+
 public class ReportGenerator {
 	
+	/**
+	 * Generates a PDF blob of a usage report based on the provided {@link UsageReport} data. The report includes detailed
+	 * statistics about park usage, represented in tables and bar charts, showing the distribution of park fullness across
+	 * different times of the day.
+	 *
+	 * @param report The {@link UsageReport} containing the data to be included in the report.
+	 * @return A byte array representing the PDF blob of the generated report. Returns {@code null} if an error occurs during report generation.
+	 */
 	public static byte[] generateUsageReportAsPdfBlob(UsageReport report)
 	{
 		Document document = new Document();
@@ -174,7 +191,15 @@ public class ReportGenerator {
 
 		}
 	}
-
+	
+	/**
+	 * Generates a PDF blob of a cancellations report based on the provided {@link CancellationsReport} data. The report
+	 * includes details about cancellations and time-passed orders, presented in a tabular format and accompanied by a
+	 * line chart visualizing monthly statistics.
+	 *
+	 * @param report The {@link CancellationsReport} containing the data to be included in the report.
+	 * @return A byte array representing the PDF blob of the generated report. Returns {@code null} if an error occurs during report generation.
+	 */
 	public static byte[] generateCancellationsReportAsPdfBlob(CancellationsReport report) {
 
 		Document document = new Document();
@@ -295,6 +320,14 @@ public class ReportGenerator {
 
 	}
 	
+	/**
+	 * Generates a PDF document of a visits report based on the provided {@link VisitsReport} data. The report details the
+	 * total amount of visitors distributed by visitor type and includes the total idle time inside the park, represented in
+	 * tables and bar charts.
+	 *
+	 * @param report The {@link VisitsReport} containing the data for the report.
+	 * @return A byte array representing the PDF document of the generated report. Returns {@code null} if an error occurs during report generation.
+	 */
 	public static byte[] generateVisitsReportAsPdf(VisitsReport report) {
 		Document document = new Document();
 		// Create a temporary file
@@ -512,6 +545,13 @@ public class ReportGenerator {
 		}
 	}
 	
+	/**
+	 * Generates a PDF document of a total visitors amount report based on the provided {@link AmountDivisionReport} data.
+	 * The report visualizes the distribution of different types of visitors (solo, family, group) within a park using a pie chart.
+	 *
+	 * @param report The {@link AmountDivisionReport} containing the data for the report.
+	 * @return A byte array representing the PDF document of the generated report. Returns {@code null} if an error occurs during report generation.
+	 */
 	@SuppressWarnings("unchecked")
 	public static byte[] generateTotalVisitorsAmountReportAsPdf(AmountDivisionReport report) {
 		Document document = new Document();
@@ -588,6 +628,16 @@ public class ReportGenerator {
 
 	}
 	
+	/**
+	 * Utility method to create a bar chart using JFreeChart based on the provided {@link CategoryDataset}. This method
+	 * configures the chart with custom settings such as title, axis labels, orientation, and legend inclusion.
+	 *
+	 * @param dataset The {@link CategoryDataset} containing the data to be visualized in the bar chart.
+	 * @param charTitle The title of the chart.
+	 * @param xAxis The label for the X-axis.
+	 * @param yAxis The label for the Y-axis.
+	 * @return A {@link JFreeChart} instance representing the configured bar chart.
+	 */
 	private static JFreeChart createBarChart(final CategoryDataset dataset,String charTitle, String xAxis,
 			String yAxis) {
 	    // Create the chart

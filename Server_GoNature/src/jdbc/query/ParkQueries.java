@@ -16,7 +16,21 @@ import logic.Request;
 import utils.enums.OrderStatusEnum;
 import utils.enums.ParkNameEnum;
 
+/**
+ * Handles database queries related to parks, including retrieving park details by ID or name,
+ * updating park parameters, and managing park fullness and capacity.
+ * Authors: Nadav Reubens, Gal Bitton, Tamer Amer, Rabea Lahham, Bahaldeen Swied, Ron Sisso
+ * @version 1.0.0
+ */
+
 public class ParkQueries {
+	
+    /**
+     * Retrieves a park's details by its ID and updates the passed Park object.
+     *
+     * @param park A Park object with the parkId set. The method fills this object with the retrieved park details.
+     * @return true if the park details were successfully retrieved and the Park object was updated; false otherwise.
+     */
 
 	public boolean getParkById(Park park) {
 		
@@ -48,6 +62,12 @@ public class ParkQueries {
 	}
 	
 	//NOTICE : NOT USED THAT QUERY!!
+    /**
+     * Retrieves a park's details by its name. This method is not used and may be deprecated.
+     *
+     * @param park A Park object with the parkName set. The method fills this object with the retrieved park details.
+     * @return A DatabaseResponse indicating the outcome of the operation, such as success or failure.
+     */
 	public DatabaseResponse getParkByName(Park park) {
 		
 		try {
@@ -78,6 +98,12 @@ public class ParkQueries {
 	}
 	
 	//NOTICE : NOT USED THAT QUERY!!
+    /**
+     * Retrieves a list of all park names. This method is not used and may be deprecated.
+     *
+     * @param parkList An ArrayList of ParkNameEnum to be filled with the names of all parks.
+     * @return A DatabaseResponse indicating the outcome of the operation, such as success or park list creation.
+     */
 	public DatabaseResponse getParksNames(ArrayList<ParkNameEnum> parkList) {
 		
 		try {
@@ -106,6 +132,12 @@ public class ParkQueries {
 	
 	
 	//NOTICE : NOT USED THAT QUERY!!
+    /**
+     * Retrieves the price for a given park. This method is not used and may be deprecated.
+     *
+     * @param park A Park object for which the price will be retrieved. The method updates this object with the price.
+     * @return A DatabaseResponse indicating the outcome of the operation, such as success or failure.
+     */
 	public DatabaseResponse returnParkPrice(Park park)
 	{
 		try {
@@ -135,6 +167,12 @@ public class ParkQueries {
 		}
 	}
 	
+    /**
+     * Updates a specific parameter in the park's record based on a Request object.
+     *
+     * @param request A Request object containing the new value for a parameter, the park ID, and the parameter to update.
+     * @return A DatabaseResponse indicating the outcome of the update operation.
+     */
 	public DatabaseResponse InsertNewValueInRequestedPark(Request request)
 	{
 		try {
@@ -161,6 +199,13 @@ public class ParkQueries {
 	}
 	
 	//NOTICE : NOT USED THAT QUERY!!
+    /**
+     * Retrieves the current capacity and number of visitors in the park.
+     * This method is not used and may be deprecated.
+     *
+     * @param parkId The ID of the park.
+     * @return An array of two integers: the first is the maximum capacity, and the second is the current number of visitors in the park.
+     */
 	public int[] returnCapacityCurrentInParkForPark(int parkId) {
 		int[] values = new int[2];
 
@@ -185,7 +230,14 @@ public class ParkQueries {
 
 	}
 	
-	
+    /**
+     * Updates the park full dates table to mark a park as full on a specific date.
+     *
+     * @param operation The type of operation (Insert or Update) to perform on the park full dates table.
+     * @param date The date on which the park was full.
+     * @param parkName The name of the park.
+     * @return true if the update was successful; false otherwise.
+     */
 	public boolean updateParkFullDateTable(QueryType operation, LocalDate date, String parkName) {
 
 		try {
@@ -218,6 +270,14 @@ public class ParkQueries {
 	}
 	
 	//NOTICE : NOT USED THAT QUERY!!
+    /**
+     * Checks if a park is full on a specific date and updates the park full dates table accordingly.
+     * This method is not used and may be deprecated.
+     *
+     * @param parkId The ID of the park.
+     * @param date The date to check for fullness.
+     * @return A DatabaseResponse indicating the outcome of the check, such as the park being full or not full.
+     */
 	public DatabaseResponse checkParkIsFull(int parkId, LocalDate date) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -256,14 +316,21 @@ public class ParkQueries {
 		}
 	}
 	
-	/**
-	 * @param order
-	 * @param direction - if true means the customer is entering the park, false
-	 *                  means customer is exiting the park
-	 * @return
-	 */
 	
 	//NOTICE : NOT USED THAT QUERY!!
+    /**
+     * Updates the number of visitors currently in the park based on an order's entry or exit. 
+     * If the direction is true, it indicates that the customers associated with the order are entering the park, 
+     * and the current in-park visitor count is incremented by the order's visitor count. 
+     * If false, it indicates that the customers are exiting, and the count is decremented.
+     *
+     * Additionally, this method updates the order status to either In_Park (if entering) or Completed (if exiting).
+     *
+     * @param order The order object containing details such as the park ID and the number of visitors.
+     * @param direction A boolean value indicating the direction of the update: true for entry, false for exit.
+     * @return A DatabaseResponse enum indicating the outcome of the operation. It can denote successful update, 
+     *         failure due to SQL issues, or other specific reasons like the park does not exist.
+     */
 	public DatabaseResponse updateCurrentInParkValue(Order order, boolean direction) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();

@@ -15,6 +15,12 @@ import utils.enums.OrderStatusEnum;
 import utils.enums.OrderTypeEnum;
 import utils.enums.ParkNameEnum;
 
+/**
+ * Handles database interactions for occasional orders, providing functionality
+ * to fetch, update, and insert occasional orders into the database.
+ * Authors: Nadav Reubens, Gal Bitton, Tamer Amer, Rabea Lahham, Bahaldeen Swied, Ron Sisso
+ */
+
 public class OccasionalQueries {
 	/**
 	 * Gets an occasional order and checks if it's in DB

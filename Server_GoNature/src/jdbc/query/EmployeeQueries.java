@@ -15,11 +15,23 @@ import utils.enums.ParkNameEnum;
 import utils.enums.UserStatus;
 import utils.enums.UserTypeEnum;
 
+/**
+ * Manages database queries related to employees and guides, providing functionality to search for
+ * approved employees, check visitor payment and confirmation, update guide status, and list all guides
+ * with a pending status.
+ * Authors: Nadav Reubens, Gal Bitton, Tamer Amer, Rabea Lahham, Bahaldeen Swied, Ron Sisso
+ */
 public class EmployeeQueries {
 
 	public EmployeeQueries() {
 	}
-
+	
+    /**
+     * Searches for an employee in the database with the specified username and verifies the password.
+     * 
+     * @param employee An Employee object containing the username and password to verify.
+     * @return A DatabaseResponse indicating the result of the search and verification process.
+     */
 	public DatabaseResponse searchForApprovedEmployee(Employee employee) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -55,6 +67,14 @@ public class EmployeeQueries {
 	}
 	
 	//NOTICE : NOT USED THAT QUERY!!
+    /**
+     * Checks if a visitor associated with a given order ID has paid and confirmed their order.
+     * This query is marked as not used and may be deprecated or reserved for future use.
+     * 
+     * @param orderId The ID of the order to check.
+     * @return A DatabaseResponse indicating whether the order is paid and confirmed, not paid,
+     *         not confirmed, or if the order does not exist.
+     */
 	public DatabaseResponse checkIfVisitorPaidAndConfirmed(int orderId) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -84,7 +104,12 @@ public class EmployeeQueries {
 		}
 	}
 	
-
+    /**
+     * Updates the status of a guide to 'Approved' in the database.
+     * 
+     * @param guide A Guide object containing the user ID of the guide to be approved.
+     * @return A DatabaseResponse indicating whether the guide's status was successfully updated to 'Approved'.
+     */
 	public DatabaseResponse UpdateGuideStatusToApprove(Guide guide) //Update guide permission from Pending to Approve (Tamir/Siso)
 	{
 		try {
@@ -105,7 +130,13 @@ public class EmployeeQueries {
 			return DatabaseResponse.Failed;
 		}
 	}
-
+	
+    /**
+     * Retrieves all guides with a status of 'Pending' from the database.
+     * 
+     * @param guideList An ArrayList of Guide objects to be filled with the details of all guides found.
+     * @return A DatabaseResponse indicating whether any pending guide requests were found and added to the list.
+     */
 	public DatabaseResponse ShowAllGuidesWithPendingStatus(ArrayList<Guide> guideList) //Method to pull all the requests with pending status. (Tamir/Siso)
 	{
 		try {

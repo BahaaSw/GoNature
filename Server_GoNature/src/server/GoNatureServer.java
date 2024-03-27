@@ -42,6 +42,7 @@ import utils.enums.ServerResponse;
 /**
  * The GoNatureServer class is the main system's server class. This class
  * extends AbstractServer ocsf class, and manage all the Client-Server design.
+ * Authors: Nadav Reubens, Gal Bitton, Tamer Amer, Rabea Lahham, Bahaldeen Swied, Ron Sisso
  */
 public class GoNatureServer extends AbstractServer {
 
@@ -97,7 +98,14 @@ public class GoNatureServer extends AbstractServer {
 			}
 		}
 	}
-
+	
+	/**
+	 * Handles logout requests from users, logging the event and removing the user from the server's list of active connections.
+	 *
+	 * @param user The user object, which can be an instance of {@link Visitor} or {@link User}, representing the user requesting logout.
+	 * @param client The client's connection instance to identify the specific session to be closed.
+	 * @param clientIp The IP address of the client, used for logging purposes.
+	 */
 	private void handleUserLogoutFromApplication(Object user, ConnectionToClient client, String clientIp) {
 		try {
 			String id = "";
@@ -246,7 +254,12 @@ public class GoNatureServer extends AbstractServer {
 			server = null;
 		}
 	}
-
+	
+	/**
+	 * Gracefully stops all background threads utilized by the server for various scheduled tasks. This method ensures that threads for sending notifications 24 hours before an order, cancelling orders not confirmed within 2 hours, and cancelling time-passed waiting list orders are safely interrupted and terminated.
+	 * If any of the threads are currently running, this method sends an interrupt signal to each. After signaling, it waits for each thread to terminate by joining each thread, thereby ensuring that the server does not prematurely exit while background tasks are still being processed.
+	 * In the case of an {@link InterruptedException}, which can occur if the current thread is interrupted while waiting for the background threads to join, this method re-interrupts the current thread to preserve the interrupted status. This is a best practice that allows higher-level interrupt handlers to take appropriate action.
+	 */
 	private static void closeAllThreads() {
 //		private static Thread sendNotifications24HoursBefore = null;
 //		private static Thread cancelOrdersNotConfirmedWithin2Hours = null;
@@ -314,7 +327,10 @@ public class GoNatureServer extends AbstractServer {
 			server = null;
 		}
 	}
-
+	
+	/**
+	 * Initializes and starts background threads responsible for sending notifications, cancelling unconfirmed orders, and managing the waiting list. This method ensures that any previously running threads are safely stopped before starting new ones.
+	 */
 	private void initializeThreadsAndStartRun() {
 		if (sendNotifications24HoursBefore != null && sendNotifications24HoursBefore.isAlive()) {
 			sendNotifications24HoursBefore.interrupt();

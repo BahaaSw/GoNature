@@ -13,8 +13,31 @@ import logic.Request;
 import utils.enums.RequestStatusEnum;
 import utils.enums.RequestTypeEnum;
 
+/**
+ * 
+ * @Author NadavReubens
+ * @Author Gal Bitton
+ * @Author Tamer Amer
+ * @Author Rabea Lahham
+ * @Author Bahaldeen Swied
+ * @Author Ron Sisso
+ * @version 1.0.0 
+ */
+
+/**
+ * This class is responsible for executing database operations related to requests,
+ * including showing all park manager requests with a pending status, updating the status of a request,
+ * and inserting new requests into the database.
+ */
+
 public class RequestQueries {
 	private ParkQueries parkQueries= new ParkQueries();
+	
+    /**
+     * Retrieves all requests with a status of "Pending" from the database.
+     * @param request An ArrayList of Request objects to be populated with the retrieved requests.
+     * @return A DatabaseResponse indicating the outcome of the operation.
+     */
 	
 	public DatabaseResponse ShowAllParkManagerRequests(ArrayList<Request> request) //Method to pull all the requests with pending status. (Tamir/Siso)
 	{
@@ -48,10 +71,17 @@ public class RequestQueries {
 			return DatabaseResponse.Pending_Request_Pulled;
 			
 		} catch (SQLException ex) {
-//			serverController.printToLogConsole("Query search for user failed");
+			// Log failure (actual logging commented out)
 			return DatabaseResponse.Failed;
 		}
 	}
+	
+    /**
+     * Updates the status of a specific request in the database.
+     * @param request The Request object containing the ID of the request to update.
+     * @param status The new status to set for the request.
+     * @return A DatabaseResponse indicating the outcome of the operation.
+     */
 	
 	public DatabaseResponse UpdateStatusRequest(Request request,String status)
 	{
@@ -74,11 +104,17 @@ public class RequestQueries {
 			return DatabaseResponse.Request_Was_Updated;
 			
 		} catch (SQLException ex) {
-//			serverController.printToLogConsole("Query search for user failed");
+			// Log failure (actual logging commented out)
 			return DatabaseResponse.Failed;
 		}
 	}
 	
+    /**
+     * Inserts a new request into the database, ensuring that no duplicate pending requests of the same type
+     * for the same park exist.
+     * @param request The Request object to insert into the database.
+     * @return True if the request was successfully inserted, otherwise false.
+     */
 	public boolean InsertNewRequest(Request request) {
 	    try {
 	        Connection con = MySqlConnection.getInstance().getConnection();

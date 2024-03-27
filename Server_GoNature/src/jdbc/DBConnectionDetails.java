@@ -21,6 +21,7 @@ public class DBConnectionDetails {
 	private String dbUserName;
 	private String dbPassword;
 	
+	
 	public DBConnectionDetails(String name, String username, String password) {
 		this.schemeName=name;
 		this.dbUserName=username;

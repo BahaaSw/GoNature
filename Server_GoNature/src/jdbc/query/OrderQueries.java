@@ -19,6 +19,11 @@ import utils.enums.OrderTypeEnum;
 import utils.enums.ParkNameEnum;
 import utils.enums.UserTypeEnum;
 
+/**
+ * Facilitates all database interactions related to orders, including fetching, updating, and deleting orders,
+ * checking available spots in parks, and handling notifications for waiting list orders.
+ * Authors: Nadav Reubens, Gal Bitton, Tamer Amer, Rabea Lahham, Bahaldeen Swied, Ron Sisso
+ */
 public class OrderQueries {
 
 	private ParkQueries parkQueries = new ParkQueries();

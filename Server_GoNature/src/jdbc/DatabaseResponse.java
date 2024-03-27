@@ -1,5 +1,10 @@
 package jdbc;
 
+/**
+ * Enumerates possible responses from database operations, encompassing general outcomes,
+ * login-related responses, order and park operations, guide approval processes, and more.
+ * Authors: Nadav Reubens, Gal Bitton, Tamer Amer, Rabea Lahham, Bahaldeen Swied, Ron Sisso
+ */
 public enum DatabaseResponse {
 	Exception_Was_Thrown,
 	Failed,
@@ -19,25 +24,25 @@ public enum DatabaseResponse {
 	// Order Section
 	Such_Order_Does_Not_Exists,
 	Order_Found_Successfully,
-	Order_Status_Updated, // added
-	Order_PhoneNumber_Updated, //added
-	Order_Email_Updated, //added
-	Order_EnterDate_Updated, //added
-	Order_ExitDate_Updated, //added
-	Order_Number_Of_Visitors_Updated, //added
-	Order_Type_Updated, //added
-	Order_Added_Into_Table, //added
-	Current_Date_Is_Full,// gal - added
-	Requested_Date_Is_Available, // gal - added
+	Order_Status_Updated,
+	Order_PhoneNumber_Updated,
+	Order_Email_Updated,
+	Order_EnterDate_Updated,
+	Order_ExitDate_Updated,
+	Order_Number_Of_Visitors_Updated,
+	Order_Type_Updated,
+	Order_Added_Into_Table,
+	Current_Date_Is_Full,
+	Requested_Date_Is_Available,
 	Number_Of_Visitors_More_Than_Max_Capacity,
 	
 	// Park Section
 	Park_Found_Successfully,
 	Such_Park_Does_Not_Exists,
 	Park_Parameter_Updated_Successfully,
-	No_Pending_Request_Exists, // tamir/siso added
-	Park_Is_Full, //added
-	Park_Is_Not_Full, // added
+	No_Pending_Request_Exists,
+	Park_Is_Full,
+	Park_Is_Not_Full,
 	Park_MaxCapacity_Was_Updated,
 	Park_EstimatedStayTime_Was_Updated,
 	Park_ReservedSpots_Was_Updated,
@@ -50,7 +55,7 @@ public enum DatabaseResponse {
 	Park_Reached_Full_Capacity_Updated_Failed,
 	
 	//ServiceEmployee
-	Guide_Was_Approved, // tamir/siso added
+	Guide_Was_Approved,
 	
 
 	//currentEstimatedStayTime
@@ -62,9 +67,9 @@ public enum DatabaseResponse {
 	
 	
 	// Request Section
-	Pending_Request_Pulled, // tamir/siso added
-	No_Request_Exists, // tamir/siso added
-	Request_Was_Updated, // tamir/siso added
+	Pending_Request_Pulled,
+	No_Request_Exists,
+	Request_Was_Updated,
 	
 	// Report Section
 	

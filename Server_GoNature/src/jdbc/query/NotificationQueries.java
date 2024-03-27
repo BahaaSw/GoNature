@@ -14,9 +14,21 @@ import logic.Order;
 import utils.enums.ParkNameEnum;
 import utils.enums.UserTypeEnum;
 
-
+/**
+ * Handles database operations related to the notification status of orders,
+ * including checking for orders that need to be updated due to their scheduled
+ * entry time approaching or having passed.
+ * Authors: Nadav Reubens, Gal Bitton, Tamer Amer, Rabea Lahham, Bahaldeen Swied, Ron Sisso
+ */
 public class NotificationQueries {
 	
+    /**
+     * Checks all notified orders and updates their status to 'Cancelled' if the current
+     * time has surpassed their entry time.
+     * 
+     * @param localDateTime The current LocalDateTime to compare against order entry times.
+     * @return An ArrayList of Orders that were cancelled as a result of this operation.
+     */
 	public ArrayList<Order> CheckAllOrdersAndChangeToCancelledIfNeeded(LocalDateTime localDateTime)
 	{
 		ArrayList<Order> cancelledOrders = new ArrayList<Order>();
@@ -60,6 +72,11 @@ public class NotificationQueries {
 		}
 	}
 	
+    /**
+     * Automatically updates the status of a specified order to 'Cancelled'.
+     * 
+     * @param order The order to cancel.
+     */
 	public void automaticallyCancelAllNotifiedOrders(Order order) {
 		
 		try {
@@ -81,6 +98,12 @@ public class NotificationQueries {
 		}
 	}
 	
+    /**
+     * Automatically marks a specified order as 'Irrelevant', typically used when
+     * an order is no longer actionable or relevant to the current context.
+     * 
+     * @param order The order to mark as irrelevant.
+     */
 	public void automaticallyMarkOrdersAsIrrelevant(Order order) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -101,6 +124,13 @@ public class NotificationQueries {
 		}
 	}
 	
+    /**
+     * Checks all orders with a status of 'Wait Notify' and updates their status to
+     * 'Notified' if their entry time matches the specified LocalDateTime.
+     * 
+     * @param localDateTime The LocalDateTime to check orders against.
+     * @return An ArrayList of Orders that were updated to 'Notified' status.
+     */
 	public ArrayList<Order> CheckAllOrdersAndChangeToNotifedfNeeded(LocalDateTime localDateTime)
 	{
 		Connection con = MySqlConnection.getInstance().getConnection();
@@ -143,6 +173,13 @@ public class NotificationQueries {
 		
 	}
 	
+    /**
+     * Updates the status of all orders from 'Wait Notify' to 'Notified' for a specific
+     * order. This is typically used as part of processing the queue of orders awaiting
+     * notification.
+     * 
+     * @param orderToUpdate The order to update.
+     */
 	public void UpdateAllWaitNotifyOrdersToNotify(Order orderToUpdate) {
 
 		try {
@@ -166,6 +203,13 @@ public class NotificationQueries {
 }
 	
 	//TODO: USE THIS QUERY
+    /**
+     * Checks the waiting list for all orders that are no longer relevant based on
+     * their entry time and updates them accordingly.
+     * 
+     * @param localDateTime The current LocalDateTime used to assess relevance.
+     * @return An ArrayList of Orders that were deemed irrelevant and updated.
+     */
 	public ArrayList<Order> CheckWaitingListAndRemoveAllIrrelcantOrders(LocalDateTime localDateTime)
 	{   
 		ArrayList<Order> irrelevantOrders = new ArrayList<Order>();
@@ -210,6 +254,14 @@ public class NotificationQueries {
 	}
 	
 	//NOTICE : NOT USED THAT QUERY!!
+    /**
+     * Checks if an order that has been notified for 24 hours has been updated
+     * from the server-side. This method is currently not used and may be part
+     * of a future implementation or legacy system.
+     * 
+     * @param OrderId The ID of the order to check.
+     * @return true if the order has been updated within 24 hours, false otherwise.
+     */
 	public boolean CheckNotifiedFromServer24Hours(int OrderId)
     {
 
