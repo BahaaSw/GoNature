@@ -5,7 +5,8 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.sql.Connection;
-
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -178,7 +179,7 @@ public class GoNatureServer extends AbstractServer {
 	 */
 	@Override
 	protected void serverStopped() {
-		Platform.runLater(()->serverController.printToLogConsole("Server has stopped listening for connections\n"));
+		Platform.runLater(() -> serverController.printToLogConsole("Server has stopped listening for connections\n"));
 	}
 
 	/**
@@ -186,7 +187,7 @@ public class GoNatureServer extends AbstractServer {
 	 */
 	@Override
 	protected void serverClosed() {
-		Platform.runLater(()->serverController.printToLogConsole("Server has been closed\n"));
+		Platform.runLater(() -> serverController.printToLogConsole("Server has been closed\n"));
 	}
 
 	/**
@@ -236,6 +237,7 @@ public class GoNatureServer extends AbstractServer {
 			// first tell all the clients to disconnect.
 			closeAllThreads();
 			server.sendToAllClients(new ServerResponseBackToClient(ServerResponse.Server_Disconnected, ""));
+			clearImportedData();
 			server.stopListening();
 			server.close();
 
@@ -244,6 +246,38 @@ public class GoNatureServer extends AbstractServer {
 		} finally {
 			MySqlConnection.getInstance().closeConnection();
 			server = null;
+		}
+	}
+
+	private static void clearImportedData() {
+		try {
+			Connection con = MySqlConnection.getInstance().getConnection();
+			Statement stmt = con.createStatement();
+			stmt.execute("TRUNCATE TABLE users");
+			System.out.println("Imported data cleared successfully");
+		}catch(SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public static boolean importUsersData() {
+		try {
+			String csvFilePath = "@../../import/usersData.csv";
+
+			String sql = "LOAD DATA LOCAL INFILE '" + csvFilePath + "' INTO TABLE users "
+			           + "FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\n' "
+			           + "(UserId, Username, Password, FirstName, LastName, Phone, Email, Status, UserType, @ParkId, EmployeeType) "
+			           + "SET ParkId = NULLIF(@ParkId, '')";
+
+			Connection conn = MySqlConnection.getInstance().getConnection();
+			Statement stmt = conn.createStatement();
+
+			stmt.execute(sql);
+			System.out.println("Data imported successfully");
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
 		}
 	}
 
@@ -289,6 +323,8 @@ public class GoNatureServer extends AbstractServer {
 			return;
 		}
 
+		clearImportedData();
+		
 		serverController.printToLogConsole("Connection to database succeed");
 
 		// Singleton DesignPattern. Only 1 instance of server is available.

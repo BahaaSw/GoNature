@@ -9,7 +9,7 @@ public enum OrderTypeEnum {
 	Solo_Occasional("Solo Occasional"),
 	Family_PreOrder ("Family Preorder"),
 	Family_Occasional ("Family Occasional"),
-	Group_PreOrder ("Guide Preorder"),
+	Group_PreOrder ("Group Preorder"),
 	Group_Occasional ("Group Occasional");
 	
 	

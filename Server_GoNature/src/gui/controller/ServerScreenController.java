@@ -135,18 +135,25 @@ public class ServerScreenController implements Initializable {
 	 */
 	public void onDisconnectServerClicked() {
 		GoNatureServer.stopServer();
+		printToLogConsole("Imported data cleared successfully");
 		disconnectServer.setDisable(true);
 		connectServer.setDisable(false);
 		disableFields(false);
+		importData.setDisable(false);
 		importData.setVisible(false);
 		connectedClientsList.clear();
 
 	}
 	
 	public void onImportDataClicked() {
-		
+		boolean imported = GoNatureServer.importUsersData();
+		if(imported) {
+			printToLogConsole("User data imported successfully");
+			importData.setDisable(true);
+			return;
+		}
+		printToLogConsole("User data import failed");
 	}
-	
 	/**
 	 * This method add specific client to the connected clients table view in the gui screen.
 	 * @param client- The ConnectionToClient instance which include the details of the client.

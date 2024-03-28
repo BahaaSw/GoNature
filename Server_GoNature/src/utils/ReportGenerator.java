@@ -362,12 +362,12 @@ public class ReportGenerator {
 			    "15:00-16:00",
 			};
 
-			ArrayList<Integer> solo = report.getTotalVisitsByEnterTime().get(0);
-			ArrayList<Integer> soloPreorder = report.getTotalVisitsByEnterTime().get(1);
-//			ArrayList<Integer> family = report.getTotalVisitsByEnterTime().get(2);
-			ArrayList<Integer> familyPreorder = report.getTotalVisitsByEnterTime().get(3);
-			ArrayList<Integer> group = report.getTotalVisitsByEnterTime().get(4);
-			ArrayList<Integer> groupPreorder = report.getTotalVisitsByEnterTime().get(5);
+			ArrayList<Integer> soloOccasional = report.getTotalVisitsByEnterTime().get(0);
+			ArrayList<Integer> soloPreorder = report.getTotalVisitsByEnterTime().get(5);
+			ArrayList<Integer> familyOccasional = report.getTotalVisitsByEnterTime().get(1);
+			ArrayList<Integer> familyPreorder = report.getTotalVisitsByEnterTime().get(4);
+			ArrayList<Integer> groupOccasional = report.getTotalVisitsByEnterTime().get(2);
+			ArrayList<Integer> groupPreorder = report.getTotalVisitsByEnterTime().get(3);
 			int i=0;
 			// For each hour slot, add a row to the table
 			for (String hour : hours) {
@@ -377,9 +377,9 @@ public class ReportGenerator {
 			    cellHour.setHorizontalAlignment(Element.ALIGN_CENTER);
 			    table.addCell(cellHour);
 			    
-			    Integer totalSolo = solo.get(i)+soloPreorder.get(i);
-			    Integer totalFamily = familyPreorder.get(i);
-			    Integer totalGroup = group.get(i)+groupPreorder.get(i);
+			    Integer totalSolo = soloOccasional.get(i)+soloPreorder.get(i);
+			    Integer totalFamily = familyOccasional.get(i)+familyPreorder.get(i);
+			    Integer totalGroup = groupOccasional.get(i)+groupPreorder.get(i);
 			    
 		        PdfPCell cellCount = new PdfPCell(new Phrase(String.valueOf(totalSolo)));
 		        cellCount.setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -475,9 +475,9 @@ public class ReportGenerator {
 			for (int j=0;j<8;j++) {
 //				ArrayList<Integer> data = report.getEnterTimeData(j);
 				String column = String.format("%s:00-%s:59",8+j,8+j+1);
-			    Integer totalSolo = solo.get(j)+soloPreorder.get(j);
-			    Integer totalFamily = familyPreorder.get(j);
-			    Integer totalGroup = group.get(j)+groupPreorder.get(j);
+			    Integer totalSolo = soloOccasional.get(j)+soloPreorder.get(j);
+			    Integer totalFamily = familyOccasional.get(j)+familyPreorder.get(j);
+			    Integer totalGroup = groupOccasional.get(j)+groupPreorder.get(j);
 				if(j==7)
 					column="15:00-16:00";
 				dataset.addValue(totalSolo, "Solo",column);

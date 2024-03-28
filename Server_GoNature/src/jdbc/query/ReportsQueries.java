@@ -26,7 +26,7 @@ import utils.enums.ParkNameEnum;
 
 public class ReportsQueries {
 
-	public ParkDailySummary getParkDailySummaryByDay(int day,int month, int parkId) { 
+	public ParkDailySummary getParkDailySummaryByDay(int month,int day, int parkId) { 
 		ParkDailySummary currentDaySummary = new ParkDailySummary();
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -36,7 +36,7 @@ public class ReportsQueries {
 			case(5):
 				stmt = con
 				.prepareStatement("SELECT"
-			              + " SUM(CASE WHEN OrderStatus = 'Canceled' THEN 1 ELSE 0 END) AS TotalCanceledOrders,"
+			              + " SUM(CASE WHEN OrderStatus = 'Cancelled' THEN 1 ELSE 0 END) AS TotalCanceledOrders,"
 			              + " SUM(CASE WHEN OrderStatus = 'Time Passed' THEN 1 ELSE 0 END) AS TotalTimePassedOrders,"
 			              + " COUNT(*) AS TotalOrders"
 			              + " FROM"
@@ -52,7 +52,7 @@ public class ReportsQueries {
 				break;
 			default:
 				stmt = con
-				.prepareStatement("SELECT COUNT(CASE WHEN OrderStatus = 'Canceled' THEN 1 END) AS CanceledOrders, "
+				.prepareStatement("SELECT COUNT(CASE WHEN OrderStatus = 'Cancelled' THEN 1 END) AS CanceledOrders, "
 						+ "COUNT(CASE WHEN OrderStatus = 'Time Passed' THEN 1 END) AS TimePassedOrders, "
 						+ "COUNT(*) AS TotalOrders " + "FROM preorders " + "WHERE ParkId = ? "
 						+ "AND MONTH(EnterDate) = ? AND DAY(EnterDate) = ?");
@@ -155,7 +155,7 @@ public class ReportsQueries {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
 			PreparedStatement stmt = con.prepareStatement(
-					"INSERT INTO usagereport (parkId, year, month, pdfblob) \r\n" + "VALUES (?, ?, ?, ?)");
+					"INSERT INTO usagereport (parkId, year, month, pdfblob) \r\n" + "VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE PDFBlob = VALUES(PDFBlob);");
 
 			stmt.setInt(1, report.getRequestedPark().getParkId());
 			stmt.setInt(2, report.getYear());
@@ -370,7 +370,7 @@ public class ReportsQueries {
 						    "    UNION ALL " +
 						    "    SELECT 'Group Occasional' " +
 						    "     UNION ALL " +
-						    "    SELECT 'Guide Preorder' " +
+						    "    SELECT 'Group Preorder' " +
 						    "     UNION ALL " +
 						    "    SELECT 'Family Preorder' " +
 						    "     UNION ALL " +
@@ -403,11 +403,11 @@ public class ReportsQueries {
 				ArrayList<Integer> data = new ArrayList<Integer>();
 				String orderType = rs.getString(1);
 				int indexToAdd = (orderType.equals("Solo Occasional") ? 0
-						: orderType.equals("Solo Preorder") ? 1
-								: orderType.equals("Family Occasional") ? 2
-										: orderType.equals("Family Preorder") ? 3
-												: orderType.equals("Group Occasional") ? 4
-														: orderType.equals("Group Preorder") ? 5 : 6);
+						: orderType.equals("Solo Preorder") ? 5
+								: orderType.equals("Family Occasional") ? 1
+										: orderType.equals("Family Preorder") ? 4
+												: orderType.equals("Group Occasional") ? 2
+														: orderType.equals("Group Preorder") ? 3 : 6);
 
 				data.add(rs.getInt(2));
 				data.add(rs.getInt(3));
@@ -434,21 +434,21 @@ public class ReportsQueries {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
 			PreparedStatement stmt = con.prepareStatement("SELECT "
-				    + "SUM(CASE WHEN (OrderType='Solo' OR OrderType='Solo Preorder') AND Duration='0-1' THEN Amount ELSE 0 END) AS TotalSolo0_1, "
-				    + "SUM(CASE WHEN (OrderType='Family' OR OrderType='Family Preorder') AND Duration='0-1' THEN Amount ELSE 0 END) AS TotalFamily0_1, "
-				    + "SUM(CASE WHEN (OrderType='Group' OR OrderType='Group Preorder') AND Duration='0-1' THEN Amount ELSE 0 END) AS TotalGroup0_1, "
-				    + "SUM(CASE WHEN (OrderType='Solo' OR OrderType='Solo Preorder') AND Duration='1-2' THEN Amount ELSE 0 END) AS TotalSolo1_2, "
-				    + "SUM(CASE WHEN (OrderType='Family' OR OrderType='Family Preorder') AND Duration='1-2' THEN Amount ELSE 0 END) AS TotalFamily1_2, "
-				    + "SUM(CASE WHEN (OrderType='Group' OR OrderType='Group Preorder') AND Duration='1-2' THEN Amount ELSE 0 END) AS TotalGroup1_2, "
-				    + "SUM(CASE WHEN (OrderType='Solo' OR OrderType='Solo Preorder') AND Duration='2-3' THEN Amount ELSE 0 END) AS TotalSolo2_3, "
-				    + "SUM(CASE WHEN (OrderType='Family' OR OrderType='Family Preorder') AND Duration='2-3' THEN Amount ELSE 0 END) AS TotalFamily2_3, "
-				    + "SUM(CASE WHEN (OrderType='Group' OR OrderType='Group Preorder') AND Duration='2-3' THEN Amount ELSE 0 END) AS TotalGroup2_3, "
-				    + "SUM(CASE WHEN (OrderType='Solo' OR OrderType='Solo Preorder') AND Duration='3-4' THEN Amount ELSE 0 END) AS TotalSolo3_4, "
-				    + "SUM(CASE WHEN (OrderType='Family' OR OrderType='Family Preorder') AND Duration='3-4' THEN Amount ELSE 0 END) AS TotalFamily3_4, "
-				    + "SUM(CASE WHEN (OrderType='Group' OR OrderType='Group Preorder') AND Duration='3-4' THEN Amount ELSE 0 END) AS TotalGroup3_4, "
-				    + "SUM(CASE WHEN (OrderType='Solo' OR OrderType='Solo Preorder') AND Duration='4+' THEN Amount ELSE 0 END) AS TotalSolo4, "
-				    + "SUM(CASE WHEN (OrderType='Family' OR OrderType='Family Preorder') AND Duration='4+' THEN Amount ELSE 0 END) AS TotalFamily4, "
-				    + "SUM(CASE WHEN (OrderType='Group' OR OrderType='Group Preorder') AND Duration='4+' THEN Amount ELSE 0 END) AS TotalGroup4 "
+				    + "SUM(CASE WHEN (OrderType='Solo Occasional' OR OrderType='Solo Preorder') AND Duration='0-1' THEN Amount ELSE 0 END) AS TotalSolo0_1, "
+				    + "SUM(CASE WHEN (OrderType='Family Occasional' OR OrderType='Family Preorder') AND Duration='0-1' THEN Amount ELSE 0 END) AS TotalFamily0_1, "
+				    + "SUM(CASE WHEN (OrderType='Group Occasional' OR OrderType='Group Preorder') AND Duration='0-1' THEN Amount ELSE 0 END) AS TotalGroup0_1, "
+				    + "SUM(CASE WHEN (OrderType='Solo Occasional' OR OrderType='Solo Preorder') AND Duration='1-2' THEN Amount ELSE 0 END) AS TotalSolo1_2, "
+				    + "SUM(CASE WHEN (OrderType='Family Occasional' OR OrderType='Family Preorder') AND Duration='1-2' THEN Amount ELSE 0 END) AS TotalFamily1_2, "
+				    + "SUM(CASE WHEN (OrderType='Group Occasional' OR OrderType='Group Preorder') AND Duration='1-2' THEN Amount ELSE 0 END) AS TotalGroup1_2, "
+				    + "SUM(CASE WHEN (OrderType='Solo Occasional' OR OrderType='Solo Preorder') AND Duration='2-3' THEN Amount ELSE 0 END) AS TotalSolo2_3, "
+				    + "SUM(CASE WHEN (OrderType='Family Occasional' OR OrderType='Family Preorder') AND Duration='2-3' THEN Amount ELSE 0 END) AS TotalFamily2_3, "
+				    + "SUM(CASE WHEN (OrderType='Group Occasional' OR OrderType='Group Preorder') AND Duration='2-3' THEN Amount ELSE 0 END) AS TotalGroup2_3, "
+				    + "SUM(CASE WHEN (OrderType='Solo Occasional' OR OrderType='Solo Preorder') AND Duration='3-4' THEN Amount ELSE 0 END) AS TotalSolo3_4, "
+				    + "SUM(CASE WHEN (OrderType='Family Occasional' OR OrderType='Family Preorder') AND Duration='3-4' THEN Amount ELSE 0 END) AS TotalFamily3_4, "
+				    + "SUM(CASE WHEN (OrderType='Group Occasional' OR OrderType='Group Preorder') AND Duration='3-4' THEN Amount ELSE 0 END) AS TotalGroup3_4, "
+				    + "SUM(CASE WHEN (OrderType='Solo Occasional' OR OrderType='Solo Preorder') AND Duration='4+' THEN Amount ELSE 0 END) AS TotalSolo4, "
+				    + "SUM(CASE WHEN (OrderType='Family Occasional' OR OrderType='Family Preorder') AND Duration='4+' THEN Amount ELSE 0 END) AS TotalFamily4, "
+				    + "SUM(CASE WHEN (OrderType='Group Occasional' OR OrderType='Group Preorder') AND Duration='4+' THEN Amount ELSE 0 END) AS TotalGroup4 "
 				    + "FROM ( "
 				    + "SELECT OrderId, EnterDate, ExitDate, Amount, OrderType, "
 				    + "CASE "
@@ -507,7 +507,7 @@ public class ReportsQueries {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
 			PreparedStatement stmt = con.prepareStatement(
-					"INSERT INTO cancellationsreports (parkId, year, month, pdfblob) \r\n" + "VALUES (?, ?, ?, ?)");
+					"INSERT INTO cancellationsreports (parkId, year, month, pdfblob) \r\n" + "VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE PDFBlob = VALUES(PDFBlob);");
 
 			stmt.setInt(1, report.getRequestedPark().getParkId());
 			stmt.setInt(2, report.getYear());
@@ -532,7 +532,7 @@ public class ReportsQueries {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
 			PreparedStatement stmt = con.prepareStatement(
-					"INSERT INTO visitsreport (parkId, year, month, pdfblob) \r\n" + "VALUES (?, ?, ?, ?)");
+					"INSERT INTO visitsreport (parkId, year, month, pdfblob) \r\n" + "VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE PDFBlob = VALUES(PDFBlob);");
  
 			stmt.setInt(1, report.getRequestedPark().getParkId());
 			stmt.setInt(2, report.getYear());
@@ -557,7 +557,7 @@ public class ReportsQueries {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
 			PreparedStatement stmt = con.prepareStatement(
-					"INSERT INTO totalvisitorsreport (parkId, year, month, pdfblob) \r\n" + "VALUES (?, ?, ?, ?)");
+					"INSERT INTO totalvisitorsreport (parkId, year, month, pdfblob) \r\n" + "VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE PDFBlob = VALUES(PDFBlob);");
  
 			stmt.setInt(1, report.getRequestedPark().getParkId());
 			stmt.setInt(2, report.getYear());
