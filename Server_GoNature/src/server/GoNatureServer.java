@@ -1,6 +1,5 @@
 package server;
 
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -83,9 +82,9 @@ public class GoNatureServer extends AbstractServer {
 		ClientRequestDataContainer data = (ClientRequestDataContainer) msg;
 		ClientRequest request = data.getRequest();
 		ServerResponseBackToClient response = null;
-		if (request == ClientRequest.Logout)
+		if (request == ClientRequest.Logout) {
 			handleUserLogoutFromApplication(data.getData(), client, clientIp);
-		else {
+		} else {
 			response = clientRequestHandler.handleRequest(data, client);
 
 			try {
@@ -100,18 +99,20 @@ public class GoNatureServer extends AbstractServer {
 
 	private void handleUserLogoutFromApplication(Object user, ConnectionToClient client, String clientIp) {
 		try {
-			String id = "";
-			if (user instanceof Visitor) {
-				id = "Visitor" + ((Visitor) user).getCustomerId();
+			if (!(user == null)) {
+				String id = "";
+				if (user instanceof Visitor) {
+					id = "Visitor" + ((Visitor) user).getCustomerId();
 
-			} else if (user instanceof User) {
-				id = ((User) user).getUsername();
+				} else if (user instanceof User) {
+					id = ((User) user).getUsername();
+				}
+				serverController.printToLogConsole(
+						String.format("User : '%s' with IP : '%s' : Request Logout from Application", id, clientIp));
+				serverController.getClientsList().remove(new ClientConnection("", client));
+				serverController.printToLogConsole(
+						String.format("User : '%s' with IP : '%s' : Logged Out Successfully", id, clientIp));
 			}
-			serverController.printToLogConsole(
-					String.format("User : '%s' with IP : '%s' : Request Logout from Application", id, clientIp));
-			serverController.getClientsList().remove(new ClientConnection("", client));
-			serverController.printToLogConsole(
-					String.format("User : '%s' with IP : '%s' : Logged Out Successfully", id, clientIp));
 			client.sendToClient(new ServerResponseBackToClient(ServerResponse.User_Logout_Successfully, null));
 		} catch (IOException ex) {
 			serverController.printToLogConsole("Error while sending update message to client");
@@ -177,7 +178,7 @@ public class GoNatureServer extends AbstractServer {
 	 */
 	@Override
 	protected void serverStopped() {
-		serverController.printToLogConsole("Server has stopped listening for connections\n");
+		Platform.runLater(()->serverController.printToLogConsole("Server has stopped listening for connections\n"));
 	}
 
 	/**
@@ -185,7 +186,7 @@ public class GoNatureServer extends AbstractServer {
 	 */
 	@Override
 	protected void serverClosed() {
-		serverController.printToLogConsole("Server has been closed\n");
+		Platform.runLater(()->serverController.printToLogConsole("Server has been closed\n"));
 	}
 
 	/**
@@ -240,7 +241,6 @@ public class GoNatureServer extends AbstractServer {
 
 		} catch (IOException ex) {
 			System.out.println("Error while closing server");
-			ex.printStackTrace();
 		} finally {
 			MySqlConnection.getInstance().closeConnection();
 			server = null;
@@ -260,7 +260,7 @@ public class GoNatureServer extends AbstractServer {
 
 			if (cancelTimePassedWaitingListOrders != null && cancelTimePassedWaitingListOrders.isAlive())
 				cancelTimePassedWaitingListOrders.interrupt();
-			
+
 			sendNotifications24HoursBefore.join(); // Wait for the thread to stop
 			cancelOrdersNotConfirmedWithin2Hours.join();
 			cancelTimePassedWaitingListOrders.join();
@@ -394,7 +394,7 @@ public class GoNatureServer extends AbstractServer {
 			}
 		});
 
-		cancelTimePassedWaitingListOrders = new Thread(()->{
+		cancelTimePassedWaitingListOrders = new Thread(() -> {
 			while (!Thread.interrupted()) {
 				try {
 					Thread.sleep(1000);
@@ -403,7 +403,8 @@ public class GoNatureServer extends AbstractServer {
 							.CheckWaitingListAndRemoveAllIrrelcantOrders(currentTime);
 
 					if (ordersToNotify != null && !ordersToNotify.isEmpty()) {
-						Platform.runLater(() -> serverController.printToLogConsole(String.format("All orders in waiting list for %s marked as irrelevant", currentTime.toString())));
+						Platform.runLater(() -> serverController.printToLogConsole(String.format(
+								"All orders in waiting list for %s marked as irrelevant", currentTime.toString())));
 						for (Order order : ordersToNotify) {
 							QueryControl.notificationQueries.automaticallyMarkOrdersAsIrrelevant(order);
 						}

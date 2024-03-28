@@ -137,8 +137,6 @@ public class CustomerScreenController implements Initializable, IScreenControlle
 	public void onLogoutClicked() {
 		ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Logout, customer);
 		ClientApplication.client.accept(request);
-		@SuppressWarnings("unused")
-		ServerResponseBackToClient response = ClientCommunication.responseFromServer;
 		GuiHelper.setScreenAfterLogoutOrBack();
 	}
 
@@ -189,6 +187,17 @@ public class CustomerScreenController implements Initializable, IScreenControlle
 			return;
 		}
 
+	}
+
+	@Override
+	public void onCloseApplication() {
+		ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Logout, customer);
+		ClientApplication.client.accept(request);
+		try {
+			ClientApplication.client.getClient().closeConnection();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
 

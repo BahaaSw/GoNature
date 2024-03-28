@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="940.0" styleClass="app" stylesheets="@appStyles.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="940.0" styleClass="app" stylesheets="@appStyles.css" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
    <children>
       <Label fx:id="dateLabel" layoutX="782.0" layoutY="44.0" styleClass="app_date_label" text="Today 2024-06-03" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="27.0" />
       <Label layoutX="337.0" layoutY="62.0" text="View Reports" AnchorPane.topAnchor="62.0">

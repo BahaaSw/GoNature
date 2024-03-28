@@ -5,7 +5,9 @@ public enum ParkNameEnum {
 	None (0),
 	Banias (1),
 	Masada (2),
-	Herodium (3);
+	Herodium (3),
+	North(4),
+	South(5);
 
     private final Integer parkId;
 

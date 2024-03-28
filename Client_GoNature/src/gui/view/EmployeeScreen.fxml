@@ -12,7 +12,7 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="screen" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+<BorderPane fx:id="screen" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
    <left>
       <VBox prefHeight="800.0" prefWidth="260.0" styleClass="landing_page_left_side" stylesheets="@appStyles.css">
          <children>
@@ -41,12 +41,12 @@
                                     <Label fx:id="userIdLabel" text="123456789" />
                                  </children>
                               </HBox>
-                              <HBox prefHeight="100.0" prefWidth="200.0">
+                              <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-alignment: center;">
                                  <children>
                                     <Label text="Type: " />
                                     <Label fx:id="employeeTypeLabel" text="Employee" />
                                  </children>
-                              </HBox>
+                              </VBox>
                            </children>
                         </VBox>
                         <Button fx:id="homeButton" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#onHomeClicked" text="Home">

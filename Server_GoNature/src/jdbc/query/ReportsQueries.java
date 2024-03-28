@@ -30,17 +30,40 @@ public class ReportsQueries {
 		ParkDailySummary currentDaySummary = new ParkDailySummary();
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
-			PreparedStatement stmt = con
-					.prepareStatement("SELECT COUNT(CASE WHEN OrderStatus = 'Canceled' THEN 1 END) AS CanceledOrders, "
-							+ "COUNT(CASE WHEN OrderStatus = 'Time Passed' THEN 1 END) AS TimePassedOrders, "
-							+ "COUNT(*) AS TotalOrders " + "FROM preorders " + "WHERE ParkId = ? "
-							+ "AND MONTH(EnterDate) = ? AND DAY(EnterDate) = ?");
+			PreparedStatement stmt;
+			switch(parkId) {
+			case(4):
+			case(5):
+				stmt = con
+				.prepareStatement("SELECT"
+			              + " SUM(CASE WHEN OrderStatus = 'Canceled' THEN 1 ELSE 0 END) AS TotalCanceledOrders,"
+			              + " SUM(CASE WHEN OrderStatus = 'Time Passed' THEN 1 ELSE 0 END) AS TotalTimePassedOrders,"
+			              + " COUNT(*) AS TotalOrders"
+			              + " FROM"
+			              + " preorders"
+			              + " WHERE"
+			              + " ParkId IN (SELECT ParkId FROM parks WHERE district = ?)"
+			              + " AND MONTH(EnterDate) = ?"
+			              + " AND DAY(EnterDate) = ?");
 
-			stmt.setInt(1, parkId);
-			stmt.setInt(2, month);
-			stmt.setInt(3, day);
+				stmt.setInt(1, parkId);
+				stmt.setInt(2, month);
+				stmt.setInt(3, day);
+				break;
+			default:
+				stmt = con
+				.prepareStatement("SELECT COUNT(CASE WHEN OrderStatus = 'Canceled' THEN 1 END) AS CanceledOrders, "
+						+ "COUNT(CASE WHEN OrderStatus = 'Time Passed' THEN 1 END) AS TimePassedOrders, "
+						+ "COUNT(*) AS TotalOrders " + "FROM preorders " + "WHERE ParkId = ? "
+						+ "AND MONTH(EnterDate) = ? AND DAY(EnterDate) = ?");
+
+				stmt.setInt(1, parkId);
+				stmt.setInt(2, month);
+				stmt.setInt(3, day);
+				break;
+		
+			}
 			ResultSet rs = stmt.executeQuery();
-
 			// if the query ran successfully, but returned as empty table.
 			if (!rs.next()) {
 				currentDaySummary.setCancelsOrders(0);
