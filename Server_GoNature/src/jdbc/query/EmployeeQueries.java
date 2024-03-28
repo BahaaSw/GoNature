@@ -44,7 +44,7 @@ public class EmployeeQueries {
 			employee.setUserStatus(UserStatus.Approved);
 			employee.setUserType(UserTypeEnum.Employee);
 			employee.setRelatedPark(ParkNameEnum.fromParkId(rs.getInt(10)));
-			employee.setEmployeeType(EmployeeTypeEnum.fromString(rs.getString(11)));
+			employee.setEmployeeType(EmployeeTypeEnum.fromString(rs.getString(11).trim()));
 			
 			return DatabaseResponse.Employee_Connected_Successfully;
 			
@@ -89,7 +89,7 @@ public class EmployeeQueries {
 	{
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
-			PreparedStatement stmt = con.prepareStatement("UPDATE users SET Status = 'Approve' WHERE UserId = ?");
+			PreparedStatement stmt = con.prepareStatement("UPDATE users SET Status = 'Approved' WHERE UserId = ?");
 			stmt.setString(1, guide.getUserId());
 			int rs = stmt.executeUpdate();
 

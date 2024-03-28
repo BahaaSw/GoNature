@@ -36,7 +36,8 @@ public class ClientRequestHandler {
 			response = handleLoginAsGuide(data, client);
 			if (response.getRensponse() == ServerResponse.User_Already_Connected
 					|| response.getRensponse() == ServerResponse.Guide_Status_Pending
-					|| response.getRensponse() == ServerResponse.Password_Incorrect)
+					|| response.getRensponse() == ServerResponse.Password_Incorrect
+					|| response.getRensponse() == ServerResponse.User_Does_Not_Found)
 				break;
 			serverController.addToConnected(client, ((Guide) response.getMessage()).getUsername());
 			break;

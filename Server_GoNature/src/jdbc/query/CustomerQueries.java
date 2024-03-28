@@ -20,7 +20,7 @@ public class CustomerQueries {
 	public DatabaseResponse searchForApprovedGuide(Guide guide) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
-			PreparedStatement stmt = con.prepareStatement("SELECT * FROM users WHERE Username = ?");
+			PreparedStatement stmt = con.prepareStatement("SELECT * FROM users WHERE Username = ? AND UserType = 'Guide'");
 			stmt.setString(1, guide.getUsername());
 			ResultSet rs = stmt.executeQuery();
 

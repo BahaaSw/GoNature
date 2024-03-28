@@ -38,7 +38,7 @@ public class MySqlConnection {
 		}
 
 		try {
-			String url = "jdbc:mysql://127.0.0.1/" + dbDetails.getName() + "?serverTimezone=Asia/Jerusalem";
+			String url = "jdbc:mysql://127.0.0.1/" + dbDetails.getName() + "?serverTimezone=Asia/Jerusalem&allowLoadLocalInfile=true";
 			connection = DriverManager.getConnection(url, dbDetails.getUsername(), dbDetails.getPassword());
 			connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 
