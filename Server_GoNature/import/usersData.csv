@@ -1,0 +1,10 @@
+241668676,department,12345678,Ethan,Anderson,0501234567,ethan.anderson@example.com,Approved,Employee,,Department Manager
+245265743,employee1,12345678,Lucas,Moore,0501231231,lucas.moore@example.com,Approved,Employee,1,Park Employee
+491063785,employee2,12345678,Gal,Bitton,0503418900,gal.bitton@example.com,Approved,Employee,2,Park Employee
+826295245,employee3,12345678,Michael,Brown,0502323232,michael.brown@example.com,Approved,Employee,3,Park Employee
+915956620,guide1,12345678,Rabea,Laham,0528468520,rabea@example.com,Pending,Guide,,Not Employee
+602974299,guide2,12345678,Nadav,Reubens,0542315645,nadavreu@example.com,Pending,Guide,,Not Employee
+727130146,manager1,12345678,Tamer,Amer,0523128974,tamer.amer@example.com,Approved,Employee,1,Park Manager
+892686276,manager2,12345678,Sophia,Taylor,0503987456,sophia.taylor@example.com,Approved,Employee,2,Park Manager
+479184428,manager3,12345678,Bahaa,Swied,0503826452,bahaa@example.com,Approved,Employee,3,Park Manager
+607494429,service,12345678,Jane,Smith,0548123465,jane.smith@example.com,Approved,Employee,,Service Employee
