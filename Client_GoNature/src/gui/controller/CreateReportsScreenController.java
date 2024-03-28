@@ -52,7 +52,7 @@ public class CreateReportsScreenController implements Initializable {
 	private ObservableList<ReportType> reportsList = FXCollections.observableArrayList(ReportType.UsageReport,
 			ReportType.VisitsReports, ReportType.CancellationsReport, ReportType.TotalVisitorsReport);
 	private ObservableList<ParkNameEnum> parksList = FXCollections.observableArrayList(ParkNameEnum.Banias,
-			ParkNameEnum.Herodium, ParkNameEnum.Masada);
+			ParkNameEnum.Herodium, ParkNameEnum.Masada,ParkNameEnum.North,ParkNameEnum.South);
 	private ObservableList<String> yearsList = FXCollections.observableArrayList("2024", "2023", "2022", "2021");
 	private ObservableList<String> monthsList = FXCollections.observableArrayList("1", "2", "3", "4", "5", "6", "7",
 			"8", "9", "10", "11", "12");
@@ -123,6 +123,19 @@ public class CreateReportsScreenController implements Initializable {
 	
 	private void onChangeReportSelection(ActionEvent event) {
 		selectedReportType=selectReportComboBox.getValue();
+	    if (this.employee.getEmployeeType() == EmployeeTypeEnum.Department_Manager) {
+	        switch (selectedReportType) {
+	            case CancellationsReport:
+	                parksList = FXCollections.observableArrayList(ParkNameEnum.Banias, ParkNameEnum.Herodium,
+	                        ParkNameEnum.Masada, ParkNameEnum.North, ParkNameEnum.South);
+	                break;
+            	default:
+            		parksList = FXCollections.observableArrayList(ParkNameEnum.Banias, ParkNameEnum.Herodium,
+	                        ParkNameEnum.Masada);
+            		break;
+	        }
+	        parkSelector.setItems(parksList); // Set the items of parkSelector with the updated parksList
+	    }
 	}
 	
 	@SuppressWarnings("incomplete-switch")

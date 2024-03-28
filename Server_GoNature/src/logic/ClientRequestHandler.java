@@ -21,6 +21,7 @@ public class ClientRequestHandler {
 	public ServerResponseBackToClient handleRequest(ClientRequestDataContainer data,ConnectionToClient client) {
 		ClientRequest request = data.getRequest();
 		ServerResponseBackToClient response = null;
+		//TODO : write to log
 		switch (request) {
 		case Login_As_Employee:
 			response = handleLoginAsEmployee(data, client);

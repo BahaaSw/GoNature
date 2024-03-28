@@ -178,7 +178,7 @@ public class GoNatureServer extends AbstractServer {
 	 */
 	@Override
 	protected void serverStopped() {
-		serverController.printToLogConsole("Server has stopped listening for connections\n");
+		Platform.runLater(()->serverController.printToLogConsole("Server has stopped listening for connections\n"));
 	}
 
 	/**
@@ -186,7 +186,7 @@ public class GoNatureServer extends AbstractServer {
 	 */
 	@Override
 	protected void serverClosed() {
-		serverController.printToLogConsole("Server has been closed\n");
+		Platform.runLater(()->serverController.printToLogConsole("Server has been closed\n"));
 	}
 
 	/**
@@ -241,7 +241,6 @@ public class GoNatureServer extends AbstractServer {
 
 		} catch (IOException ex) {
 			System.out.println("Error while closing server");
-			ex.printStackTrace();
 		} finally {
 			MySqlConnection.getInstance().closeConnection();
 			server = null;
