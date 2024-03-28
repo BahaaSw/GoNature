@@ -39,14 +39,19 @@ import utils.ValidationRules;
 import utils.enums.ClientRequest;
 import utils.enums.UserTypeEnum;
 
-public class LandingPageScreenController implements Initializable,IScreenController {
+/**
+ * Controller class for the Landing Page screen, responsible for handling user
+ * interactions and events. Implements {@link Initializable} and
+ * {@link IScreenController} interfaces.
+ */
+public class LandingPageScreenController implements Initializable, IScreenController {
 	@FXML
 	public ImageView icon;
 	@FXML
 	public Button backToOptionsButton;
 	@FXML
 	public ImageView backImage;
-	
+
 	/* Server Connect Section */
 	@FXML
 	public Button connectButton;
@@ -56,7 +61,7 @@ public class LandingPageScreenController implements Initializable,IScreenControl
 	public TextField serverIpField;
 	@FXML
 	public TextField serverPortField;
-	
+
 	/* Choose Options Section */
 	@FXML
 	public Button optionLoginButton;
@@ -64,7 +69,7 @@ public class LandingPageScreenController implements Initializable,IScreenControl
 	public Button optionMakeOrderButton;
 	@FXML
 	public VBox optionsVbox;
-	
+
 	/* Login Application Section */
 	@FXML
 	public Button loginButton;
@@ -80,84 +85,115 @@ public class LandingPageScreenController implements Initializable,IScreenControl
 	public HBox employeeOrGuideHbox;
 	@FXML
 	public VBox loginVbox;
-	
-	/*Error Section*/
+
+	/* Error Section */
 	@FXML
 	public Pane errorPane;
 	@FXML
 	public Label errorMessageLabel;
-	
-	/* Additional Members*/
-	private ObservableList<UserTypeEnum> accountTypes = FXCollections.observableArrayList(
-			UserTypeEnum.Visitor,
-			UserTypeEnum.Guide,
-			UserTypeEnum.Employee
-			);
-	
+
+	/* Additional Members */
+	private ObservableList<UserTypeEnum> accountTypes = FXCollections.observableArrayList(UserTypeEnum.Visitor,
+			UserTypeEnum.Guide, UserTypeEnum.Employee);
+
 	private UserTypeEnum currentUser;
-	
-	public LandingPageScreenController() {}
-	
+
+	/**
+	 * Default constructor.
+	 */
+	public LandingPageScreenController() {
+	}
+
+	/**
+	 * Initializes the Landing Page screen.
+	 *
+	 * @param location  The location used to resolve relative paths for the root
+	 *                  object, or null if the location is not known.
+	 * @param resources The resources used to localize the root object, or null if
+	 *                  the root object was not localized.
+	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		accountTypeComboBox.getItems().addAll(accountTypes);
 		accountTypeComboBox.setOnAction(this::onChangeSelection);
 		hideErrorMessage();
 	}
-	
+
+	/**
+	 * Handles the selection change event of the account type combo box.
+	 *
+	 * @param event The action event.
+	 */
 	@SuppressWarnings("incomplete-switch")
 	private void onChangeSelection(ActionEvent event) {
 		UserTypeEnum account = accountTypeComboBox.getValue();
-		switch(account) {
+		switch (account) {
 		case Employee:
 		case Guide:
 			employeeOrGuideHbox.setVisible(true);
 			visitorField.setVisible(false);
-			currentUser=account;
+			currentUser = account;
 			return;
 		case Visitor:
 			employeeOrGuideHbox.setVisible(false);
 			visitorField.setVisible(true);
-			currentUser=account;
+			currentUser = account;
 			return;
 		}
 	}
-	
+
+	/**
+	 * Handles the connect to server button click event. Attempts to establish a
+	 * connection to the server.
+	 */
 	public void onConnectToServerClicked() {
-		String message="";
-		boolean isValidIp=ValidationRules.isValidIp(serverIpField.getText());
-		boolean isValidPort=ValidationRules.isValidPort(serverPortField.getText());
-		if(!isValidIp||!isValidPort) {
-			message = (!isValidIp)? message + "Server IP isn't valid\n":message;
-			message= (!isValidPort)? message + "Server Port isn't valid\n":message;
+		String message = "";
+		boolean isValidIp = ValidationRules.isValidIp(serverIpField.getText());
+		boolean isValidPort = ValidationRules.isValidPort(serverPortField.getText());
+		if (!isValidIp || !isValidPort) {
+			message = (!isValidIp) ? message + "Server IP isn't valid\n" : message;
+			message = (!isValidPort) ? message + "Server Port isn't valid\n" : message;
 			errorPane.setVisible(true);
 			errorMessageLabel.setText(message);
 			return;
 		}
-		
-		ClientApplication.client = new ClientMainControl(serverIpField.getText(), Integer.parseInt(serverPortField.getText()));
-		if(ClientApplication.client.getClient()==null) {
-			AlertPopUp alert = new AlertPopUp(AlertType.ERROR, "Error", "Connect To Server", "Failed to connect the server");
+
+		ClientApplication.client = new ClientMainControl(serverIpField.getText(),
+				Integer.parseInt(serverPortField.getText()));
+		if (ClientApplication.client.getClient() == null) {
+			AlertPopUp alert = new AlertPopUp(AlertType.ERROR, "Error", "Connect To Server",
+					"Failed to connect the server");
 			alert.showAndWait();
 			return;
 		}
-		AlertPopUp alert = new AlertPopUp(AlertType.INFORMATION,"Success","Connect To Server","Connected Success!");
+		AlertPopUp alert = new AlertPopUp(AlertType.INFORMATION, "Success", "Connect To Server", "Connected Success!");
 		alert.showAndWait();
 		connectToServerVbox.setVisible(false);
 		optionsVbox.setVisible(true);
 		hideErrorMessage();
 	}
-	
+
+	/**
+	 * Hides the error message.
+	 */
 	private void hideErrorMessage() {
 		errorMessageLabel.setText("");
 		errorPane.setVisible(false);
 	}
-	
+
+	/**
+	 * Displays the specified error message.
+	 *
+	 * @param error The error message to be displayed.
+	 */
 	private void showErrorMessage(String error) {
 		errorPane.setVisible(true);
 		errorMessageLabel.setText(error);
 	}
-	
+
+	/**
+	 * Handles the option login button click event. Displays the login screen.
+	 */
 	public void onOptionLoginClicked() {
 		clearLoginFields();
 		optionsVbox.setVisible(false);
@@ -165,125 +201,144 @@ public class LandingPageScreenController implements Initializable,IScreenControl
 		backToOptionsButton.setVisible(true);
 		hideErrorMessage();
 	}
-	
+
+	/**
+	 * Handles the option make order button click event. Opens a screen for new
+	 * visitors to make an order.
+	 */
 	public void onOptionMakeOrderClicked() {
-		//open screen for new visitor
-		currentUser=UserTypeEnum.ExternalUser;
+		// open screen for new visitor
+		currentUser = UserTypeEnum.ExternalUser;
 		switchMainScreenAccordingToUserLogin(new ExternalUser());
 	}
-	
+
+	/**
+	 * Validates the GUI fields.
+	 *
+	 * @param fields The list of fields to be validated.
+	 * @return True if all fields are valid, false otherwise.
+	 */
 	private boolean validateGuiFields(ArrayList<String> fields) {
-		String message="";
-		boolean areFieldsEmpty=true;
-		boolean isValidUsername=true;
-		boolean isValidPassword=true;
-		boolean isValidId=true;
-		
-		if(null==accountTypeComboBox.getValue()) {
+		String message = "";
+		boolean areFieldsEmpty = true;
+		boolean isValidUsername = true;
+		boolean isValidPassword = true;
+		boolean isValidId = true;
+
+		if (null == accountTypeComboBox.getValue()) {
 			showErrorMessage("Must Select Account");
 			return false;
 		}
-		
-		if(currentUser==UserTypeEnum.Visitor) {
+
+		if (currentUser == UserTypeEnum.Visitor) {
 			fields.add(visitorField.getText());
-			isValidId=ValidationRules.isValidId(fields.get(0));
-		}
-		else {
+			isValidId = ValidationRules.isValidId(fields.get(0));
+		} else {
 			fields.add(usernameField.getText());
 			fields.add(passwordField.getText());
 			isValidUsername = ValidationRules.isValidUsername(fields.get(0));
 			isValidPassword = ValidationRules.isValidPassword(fields.get(1));
 		}
-		
+
 		areFieldsEmpty = ValidationRules.areFieldsEmpty(fields);
 
-		if(areFieldsEmpty) {
+		if (areFieldsEmpty) {
 			showErrorMessage("All Fields Must be Filled!");
 			return false;
 		}
-		
-		if(!isValidId) {
+
+		if (!isValidId) {
 			showErrorMessage("ID can contain only digits!");
 			return false;
 		}
-		
-		if(!isValidUsername || !isValidPassword) {
-			message = (isValidUsername) ? message : message+"Username must be Upper,Lower case or digits\n";
-			message = (isValidPassword) ? message : message+"Password must be 6 digits atleast";
+
+		if (!isValidUsername || !isValidPassword) {
+			message = (isValidUsername) ? message : message + "Username must be Upper,Lower case or digits\n";
+			message = (isValidPassword) ? message : message + "Password must be 6 digits atleast";
 			showErrorMessage(message);
 			return false;
 		}
-		
+
 		return true;
 
 	}
-	
+
+	/**
+	 * Handles the login button click event. Validates user credentials and performs
+	 * login operation.
+	 */
 	@SuppressWarnings("incomplete-switch")
 	public void onLoginClicked() {
 		ArrayList<String> fields = new ArrayList<String>();
-		if(!validateGuiFields(fields)) {
+		if (!validateGuiFields(fields)) {
 			return;
 		}
-		
+
 		ExternalUser requestedUser;
-		ClientRequestDataContainer requestMessage=new ClientRequestDataContainer();
-		switch(currentUser) {
-			case Employee:
-				requestedUser = new Employee(fields.get(0),fields.get(1));
-				requestMessage.setRequest(ClientRequest.Login_As_Employee);
-				requestMessage.setMessage(requestedUser);
-				break;
-			case Guide:
-				requestedUser = new Guide(fields.get(0),fields.get(1));
-				requestMessage.setRequest(ClientRequest.Login_As_Guide);
-				requestMessage.setMessage(requestedUser);
-				break;
-			case Visitor:
-				requestedUser = new Visitor(fields.get(0));
-				requestMessage.setRequest(ClientRequest.Login_As_Visitor);
-				requestMessage.setMessage(requestedUser);
-				break;
+		ClientRequestDataContainer requestMessage = new ClientRequestDataContainer();
+		switch (currentUser) {
+		case Employee:
+			requestedUser = new Employee(fields.get(0), fields.get(1));
+			requestMessage.setRequest(ClientRequest.Login_As_Employee);
+			requestMessage.setMessage(requestedUser);
+			break;
+		case Guide:
+			requestedUser = new Guide(fields.get(0), fields.get(1));
+			requestMessage.setRequest(ClientRequest.Login_As_Guide);
+			requestMessage.setMessage(requestedUser);
+			break;
+		case Visitor:
+			requestedUser = new Visitor(fields.get(0));
+			requestMessage.setRequest(ClientRequest.Login_As_Visitor);
+			requestMessage.setMessage(requestedUser);
+			break;
 		}
-		
+
 		ClientApplication.client.accept(requestMessage);
 		ServerResponseBackToClient response = ClientCommunication.responseFromServer;
-		switch(response.getRensponse()) {
-			case Password_Incorrect:
-				showErrorMessage("Password is incorrect!");
-				return;
-			case User_Already_Connected:
-				showErrorMessage("User already connected!");
-				return;
-			case User_Does_Not_Found:
-				showErrorMessage("Such user does not exists!");
-				return;
-			case Guide_Status_Pending:
-				showErrorMessage("Not approved yet!");
-				return;
-			case Visitor_Have_No_Orders_Yet:
-				showErrorMessage("Such ID does not exists");
-				return;
-			case Visitor_Connected_Successfully:
-				switchMainScreenAccordingToUserLogin((Visitor)response.getMessage());
-				return;
-			case Guide_Connected_Successfully:
-				switchMainScreenAccordingToUserLogin((Guide)response.getMessage());
-				return;
-			case Employee_Connected_Successfully:
-				switchMainScreenAccordingToUserLogin((Employee)response.getMessage());
-				return;
-			case Query_Failed:
-				showErrorMessage("Failed to fetch data from database");
+		switch (response.getRensponse()) {
+		case Password_Incorrect:
+			showErrorMessage("Password is incorrect!");
+			return;
+		case User_Already_Connected:
+			showErrorMessage("User already connected!");
+			return;
+		case User_Does_Not_Found:
+			showErrorMessage("Such user does not exists!");
+			return;
+		case Guide_Status_Pending:
+			showErrorMessage("Not approved yet!");
+			return;
+		case Visitor_Have_No_Orders_Yet:
+			showErrorMessage("Such ID does not exists");
+			return;
+		case Visitor_Connected_Successfully:
+			switchMainScreenAccordingToUserLogin((Visitor) response.getMessage());
+			return;
+		case Guide_Connected_Successfully:
+			switchMainScreenAccordingToUserLogin((Guide) response.getMessage());
+			return;
+		case Employee_Connected_Successfully:
+			switchMainScreenAccordingToUserLogin((Employee) response.getMessage());
+			return;
+		case Query_Failed:
+			showErrorMessage("Failed to fetch data from database");
 		}
-		
+
 	}
 
+	/**
+	 * Switches the main screen according to the logged-in user type. Loads the
+	 * appropriate FXML file and sets the corresponding controller.
+	 * 
+	 * @param client The logged-in user.
+	 */
 	private void switchMainScreenAccordingToUserLogin(ExternalUser client) {
 		try {
 			CurrentWindow.setCurrentWindow((Stage) icon.getScene().getWindow());
 			IScreenController controller;
 			FXMLLoader loader;
-			switch(currentUser) {
+			switch (currentUser) {
 			case Visitor:
 			case Guide:
 				loader = new FXMLLoader(getClass().getResource("/gui/view/CustomerScreen.fxml"));
@@ -303,26 +358,28 @@ public class LandingPageScreenController implements Initializable,IScreenControl
 				controller = new CustomerScreenController(client);
 				break;
 			}
-			
+
 			loader.setController(controller);
 			loader.load();
 			Parent p = loader.getRoot();
-	
+
 			CurrentWindow.getCurrentWindow().setTitle("GoNature - Client Screen");
 			CurrentWindow.getCurrentWindow().setScene(new Scene(p));
 			CurrentWindow.getCurrentWindow().setResizable(false);
-			ClientApplication.runningController=controller;
+			ClientApplication.runningController = controller;
 			CurrentWindow.getCurrentWindow().show();
 
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
-	
+
+	/**
+	 * Hides the login view and shows the options view when the back button is
+	 * clicked. Clears any error message and resets the visibility of UI elements.
+	 */
 	public void onBackClicked() {
 		loginVbox.setVisible(false);
 		optionsVbox.setVisible(true);
@@ -330,24 +387,32 @@ public class LandingPageScreenController implements Initializable,IScreenControl
 		errorMessageLabel.setText("");
 		errorPane.setVisible(false);
 	}
-	
+
+	/**
+	 * Clears the login fields, including username, password, and visitor ID fields.
+	 */
 	private void clearLoginFields() {
 		usernameField.clear();
 		passwordField.clear();
 		visitorField.clear();
 	}
-	
-	public void setScreenAfterLogout() {
-	connectToServerVbox.setVisible(false);
-	optionsVbox.setVisible(true);
-	errorMessageLabel.setText("");
-	errorPane.setVisible(false);
-}
 
+	/**
+	 * Sets the screen after logging out by hiding the connect to server view and
+	 * showing the options view. Clears any error message and resets the visibility
+	 * of UI elements.
+	 */
+	public void setScreenAfterLogout() {
+		connectToServerVbox.setVisible(false);
+		optionsVbox.setVisible(true);
+		errorMessageLabel.setText("");
+		errorPane.setVisible(false);
+	}
 
 	@Override
-	public void onLogoutClicked() {}
-	
+	public void onLogoutClicked() {
+	}
+
 //	public void onCloseApplication() {
 //		ClientRequestDataContainer request;
 //		if(!connectToServerVbox.isVisible()) {
@@ -357,19 +422,23 @@ public class LandingPageScreenController implements Initializable,IScreenControl
 //		}
 //	}
 
+	/**
+	 * Handles the event when the server crashes. Displays an error alert indicating
+	 * the server is down and closes the application.
+	 */
 	@Override
 	public void onServerCrashed() {
-		AlertPopUp alert = new AlertPopUp(AlertType.ERROR,"FATAL ERROR","Server is Down","Server Crashed - The application will be closed.");
+		AlertPopUp alert = new AlertPopUp(AlertType.ERROR, "FATAL ERROR", "Server is Down",
+				"Server Crashed - The application will be closed.");
 		alert.showAndWait();
 		try {
 			ClientApplication.client.getClient().closeConnection();
-			Platform.runLater(()->CurrentWindow.getCurrentWindow().close());
+			Platform.runLater(() -> CurrentWindow.getCurrentWindow().close());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
-	
 
 }

@@ -1,28 +1,63 @@
 package utils.enums;
 
+/**
+ * The UserStatus enum represents the status of a user in the system.
+ */
 public enum UserStatus {
+	/**
+	 * Represents a user status of None, indicating that the user is not registered
+	 * in the system.
+	 */
+	None("None"),
+	/**
+	 * Represents a user status of Pending, indicating that the user's registration
+	 * is pending approval.
+	 */
+	Pending("Pending"),
+	/**
+	 * Represents a user status of Approved, indicating that the user's registration
+	 * has been approved.
+	 */
+	Approved("Approved"),
+	/**
+	 * Represents a user status of Denied, indicating that the user's registration
+	 * has been denied.
+	 */
+	Denied("Denied");
 
-    None("None"), // None - for visitors they aren't users in the system
-    Pending("Pending"), // Pending - for guides before service employee approved them
-    Approved("Approved"), // Approved - for employees and guides after service employee approved them
-    Denied("Denied"); // Denied - for guides after service employee deny their register
+	private final String value;
 
-    private final String value;
+	/**
+	 * Constructs a UserStatus enum with the specified value.
+	 *
+	 * @param value The string representation of the user status.
+	 */
+	UserStatus(String value) {
+		this.value = value;
+	}
 
-    UserStatus(String value) {
-        this.value = value;
-    }
+	/**
+	 * Gets the string value of the user status.
+	 *
+	 * @return The string value of the user status.
+	 */
+	public String getValue() {
+		return value;
+	}
 
-    public String getValue() {
-        return value;
-    }
-
-    public static UserStatus fromString(String text) {
-        for (UserStatus status : UserStatus.values()) {
-            if (status.value.equalsIgnoreCase(text)) {
-                return status;
-            }
-        }
-        return None;
-    }
+	/**
+	 * Converts a string value to its corresponding UserStatus enum value.
+	 *
+	 * @param text The string value to convert.
+	 * @return The UserStatus enum value corresponding to the given string value, or
+	 *         UserStatus.None if no match is found.
+	 */
+	public static UserStatus fromString(String text) {
+		for (UserStatus status : UserStatus.values()) {
+			if (status.value.equalsIgnoreCase(text)) {
+				return status;
+			}
+		}
+		return None;
+	}
 }

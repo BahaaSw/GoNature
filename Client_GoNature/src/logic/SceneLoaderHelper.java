@@ -29,12 +29,27 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import utils.CurrentWindow;
 
+/**
+ * The SceneLoaderHelper class provides utility methods for loading FXML-based views into JavaFX scenes.
+ * It handles the dynamic loading of different views based on the specified view type.
+ */
 public class SceneLoaderHelper {
 	
-	private AnchorPane centerScreen;
-	private IThreadController runningController=null;
+	/** The center screen pane. */
+    private AnchorPane centerScreen;
+    
+    /** The currently running controller. */
+    private IThreadController runningController = null;
 	
-	//UserType type
+    /**
+     * Loads a specific view into a border pane and sets the appropriate controller.
+     *
+     * @param screen The border pane to load the view into.
+     * @param screenUrl The URL of the FXML file representing the view.
+     * @param viewToLoad The type of view to load.
+     * @param data The data to pass to the view controller.
+     * @return The loaded center screen pane.
+     */
 	public AnchorPane loadRightScreenToBorderPaneWithController(BorderPane screen, String screenUrl,ApplicationViewType viewToLoad,EntitiesContainer data) {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource(screenUrl));
 		switch(viewToLoad) {
@@ -154,7 +169,9 @@ public class SceneLoaderHelper {
 		return centerScreen;
 	}
 
-	
+	/**
+     * Sets the screen after logout or back action.
+     */
 	public void setScreenAfterLogoutOrBack() {
 
 		try {

@@ -3,8 +3,22 @@ package utils;
 import utils.enums.OrderTypeEnum;
 import utils.enums.ParkNameEnum;
 
+/**
+ * The NotificationMessageTemplate class provides static methods to generate various notification messages.
+ */
 public class NotificationMessageTemplate {
 	
+	/**
+     * Generates a message confirming an order.
+     * @param orderId The ID of the order.
+     * @param park The name of the park.
+     * @param date The date and time of the visit.
+     * @param type The type of the order.
+     * @param amountOfVisitors The number of visitors.
+     * @param totalPrice The total price of the order.
+     * @param isPaid A flag indicating if the order is paid.
+     * @return The generated confirmation message.
+     */
 	public static String orderConfirmMessage(int orderId,String park,String date,
 			String type, int amountOfVisitors,double totalPrice,boolean isPaid) {
 		StringBuilder sb= new StringBuilder();
@@ -25,6 +39,16 @@ public class NotificationMessageTemplate {
 		return sb.toString();
 	}
 	
+	/**
+     * Generates a summary message for an order.
+     * @param park The name of the park.
+     * @param date The date and time of the visit.
+     * @param type The type of the order.
+     * @param amountOfVisitors The number of visitors.
+     * @param priceAfterDiscount The total price after discount.
+     * @param priceBeforeDiscount The total price before discount.
+     * @return The generated summary message.
+     */
 	public static String orderSummaryMessage(String park,String date,
 			String type, int amountOfVisitors,double priceAfterDiscount, double priceBeforeDiscount) {
 		StringBuilder sb= new StringBuilder();
@@ -44,6 +68,17 @@ public class NotificationMessageTemplate {
 		return sb.toString();
 	}
 	
+	/**
+     * Generates a message for entrance payment receipt.
+     * @param parkName The name of the park.
+     * @param type The type of the order.
+     * @param firstName The first name of the customer.
+     * @param lastName The last name of the customer.
+     * @param amountOfVisitors The number of visitors.
+     * @param totalPrice The total price of the order.
+     * @param estimatedTimeVisit The estimated duration of the visit.
+     * @return The generated entrance payment receipt message.
+     */
 	public static String entrancePaymentReceiptMessage(ParkNameEnum parkName,OrderTypeEnum type,String firstName,String lastName,int amountOfVisitors,double totalPrice,long estimatedTimeVisit) {
 		StringBuilder sb= new StringBuilder();
 		sb.append(String.format("Welcome To %s\n",parkName.toString()));
@@ -61,6 +96,18 @@ public class NotificationMessageTemplate {
 		return sb.toString();
 	}
 	
+	/**
+     * Generates a message for pre-payment receipt.
+     * @param parkName The name of the park.
+     * @param orderDate The date of the order.
+     * @param amountOfVisitors The number of visitors.
+     * @param firstName The first name of the customer.
+     * @param lastName The last name of the customer.
+     * @param prepaidPrice The total price after pre-payment.
+     * @param entrancePrice The total price at the entrance.
+     * @param estimatedTimeVisit The estimated duration of the visit.
+     * @return The generated pre-payment receipt message.
+     */
 	public static String prePaymentReceiptMessage(ParkNameEnum parkName,String orderDate, int amountOfVisitors,
 			String firstName,String lastName,double prepaidPrice,double entrancePrice,long estimatedTimeVisit) {
 		StringBuilder sb= new StringBuilder();
@@ -79,6 +126,13 @@ public class NotificationMessageTemplate {
 		return sb.toString();
 	}
 
+	/**
+     * Generates a message for entering the waiting list.
+     * @param park The name of the park.
+     * @param dateAndTime The date and time of the visit.
+     * @param amountOfVisitors The number of visitors.
+     * @return The generated waiting list message.
+     */
 	public static String enterWaitingListMessage(String park, String dateAndTime ,String amoutOfVisitors) {
 		StringBuilder sb= new StringBuilder();
 		sb.append("Enter waiting list\n");
@@ -94,6 +148,10 @@ public class NotificationMessageTemplate {
 		return sb.toString();
 	}
 	
+	/**
+     * Generates an error message for waiting list.
+     * @return The generated error waiting list message.
+     */
 	public static String errorWaitingListMessage() {
 		StringBuilder sb= new StringBuilder();
 		sb.append("Error Waiting List!\n");
@@ -105,6 +163,12 @@ public class NotificationMessageTemplate {
 		return sb.toString();
 	}
 	
+	/**
+     * Generates a password recovery message.
+     * @param userId The user ID.
+     * @param userPassword The recovered password.
+     * @return The generated password recovery message.
+     */
 	public static String passwordRecoveryMessage(String userId,String userPassword) {
 		StringBuilder sb= new StringBuilder();
 		sb.append("GoNature Password Recovery\n");
@@ -116,6 +180,10 @@ public class NotificationMessageTemplate {
 		return sb.toString();
 	}
 	
+	/**
+     * Generates a message to confirm an order one day before the visit.
+     * @return The generated confirmation message.
+     */
 	public static String confirmOrder1DayBeforeVisitMessage() {
 		StringBuilder sb= new StringBuilder();
 		sb.append("Please Confirm your order\n");
@@ -128,6 +196,10 @@ public class NotificationMessageTemplate {
 		return sb.toString();
 	}
 	
+	/**
+     * Generates a message informing the cancellation of an order.
+     * @return The generated cancellation message.
+     */
 	public static String orderCanceledMessage() {
 		StringBuilder sb= new StringBuilder();
 		sb.append("Your Order has been cancel\n");
@@ -138,6 +210,10 @@ public class NotificationMessageTemplate {
 		return sb.toString();
 	}
 	
+	/**
+     * Generates a message informing about a spot available from the waiting list.
+     * @return The generated message.
+     */
 	public static String spotFromWaitingListMessage() {
 		StringBuilder sb= new StringBuilder();
 		sb.append("We have a spot for you in the park!\n");

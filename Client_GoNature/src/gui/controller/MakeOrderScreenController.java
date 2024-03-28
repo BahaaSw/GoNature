@@ -39,6 +39,10 @@ import utils.enums.OrderTypeEnum;
 import utils.enums.ParkNameEnum;
 import utils.enums.UserTypeEnum;
 
+/**
+ * Controller class for the Make Order Screen. Handles user interactions and
+ * data input related to making a new order.
+ */
 public class MakeOrderScreenController implements Initializable {
 
 	@FXML
@@ -82,17 +86,34 @@ public class MakeOrderScreenController implements Initializable {
 	private ObservableList<ParkNameEnum> parks = FXCollections.observableArrayList(ParkNameEnum.Banias,
 			ParkNameEnum.Herodium, ParkNameEnum.Masada);
 
-	private ObservableList<String> timeForVisits = FXCollections.observableArrayList("08:00","09:00", "10:00", "11:00", "12:00",
-			"13:00", "14:00", "15:00", "16:00");
+	private ObservableList<String> timeForVisits = FXCollections.observableArrayList("08:00", "09:00", "10:00", "11:00",
+			"12:00", "13:00", "14:00", "15:00", "16:00");
 
 	private ObservableList<OrderTypeEnum> visitTypesList = FXCollections.observableArrayList();
 
+	/**
+	 * Constructor for the MakeOrderScreenController. Initializes the controller
+	 * with the specified screen and customer details.
+	 * 
+	 * @param screen          The BorderPane screen for navigation.
+	 * @param customer        The customer object.
+	 * @param customerDetails The details of the customer.
+	 */
 	public MakeOrderScreenController(BorderPane screen, Object customer, ICustomer customerDetails) {
 		this.screen = screen;
 		customerType = ((ExternalUser) customer).getUserType();
 		this.customerDetails = customerDetails;
 	}
 
+	/**
+	 * Initializes the controller after its root element has been completely
+	 * processed. Sets up initial GUI components and event handlers.
+	 * 
+	 * @param location  The location used to resolve relative paths for the root
+	 *                  object, or null if the location is not known.
+	 * @param resources The resources used to localize the root object, or null if
+	 *                  the root object was not localized.
+	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		dateLabel.setText(CurrentDateAndTime.getCurrentDate("'Today' yyyy-MM-dd"));
@@ -118,6 +139,10 @@ public class MakeOrderScreenController implements Initializable {
 		hideErrorMessage();
 	}
 
+	/**
+	 * Initializes the GUI components based on the type of customer. Sets up
+	 * appropriate visit types and disables fields if necessary.
+	 */
 	@SuppressWarnings("incomplete-switch")
 	private void initializeGuiByCustomerType() {
 		switch (customerType) {
@@ -154,109 +179,143 @@ public class MakeOrderScreenController implements Initializable {
 			break;
 		}
 	}
-	
+
+	/**
+	 * Handles the event when the selected park changes. Updates the selected park
+	 * value.
+	 * 
+	 * @param event The ActionEvent triggered by the park selection.
+	 */
 	private void onParkChangeSelection(ActionEvent event) {
 		selectedPark = parksList.getValue();
 	}
 
+	/**
+	 * Handles the event when the selected time changes. Updates the selected time
+	 * value.
+	 * 
+	 * @param event The ActionEvent triggered by the time selection.
+	 */
 	private void onTimeChangeSelection(ActionEvent event) {
 		selectedTime = pickTime.getValue();
 	}
 
+	/**
+	 * Handles the event when the selected visit type changes. Updates the selected
+	 * visit type value.
+	 * 
+	 * @param event The ActionEvent triggered by the visit type selection.
+	 */
 	private void onVisitTypeChangeSelection(ActionEvent event) {
 		selectedVisitType = visitType.getValue();
 	}
 
 	private boolean validateGuiFields() {
-		if(selectedTime.equals("") || selectedPark==ParkNameEnum.None || selectedVisitType == OrderTypeEnum.None||
-				firstNameField.getText().equals("") || lastNameField.getText().equals("")|| idField.getText().equals("")||
-				phoneNumberField.getText().equals("")|| emailField.getText().equals("")||pickDate.getValue()==null||
-				numberOfVisitorsField.getText().equals("")) {
+		if (selectedTime.equals("") || selectedPark == ParkNameEnum.None || selectedVisitType == OrderTypeEnum.None
+				|| firstNameField.getText().equals("") || lastNameField.getText().equals("")
+				|| idField.getText().equals("") || phoneNumberField.getText().equals("")
+				|| emailField.getText().equals("") || pickDate.getValue() == null
+				|| numberOfVisitorsField.getText().equals("")) {
 			showErrorMessage("All Fields must be filled!");
 			return false;
 		}
-		
-		if(ValidationRules.isValidIsraeliId(idField.getText())==false) {
+
+		if (ValidationRules.isValidIsraeliId(idField.getText()) == false) {
 			showErrorMessage("ID is not valid israeli ID");
 			return false;
 		}
-		
-		if(ValidationRules.isValidName(firstNameField.getText())==false ||
-				ValidationRules.isValidName(lastNameField.getText())==false) {
+
+		if (ValidationRules.isValidName(firstNameField.getText()) == false
+				|| ValidationRules.isValidName(lastNameField.getText()) == false) {
 			showErrorMessage("Name should be only letters");
 			return false;
 		}
-		
-		if(ValidationRules.isValidEmail(emailField.getText())==false) {
+
+		if (ValidationRules.isValidEmail(emailField.getText()) == false) {
 			showErrorMessage("Invalid email");
 			return false;
 		}
-		
-		if(ValidationRules.isValidPhone(phoneNumberField.getText())==false) {
+
+		if (ValidationRules.isValidPhone(phoneNumberField.getText()) == false) {
 			showErrorMessage("Invalid phone, should be 10 digits");
 			return false;
 		}
-		
-		if(ValidationRules.isPositiveNumeric(numberOfVisitorsField.getText())==false) {
+
+		if (ValidationRules.isPositiveNumeric(numberOfVisitorsField.getText()) == false) {
 			showErrorMessage("Number of Visitors should be positive number (above 0)!");
 			return false;
 		}
-		
-		if(selectedVisitType==OrderTypeEnum.Group_PreOrder && Integer.parseInt(numberOfVisitorsField.getText())>15) {
+
+		if (selectedVisitType == OrderTypeEnum.Group_PreOrder
+				&& Integer.parseInt(numberOfVisitorsField.getText()) > 15) {
 			showErrorMessage("Group order is limited up to 15 visitors");
 			return false;
 		}
-		
+
 		return true;
 	}
-	
+
+	/**
+	 * Validates the input fields in the GUI for making an order. Checks if all
+	 * required fields are filled, if the input values are valid, and if the
+	 * selected options are within constraints. Displays error messages for invalid
+	 * fields.
+	 * 
+	 * @return {@code true} if all fields are valid, {@code false} otherwise.
+	 */
 	@SuppressWarnings("incomplete-switch")
 	public void onMakeOrderClicked() {
-		
-		if(!validateGuiFields()) {
+
+		if (!validateGuiFields()) {
 			return;
 		}
-		
+
 		Order order = createOrderFromFields();
-		
-		ClientRequestDataContainer requestMessage = new ClientRequestDataContainer(ClientRequest.Add_New_Order_If_Available,order);
+
+		ClientRequestDataContainer requestMessage = new ClientRequestDataContainer(
+				ClientRequest.Add_New_Order_If_Available, order);
 		ClientApplication.client.accept(requestMessage);
 		ServerResponseBackToClient response = ClientCommunication.responseFromServer;
 		AnchorPane view;
-		
-		switch(response.getRensponse()) {
+
+		switch (response.getRensponse()) {
 		case Requested_Order_Date_Is_Available:
-			view = GuiHelper.loadRightScreenToBorderPaneWithController(screen,
-					"/gui/view/OrderSummaryScreen.fxml", ApplicationViewType.Order_Summary_Screen,
-					new EntitiesContainer(response.getMessage()));
+			view = GuiHelper.loadRightScreenToBorderPaneWithController(screen, "/gui/view/OrderSummaryScreen.fxml",
+					ApplicationViewType.Order_Summary_Screen, new EntitiesContainer(response.getMessage()));
 			screen.setCenter(view);
 			break;
-			
+
 		case Requested_Order_Date_Unavaliable:
-			view = GuiHelper.loadRightScreenToBorderPaneWithController(screen,
-					"/gui/view/RescheduleOrderScreen.fxml", ApplicationViewType.Reschedule_Order_Screen,
-					new EntitiesContainer(response.getMessage()));
+			view = GuiHelper.loadRightScreenToBorderPaneWithController(screen, "/gui/view/RescheduleOrderScreen.fxml",
+					ApplicationViewType.Reschedule_Order_Screen, new EntitiesContainer(response.getMessage()));
 			screen.setCenter(view);
 			break;
 		case Too_Many_Visitors:
-			AlertPopUp alert = new AlertPopUp(AlertType.INFORMATION, "Notification","Order Limit","This are too many visitors for our park");
+			AlertPopUp alert = new AlertPopUp(AlertType.INFORMATION, "Notification", "Order Limit",
+					"This are too many visitors for our park");
 			alert.showAndWait();
 			break;
 		}
-		
+
 	}
-	
+
+	/**
+	 * Creates an Order object based on the input fields in the GUI.
+	 * 
+	 * @return The Order object created from the input fields.
+	 */
 	private Order createOrderFromFields() {
 		// TODO: check all fields validation.
 		Order order = new Order();
 		order.setParkName(selectedPark);
-		order.setOwnerType((customerType==UserTypeEnum.ExternalUser)?UserTypeEnum.Visitor:customerDetails.getUserType());
+		order.setOwnerType(
+				(customerType == UserTypeEnum.ExternalUser) ? UserTypeEnum.Visitor : customerDetails.getUserType());
 		order.setFirstName(firstNameField.getText());
 		order.setLastName(lastNameField.getText());
 		order.setUserId(idField.getText());
 		order.setPaid(false);
 		order.setStatus(OrderStatusEnum.Wait_Notify);
-		
+
 		order.setTelephoneNumber(phoneNumberField.getText());
 		order.setEmail(emailField.getText());
 		LocalDate date = pickDate.getValue();
@@ -267,11 +326,19 @@ public class MakeOrderScreenController implements Initializable {
 		return order;
 	}
 
+	/**
+	 * Hides the error message section in the GUI.
+	 */
 	private void hideErrorMessage() {
 		errorMessageLabel.setText("");
 		errorSection.setVisible(false);
 	}
 
+	/**
+	 * Displays an error message in the GUI.
+	 * 
+	 * @param error The error message to display.
+	 */
 	private void showErrorMessage(String error) {
 		errorSection.setVisible(true);
 		errorMessageLabel.setText(error);

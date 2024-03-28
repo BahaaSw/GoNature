@@ -21,7 +21,12 @@ import utils.AlertPopUp;
 import utils.enums.ClientRequest;
 import utils.enums.RequestTypeEnum;
 
-public class ParkSettingsScreenController implements Initializable{
+/**
+ * Controller class for the Park Settings screen, responsible for managing park
+ * settings such as estimated visit time, reserved entries, and maximum
+ * capacity.
+ */
+public class ParkSettingsScreenController implements Initializable {
 
 	@FXML
 	public Label datelabel;
@@ -49,23 +54,37 @@ public class ParkSettingsScreenController implements Initializable{
 	public Button changeReservedEntriesRequest;
 	@FXML
 	public Button changeCapacityRequest;
-	
+
 	@SuppressWarnings("unused")
 	private Employee employee;
 	private Park park;
 	private AlertPopUp alert;
-	
+
+	/**
+	 * Constructs a new instance of ParkSettingsScreenController with the specified
+	 * park and employee objects.
+	 * 
+	 * @param park     The park object whose settings are being managed.
+	 * @param employee The employee object responsible for managing the park
+	 *                 settings.
+	 */
 	public ParkSettingsScreenController(Object park, Object employee) {
-		this.employee=(Employee)employee;
-		this.park=(Park)park;
+		this.employee = (Employee) employee;
+		this.park = (Park) park;
 	}
-	
+
+	/**
+	 * Initializes the Park Settings screen, populating fields with current park
+	 * information. This method fetches the latest park data and updates the UI
+	 * accordingly.
+	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Search_For_Specific_Park,park);
+		ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Search_For_Specific_Park,
+				park);
 		ClientApplication.client.accept(request);
 		ServerResponseBackToClient response = ClientCommunication.responseFromServer;
-		park = (Park)response.getMessage();
+		park = (Park) response.getMessage();
 		parkField1.setText(park.getParkName().toString());
 		parkField2.setText(park.getParkName().toString());
 		parkField3.setText(park.getParkName().toString());
@@ -73,64 +92,91 @@ public class ParkSettingsScreenController implements Initializable{
 		oldReservedEntriesField.setText(String.format("%d", park.getCurrentEstimatedReservedSpots()));
 		oldEstimatedVisitTimeField.setText(String.format("%d", park.getCurrentEstimatedStayTime()));
 	}
-	
+
+	/**
+	 * Handles the action to request a change in the estimated visit time for the
+	 * park. This method sends a request to update the estimated visit time and
+	 * notifies the user of the outcome.
+	 */
 	@SuppressWarnings("incomplete-switch")
 	public void onChangeEstimatedVisitTimeRequest() {
 //		public Request(int parkId,RequestTypeEnum requestType, int oldValue, int newValue, LocalDateTime requestDate )
-		Request parametersRequest = new Request(park.getParkId(),RequestTypeEnum.EstimatedVisitTime,Integer.parseInt(oldEstimatedVisitTimeField.getText()),
-				Integer.parseInt(newEstimatedVisitTimeField.getText()),LocalDateTime.now());
-		ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Make_New_Park_Estimated_Visit_Time_Request,parametersRequest);
+		Request parametersRequest = new Request(park.getParkId(), RequestTypeEnum.EstimatedVisitTime,
+				Integer.parseInt(oldEstimatedVisitTimeField.getText()),
+				Integer.parseInt(newEstimatedVisitTimeField.getText()), LocalDateTime.now());
+		ClientRequestDataContainer request = new ClientRequestDataContainer(
+				ClientRequest.Make_New_Park_Estimated_Visit_Time_Request, parametersRequest);
 		ClientApplication.client.accept(request);
 		ServerResponseBackToClient response = ClientCommunication.responseFromServer;
-		
-		switch(response.getRensponse()) {
+
+		switch (response.getRensponse()) {
 		case Last_Request_With_Same_Type_Still_Pending:
-			alert = new AlertPopUp(AlertType.WARNING,"Warning","Estimated Visit Time Request","Last Request With Same Type Still Pending");
+			alert = new AlertPopUp(AlertType.WARNING, "Warning", "Estimated Visit Time Request",
+					"Last Request With Same Type Still Pending");
 			alert.showAndWait();
 			return;
 		case Request_Sent_To_Department_Successfully:
-			alert = new AlertPopUp(AlertType.INFORMATION,"Information","Estimated Visit Time Request","Request has been sent to department manager");
+			alert = new AlertPopUp(AlertType.INFORMATION, "Information", "Estimated Visit Time Request",
+					"Request has been sent to department manager");
 			alert.showAndWait();
 			return;
 		}
 
 	}
-	
+
+	/**
+	 * Handles the action to request a change in the number of reserved entries for
+	 * the park. This method sends a request to update the reserved entries and
+	 * notifies the user of the outcome.
+	 */
 	@SuppressWarnings("incomplete-switch")
 	public void onChangeReservedEntriesRequest() {
-		Request parametersRequest = new Request(park.getParkId(),RequestTypeEnum.ReservedSpots,Integer.parseInt(oldReservedEntriesField.getText()),
-				Integer.parseInt(newReservedEntriesField.getText()),LocalDateTime.now());
-		ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Make_New_Park_Reserved_Entries_Request,parametersRequest);
+		Request parametersRequest = new Request(park.getParkId(), RequestTypeEnum.ReservedSpots,
+				Integer.parseInt(oldReservedEntriesField.getText()),
+				Integer.parseInt(newReservedEntriesField.getText()), LocalDateTime.now());
+		ClientRequestDataContainer request = new ClientRequestDataContainer(
+				ClientRequest.Make_New_Park_Reserved_Entries_Request, parametersRequest);
 		ClientApplication.client.accept(request);
 		ServerResponseBackToClient response = ClientCommunication.responseFromServer;
-		
-		switch(response.getRensponse()) {
+
+		switch (response.getRensponse()) {
 		case Last_Request_With_Same_Type_Still_Pending:
-			alert = new AlertPopUp(AlertType.WARNING,"Warning","Reserved Entries Request","Last Request With Same Type Still Pending");
+			alert = new AlertPopUp(AlertType.WARNING, "Warning", "Reserved Entries Request",
+					"Last Request With Same Type Still Pending");
 			alert.showAndWait();
 			return;
 		case Request_Sent_To_Department_Successfully:
-			alert = new AlertPopUp(AlertType.INFORMATION,"Information","Reserved Entries Request","Request has been sent to department manager");
+			alert = new AlertPopUp(AlertType.INFORMATION, "Information", "Reserved Entries Request",
+					"Request has been sent to department manager");
 			alert.showAndWait();
 			return;
 		}
 	}
-	
+
+	/**
+	 * Handles the action to request a change in the maximum capacity for the park.
+	 * This method sends a request to update the maximum capacity and notifies the
+	 * user of the outcome.
+	 */
 	@SuppressWarnings("incomplete-switch")
 	public void onChangeCapacityRequest() {
-		Request parametersRequest = new Request(park.getParkId(),RequestTypeEnum.MaxCapacity,Integer.parseInt(oldCapacityField.getText()),
-				Integer.parseInt(newCapacityField.getText()),LocalDateTime.now());
-		ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Make_New_Park_Capacity_Request,parametersRequest);
+		Request parametersRequest = new Request(park.getParkId(), RequestTypeEnum.MaxCapacity,
+				Integer.parseInt(oldCapacityField.getText()), Integer.parseInt(newCapacityField.getText()),
+				LocalDateTime.now());
+		ClientRequestDataContainer request = new ClientRequestDataContainer(
+				ClientRequest.Make_New_Park_Capacity_Request, parametersRequest);
 		ClientApplication.client.accept(request);
 		ServerResponseBackToClient response = ClientCommunication.responseFromServer;
-		
-		switch(response.getRensponse()) {
+
+		switch (response.getRensponse()) {
 		case Last_Request_With_Same_Type_Still_Pending:
-			alert = new AlertPopUp(AlertType.WARNING,"Warning","Max park Capacity Request","Last Request With Same Type Still Pending");
+			alert = new AlertPopUp(AlertType.WARNING, "Warning", "Max park Capacity Request",
+					"Last Request With Same Type Still Pending");
 			alert.showAndWait();
 			return;
 		case Request_Sent_To_Department_Successfully:
-			alert = new AlertPopUp(AlertType.INFORMATION,"Information","Max park Capacity Request","Request has been sent to department manager");
+			alert = new AlertPopUp(AlertType.INFORMATION, "Information", "Max park Capacity Request",
+					"Request has been sent to department manager");
 			alert.showAndWait();
 			return;
 		}

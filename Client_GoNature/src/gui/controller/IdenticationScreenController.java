@@ -28,6 +28,9 @@ import utils.ValidationRules;
 import utils.enums.ClientRequest;
 import utils.enums.UserTypeEnum;
 
+/**
+ * Controller class for the Identification Screen.
+ */
 public class IdenticationScreenController implements Initializable {
 
 	@FXML
@@ -45,11 +48,20 @@ public class IdenticationScreenController implements Initializable {
 	private ExternalUser customer;
 	private SceneLoaderHelper GuiHelper = new SceneLoaderHelper();
 
+	/**
+	 * Constructs a new IdenticationScreenController.
+	 * 
+	 * @param screen   The BorderPane representing the screen layout.
+	 * @param customer The ExternalUser object representing the current user.
+	 */
 	public IdenticationScreenController(BorderPane screen, Object customer) {
 		this.screen = screen;
 		this.customer = (ExternalUser) customer;
 	}
 
+	/**
+	 * Initializes the controller.
+	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		dateLabel.setText(CurrentDateAndTime.getCurrentDate("'Today' yyyy-MM-dd"));
@@ -57,6 +69,9 @@ public class IdenticationScreenController implements Initializable {
 
 	}
 
+	/**
+	 * Event handler for the search button click event.
+	 */
 	@SuppressWarnings("incomplete-switch")
 	public void onSearchClicked() {
 		if (ValidationRules.isFieldEmpty(orderIdField.getText())) {
@@ -79,40 +94,47 @@ public class IdenticationScreenController implements Initializable {
 			return;
 		case Order_Found:
 			ICustomer currentCustomer = null;
-			if (((Order) response.getMessage()).getOwnerType().name().equals("Visitor") &&
-					customer.getUserType()==UserTypeEnum.Visitor) {
+			if (((Order) response.getMessage()).getOwnerType().name().equals("Visitor")
+					&& customer.getUserType() == UserTypeEnum.Visitor) {
 				currentCustomer = (Visitor) customer;
-				if(!currentCustomer.getCustomerId().equals(((Order) response.getMessage()).getUserId())) {
+				if (!currentCustomer.getCustomerId().equals(((Order) response.getMessage()).getUserId())) {
 					showErrorMessage("This Order does not belong to you");
 					return;
 				}
-			}
-			else if (((Order) response.getMessage()).getOwnerType().name().equals("Guide") && customer.getUserType()==UserTypeEnum.Guide) {
+			} else if (((Order) response.getMessage()).getOwnerType().name().equals("Guide")
+					&& customer.getUserType() == UserTypeEnum.Guide) {
 				currentCustomer = (Guide) customer;
-				if(!currentCustomer.getCustomerId().equals(((Order) response.getMessage()).getUserId())) {
+				if (!currentCustomer.getCustomerId().equals(((Order) response.getMessage()).getUserId())) {
 					showErrorMessage("This Order does not belong to you");
 					return;
 				}
-			}
-			else {
+			} else {
 				showErrorMessage("This Order does not belong to you");
 				return;
 			}
 
 			AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,
 					"/gui/view/HandleOrderScreen.fxml", ApplicationViewType.Handle_Order_Screen,
-					new EntitiesContainer((Order)response.getMessage(), currentCustomer));
+					new EntitiesContainer((Order) response.getMessage(), currentCustomer));
 			screen.setCenter(dashboard);
 			return;
 		}
 
 	}
 
+	/**
+	 * Hides the error message section in the GUI.
+	 */
 	private void hideErrorMessage() {
 		errorMessageLabel.setText("");
 		errorSection.setVisible(false);
 	}
 
+	/**
+	 * Displays an error message in the GUI.
+	 * 
+	 * @param error The error message to be displayed.
+	 */
 	private void showErrorMessage(String error) {
 		errorSection.setVisible(true);
 		errorMessageLabel.setText(error);

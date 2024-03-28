@@ -30,6 +30,13 @@ import utils.enums.EmployeeTypeEnum;
 import utils.enums.ParkNameEnum;
 import utils.enums.ReportType;
 
+/**
+ * This class is responsible for controlling the view reports screen in the
+ * application. It allows users, particularly park managers and department
+ * managers, to select and view different types of reports for parks, including
+ * usage, visits, cancellations, and total visitors reports for specific months
+ * and years.
+ */
 public class ViewReportsScreenController implements Initializable {
 
 	@FXML
@@ -51,13 +58,21 @@ public class ViewReportsScreenController implements Initializable {
 	private ObservableList<String> monthsList = FXCollections.observableArrayList("1", "2", "3", "4", "5", "6", "7",
 			"8", "9", "10", "11", "12");
 
-	private Report requestedReport=null;
+	private Report requestedReport = null;
 	private ReportType selectedReport = ReportType.Unsupported;
 	private ParkNameEnum selectedPark = ParkNameEnum.None;
 	private String selectedYear = "";
 	private String selectedMonth = "";
 	private Employee employee;
 
+	/**
+	 * Constructor for the ViewReportsScreenController. Initializes the controller
+	 * with the employee object and adjusts the available reports and parks based on
+	 * the employee's role.
+	 *
+	 * @param employee The employee object, used to determine available reports and
+	 *                 parks based on role.
+	 */
 	public ViewReportsScreenController(Object employee) {
 		this.employee = (Employee) employee;
 		if (this.employee.getEmployeeType() == EmployeeTypeEnum.Park_Manager) {
@@ -71,6 +86,15 @@ public class ViewReportsScreenController implements Initializable {
 		}
 	}
 
+	/**
+	 * Initializes the controller class. This method is called after the FXML fields
+	 * have been loaded.
+	 *
+	 * @param location  The location used to resolve relative paths for the root
+	 *                  object, or null if the location is not known.
+	 * @param resources The resources used to localize the root object, or null if
+	 *                  the root object was not localized.
+	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		dateLabel.setText(CurrentDateAndTime.getCurrentDate("'Today' yyyy-MM-dd"));
@@ -86,27 +110,52 @@ public class ViewReportsScreenController implements Initializable {
 
 	}
 
+	/**
+	 * Handles the selection change of the report type.
+	 *
+	 * @param event The event triggered when the report type selection changes.
+	 */
 	private void onReportChangeSelection(ActionEvent event) {
 		selectedReport = reportSelector.getValue();
 	}
 
+	/**
+	 * Handles the selection change of the park.
+	 *
+	 * @param event The event triggered when the park selection changes.
+	 */
 	private void onParkChangeSelection(ActionEvent event) {
 		selectedPark = parkSelector.getValue();
 	}
 
+	/**
+	 * Handles the selection change of the year.
+	 *
+	 * @param event The event triggered when the year selection changes.
+	 */
 	private void onYearChangeSelection(ActionEvent event) {
 		selectedYear = yearSelector.getValue();
 	}
 
+	/**
+	 * Handles the selection change of the month.
+	 *
+	 * @param event The event triggered when the month selection changes.
+	 */
 	private void onMonthChangeSelection(ActionEvent event) {
 		selectedMonth = monthSelector.getValue();
 	}
 
+	/**
+	 * Handles the action of viewing the selected report. Based on the selections
+	 * made by the user, this method requests the report from the server and
+	 * displays it.
+	 */
 	@SuppressWarnings("incomplete-switch")
 	public void onViewReportClicked() {
 
-		requestedReport=null;
-		ClientRequest reportToOpen=null;
+		requestedReport = null;
+		ClientRequest reportToOpen = null;
 		if (selectedReport == null) {
 			// TODO: Alert
 			return;
@@ -115,23 +164,23 @@ public class ViewReportsScreenController implements Initializable {
 			case CancellationsReport:
 				requestedReport = new CancellationsReport(Integer.parseInt(selectedMonth),
 						Integer.parseInt(selectedYear), selectedPark);
-				reportToOpen=ClientRequest.Import_Cancellations_Report;
+				reportToOpen = ClientRequest.Import_Cancellations_Report;
 				break;
 			case TotalVisitorsReport:
 				requestedReport = new AmountDivisionReport(Integer.parseInt(selectedMonth),
 						Integer.parseInt(selectedYear), selectedPark);
-				reportToOpen=ClientRequest.Import_Total_Visitors_Report;
+				reportToOpen = ClientRequest.Import_Total_Visitors_Report;
 				break;
 			case UsageReport:
-				requestedReport = new UsageReport(Integer.parseInt(selectedMonth),
-				Integer.parseInt(selectedYear), selectedPark);
-				reportToOpen=ClientRequest.Import_Usage_Report;
-				
+				requestedReport = new UsageReport(Integer.parseInt(selectedMonth), Integer.parseInt(selectedYear),
+						selectedPark);
+				reportToOpen = ClientRequest.Import_Usage_Report;
+
 				break;
 			case VisitsReports:
-				requestedReport = new VisitsReport(Integer.parseInt(selectedMonth),
-						Integer.parseInt(selectedYear), selectedPark);
-				reportToOpen=ClientRequest.Import_Visits_Report;
+				requestedReport = new VisitsReport(Integer.parseInt(selectedMonth), Integer.parseInt(selectedYear),
+						selectedPark);
+				reportToOpen = ClientRequest.Import_Visits_Report;
 				break;
 			default:
 				return;

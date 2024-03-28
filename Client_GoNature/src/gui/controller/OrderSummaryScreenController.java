@@ -29,6 +29,9 @@ import utils.NotificationMessageTemplate;
 import utils.enums.ClientRequest;
 import utils.enums.OrderStatusEnum;
 
+/**
+ * Controller class for the Order Summary screen.
+ */
 public class OrderSummaryScreenController implements Initializable {
 	@FXML
 	public Label dateLabel;
@@ -40,104 +43,127 @@ public class OrderSummaryScreenController implements Initializable {
 	public Button continueButton;
 	@FXML
 	public HBox buttonsHbox;
-	
-	
+
 	private Order order;
 	private String orderSummaryMessage;
 	private BorderPane screen;
 	private double priceBeforeDiscount;
 	private double priceAfterDiscount;
 	private long estimatedVisitTime;
-	
-	public OrderSummaryScreenController(BorderPane screen,Object order) {
-		this.screen=screen;
-		this.order=(Order)order;
+
+	/**
+	 * Initializes the Order Summary screen controller.
+	 * 
+	 * @param screen The BorderPane representing the screen.
+	 * @param order  The Order object.
+	 */
+	public OrderSummaryScreenController(BorderPane screen, Object order) {
+		this.screen = screen;
+		this.order = (Order) order;
 		calculatePriceByOrderType();
-        Duration duration = Duration.between(this.order.getEnterDate(), this.order.getExitDate());
-        estimatedVisitTime = duration.toHours();
-        
-		orderSummaryMessage=NotificationMessageTemplate.orderSummaryMessage(this.order.getParkName().name(), this.order.getEnterDate().toString(),
-				this.order.getOrderType().name(), this.order.getNumberOfVisitors(), priceAfterDiscount, priceBeforeDiscount);
+		Duration duration = Duration.between(this.order.getEnterDate(), this.order.getExitDate());
+		estimatedVisitTime = duration.toHours();
+
+		orderSummaryMessage = NotificationMessageTemplate.orderSummaryMessage(this.order.getParkName().name(),
+				this.order.getEnterDate().toString(), this.order.getOrderType().name(),
+				this.order.getNumberOfVisitors(), priceAfterDiscount, priceBeforeDiscount);
 	}
-	
+
+	/**
+	 * Calculates the price based on the order type.
+	 */
 	@SuppressWarnings("incomplete-switch")
 	private void calculatePriceByOrderType() {
-		switch(order.getOrderType()) {
+		switch (order.getOrderType()) {
 		case Solo_PreOrder:
 		case Family_PreOrder:
-			priceBeforeDiscount = order.getPrice()*order.getNumberOfVisitors();
+			priceBeforeDiscount = order.getPrice() * order.getNumberOfVisitors();
 			priceAfterDiscount = priceBeforeDiscount * EntranceDiscount.SOLO_FAMILY_PREORDER_DISCOUNT;
 			break;
 		case Group_PreOrder:
-			priceBeforeDiscount = order.getPrice()*order.getNumberOfVisitors();
-			priceAfterDiscount = priceBeforeDiscount * EntranceDiscount.GROUP_PREORDER_DISCOUNT*EntranceDiscount.ADDITIONAL_GROUP_DISCOUNT;
+			priceBeforeDiscount = order.getPrice() * order.getNumberOfVisitors();
+			priceAfterDiscount = priceBeforeDiscount * EntranceDiscount.GROUP_PREORDER_DISCOUNT
+					* EntranceDiscount.ADDITIONAL_GROUP_DISCOUNT;
 			break;
 		}
-		
+
 	}
-	
+
+	/**
+	 * Initializes the Order Summary screen.
+	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		dateLabel.setText(CurrentDateAndTime.getCurrentDate("'Today' yyyy-MM-dd"));
 		messageLabel.setText(orderSummaryMessage);
 	}
-	
+
+	/**
+	 * Handles the action when the cancel button is clicked.
+	 */
 	public void onCancelClicked() {
-		AlertPopUp alert = new AlertPopUp(AlertType.CONFIRMATION, "Order Cancel", "Are you sure?", "Order will not be saved.",ButtonType.YES,ButtonType.CLOSE);
+		AlertPopUp alert = new AlertPopUp(AlertType.CONFIRMATION, "Order Cancel", "Are you sure?",
+				"Order will not be saved.", ButtonType.YES, ButtonType.CLOSE);
 		Optional<ButtonType> result = alert.showAndWait();
 
-        // Check which button was clicked and act accordingly
-        if (result.isPresent() && result.get() == ButtonType.YES) {
-    		SceneLoaderHelper guiHelper = new SceneLoaderHelper();
-    		AnchorPane view = guiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/CustomerHomepageScreen.fxml", ApplicationViewType.Customer_Homepage_Screen, new EntitiesContainer(order));
-    		screen.setCenter(view);
-        }
+		// Check which button was clicked and act accordingly
+		if (result.isPresent() && result.get() == ButtonType.YES) {
+			SceneLoaderHelper guiHelper = new SceneLoaderHelper();
+			AnchorPane view = guiHelper.loadRightScreenToBorderPaneWithController(screen,
+					"/gui/view/CustomerHomepageScreen.fxml", ApplicationViewType.Customer_Homepage_Screen,
+					new EntitiesContainer(order));
+			screen.setCenter(view);
+		}
 
 	}
-	
+
+	/**
+	 * Handles the action when the continue button is clicked.
+	 */
 	@SuppressWarnings("incomplete-switch")
 	public void onContinueClicked() {
-		//TODO: update the order in database as Confirmed-Paid
-		ButtonType payNow=new ButtonType("Pay Now");
-		ButtonType payLater=new ButtonType("Pay Later");
-		
-		String paymentReceipt = NotificationMessageTemplate.prePaymentReceiptMessage(order.getParkName(),order.getEnterDate().toString(),order.getNumberOfVisitors(),
-				order.getFirstName(),order.getLastName(),priceAfterDiscount, priceBeforeDiscount,estimatedVisitTime);
-		
-		AlertPopUp alert = new AlertPopUp(AlertType.CONFIRMATION,"Payment Notification", "Pay Now", paymentReceipt,payNow,payLater,ButtonType.CLOSE);
+		// TODO: update the order in database as Confirmed-Paid
+		ButtonType payNow = new ButtonType("Pay Now");
+		ButtonType payLater = new ButtonType("Pay Later");
+
+		String paymentReceipt = NotificationMessageTemplate.prePaymentReceiptMessage(order.getParkName(),
+				order.getEnterDate().toString(), order.getNumberOfVisitors(), order.getFirstName(), order.getLastName(),
+				priceAfterDiscount, priceBeforeDiscount, estimatedVisitTime);
+
+		AlertPopUp alert = new AlertPopUp(AlertType.CONFIRMATION, "Payment Notification", "Pay Now", paymentReceipt,
+				payNow, payLater, ButtonType.CLOSE);
 		Optional<ButtonType> result = alert.showAndWait();
 
-        // Check which button was clicked and act accordingly
-        if (result.isPresent() && result.get() == payNow) {
-        	order.setPaid(true);
-        	order.setPrice(priceAfterDiscount);
-        }
-        else if (result.isPresent() && result.get() == payLater) {
-        	order.setPaid(false);
-        	order.setPrice(priceBeforeDiscount);
-        }
-        else {
-        	return;
-        }
-        
-        order.setStatus(OrderStatusEnum.Wait_Notify);
-        ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Insert_New_Order_As_Wait_Notify,order);
-        ClientApplication.client.accept(request);
-        ServerResponseBackToClient response = ClientCommunication.responseFromServer;
-        Order orderFullDetailed = (Order)response.getMessage();
-        switch(response.getRensponse()) {
-        case Order_Added_Successfully:
-        	buttonsHbox.setVisible(false);
-        	String orderSummaryAfterPaymentMessage = NotificationMessageTemplate.orderConfirmMessage(orderFullDetailed.getOrderId(), orderFullDetailed.getParkName().name(),
-        			orderFullDetailed.getEnterDate().toString(), orderFullDetailed.getOrderType().name(), orderFullDetailed.getNumberOfVisitors(), orderFullDetailed.getPrice(), orderFullDetailed.isPaid());
-        	messageLabel.setText(orderSummaryAfterPaymentMessage);
-        	return;
-        case Order_Added_Failed:
-        	return;
-        }
-        
+		// Check which button was clicked and act accordingly
+		if (result.isPresent() && result.get() == payNow) {
+			order.setPaid(true);
+			order.setPrice(priceAfterDiscount);
+		} else if (result.isPresent() && result.get() == payLater) {
+			order.setPaid(false);
+			order.setPrice(priceBeforeDiscount);
+		} else {
+			return;
+		}
+
+		order.setStatus(OrderStatusEnum.Wait_Notify);
+		ClientRequestDataContainer request = new ClientRequestDataContainer(
+				ClientRequest.Insert_New_Order_As_Wait_Notify, order);
+		ClientApplication.client.accept(request);
+		ServerResponseBackToClient response = ClientCommunication.responseFromServer;
+		Order orderFullDetailed = (Order) response.getMessage();
+		switch (response.getRensponse()) {
+		case Order_Added_Successfully:
+			buttonsHbox.setVisible(false);
+			String orderSummaryAfterPaymentMessage = NotificationMessageTemplate.orderConfirmMessage(
+					orderFullDetailed.getOrderId(), orderFullDetailed.getParkName().name(),
+					orderFullDetailed.getEnterDate().toString(), orderFullDetailed.getOrderType().name(),
+					orderFullDetailed.getNumberOfVisitors(), orderFullDetailed.getPrice(), orderFullDetailed.isPaid());
+			messageLabel.setText(orderSummaryAfterPaymentMessage);
+			return;
+		case Order_Added_Failed:
+			return;
+		}
 
 	}
-
 
 }
