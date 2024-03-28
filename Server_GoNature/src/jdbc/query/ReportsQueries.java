@@ -385,8 +385,7 @@ public class ReportsQueries {
 						    "    FROM preorders " +
 						    "    WHERE parkId = ? AND MONTH(EnterDate) = ? AND YEAR(EnterDate) = ? " +
 						    ") AS combined ON OrderTypes.OrderType = combined.OrderType " +
-						    "GROUP BY OrderTypes.OrderType;"
-				);
+						    "GROUP BY OrderTypes.OrderType;");
 
 			stmt.setInt(1, report.getRequestedPark().getParkId());
 			stmt.setInt(2, report.getMonth());
@@ -408,7 +407,7 @@ public class ReportsQueries {
 								: orderType.equals("Family Occasional") ? 2
 										: orderType.equals("Family Preorder") ? 3
 												: orderType.equals("Group Occasional") ? 4
-														: orderType.equals("Guide Preorder") ? 5 : 6);
+														: orderType.equals("Group Preorder") ? 5 : 6);
 
 				data.add(rs.getInt(2));
 				data.add(rs.getInt(3));
