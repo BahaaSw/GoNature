@@ -24,8 +24,23 @@ import logic.VisitsReport;
 import utils.ReportGenerator;
 import utils.enums.ParkNameEnum;
 
+/**
+ * Manages database operations related to generating and retrieving reports for parks. This includes daily summaries,
+ * usage reports, cancellation reports, and total visitor amount reports. The class supports operations like generating
+ * new reports, inserting report data into the database, and fetching existing reports as PDF blobs.
+ * @author Tamer Amer, Gal Bitton, Rabea Lahham, Bahaldeen Swied, Ron Sisso, Nadav Reubens.
+ */
 public class ReportsQueries {
-
+	
+	/**
+	 * Retrieves a summary of daily activities for a specified park on a given day and month. The summary includes
+	 * total cancelled orders, time passed orders, and the total number of orders.
+	 *
+	 * @param month The month for which the summary is requested.
+	 * @param day   The day for which the summary is requested.
+	 * @param parkId The ID of the park for which the summary is requested.
+	 * @return A {@link ParkDailySummary} object containing the summary for the given day, or null if an error occurs.
+	 */
 	public ParkDailySummary getParkDailySummaryByDay(int month,int day, int parkId) { 
 		ParkDailySummary currentDaySummary = new ParkDailySummary();
 		try {
@@ -87,6 +102,16 @@ public class ReportsQueries {
 
 	}
 	
+	/**
+	 * Checks if the park was full for each day of a given month and year, at a specific hour. This method is useful for
+	 * understanding peak times and planning accordingly.
+	 *
+	 * @param month The month of interest.
+	 * @param hour  The hour of interest.
+	 * @param year  The year of interest.
+	 * @param park  The {@link ParkNameEnum} representing the park of interest.
+	 * @return A {@link ParkFullDaySummary} detailing the number of times the park was full during the specified hour across the month.
+	 */
 	public ParkFullDaySummary getIfParkWasFullEachDay(int month,int hour, int year, ParkNameEnum park) //added by tamir
 	{
 		ParkFullDaySummary currentDaySummary = new ParkFullDaySummary();
@@ -122,6 +147,13 @@ public class ReportsQueries {
 		return currentDaySummary;
 	}
 	
+	/**
+	 * Generates a usage report for a specific park, month, and year. The report includes details on park fullness at
+	 * various times throughout the month.
+	 *
+	 * @param report The {@link UsageReport} object containing parameters for report generation.
+	 * @return true if the report was successfully generated and saved, false otherwise.
+	 */
 	public boolean generateUsageReport(UsageReport report) {
 
 		int year = report.getYear();
@@ -150,7 +182,13 @@ public class ReportsQueries {
 
 	}
 	
-	
+	/**
+	 * Inserts a generated usage report into the database. If a report for the same park, year, and month already exists,
+	 * it updates the existing record.
+	 *
+	 * @param report The {@link UsageReport} to insert into the database.
+	 * @return true if the operation is successful, false otherwise.
+	 */
 	private boolean insertGeneratedUsageReportToDatabase(UsageReport report) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -176,6 +214,12 @@ public class ReportsQueries {
 		}
 	}
 	
+	/**
+	 * Retrieves the blob content of a previously generated usage report from the database.
+	 *
+	 * @param report The {@link UsageReport} identifying the report to retrieve.
+	 * @return An array of bytes representing the PDF content of the report, or null if the report could not be found or an error occurred.
+	 */
 	public byte[] getRequestedUsageReport(UsageReport report) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -212,7 +256,19 @@ public class ReportsQueries {
 		}
 	}
 	
-	//added by nadav
+	/**
+	 * Retrieves the total amounts divided by order type (Solo, Family, Group) for a specific park in a given month and year.
+	 * This method aggregates the amounts from both occasional visits and preorders that have been marked as 'Completed'.
+	 * The results are then summarized in a {@link ParkAmountSummary} object, which includes the total amounts for each order type,
+	 * as well as the month, year, and park ID for which the summary was generated.
+	 *
+	 * @param month The month for which the summary is to be generated.
+	 * @param parkId The ID of the park for which the summary is to be generated.
+	 * @param year The year for which the summary is to be generated.
+	 * @return A {@link ParkAmountSummary} object containing the total amounts for Solo, Family, and Group orders,
+	 *         or null if an SQL exception occurs during the operation.
+	 *         If no data is found for the specified criteria, a {@link ParkAmountSummary} with all amounts set to 0 is returned.
+	 */
 	public ParkAmountSummary getAmountDivisionByOrderTypeInChoosenMonth(int month, int parkId,int year) {
 				ParkAmountSummary parkAmountSum = new ParkAmountSummary();
 				try {
@@ -284,7 +340,13 @@ public class ReportsQueries {
 				}
 
 			}
-
+	
+	/**
+	 * Generates a report detailing the cancellations for a given park, month, and year.
+	 *
+	 * @param report The {@link CancellationsReport} containing the parameters for report generation.
+	 * @return true if the report was successfully generated and saved, false otherwise.
+	 */
 	public boolean generateCancellationsReport(CancellationsReport report) {
 		int year = report.getYear();
 		int month = report.getMonth();
@@ -311,7 +373,13 @@ public class ReportsQueries {
 		return false;
 
 	}
-
+	
+	/**
+	 * Generates a visits report for a given park, month, and year, including details on the number of visitors by type and visit duration.
+	 *
+	 * @param report The {@link VisitsReport} to be generated.
+	 * @return true if the report was successfully generated and saved, false otherwise.
+	 */
 	public boolean generateVisitsReport(VisitsReport report) {
 		boolean isQuerySucceed = getParkVisitsSummaryByEnterTime(report);
 		if (!isQuerySucceed)
@@ -327,7 +395,14 @@ public class ReportsQueries {
 			return true;
 		return false;
 	}
-	//added by nadav
+	
+	/**
+	 * Generates a report that divides the total amount of visitors by their type (e.g., Solo, Family, Group) for a given
+	 * park, month, and year.
+	 *
+	 * @param report The {@link AmountDivisionReport} containing the parameters for the report generation.
+	 * @return true if the report was successfully generated and saved, false otherwise.
+	 */
 	public boolean generateTotalAmountDivisionReport(AmountDivisionReport report) {
 		int year = report.getYear();
 		int month = report.getMonth();
@@ -348,7 +423,18 @@ public class ReportsQueries {
 		return false;
 
 	}
-
+	
+	/**
+	 * Calculates the summary of park visits based on the time of entry, segmented into hourly intervals for various types of visits.
+	 * This method combines data from both occasional visits and preorders, categorizing them by their respective order types
+	 * (e.g., Solo Occasional, Family Preorder) and then aggregating the total number of visitors for each hourly interval throughout the day.
+	 * The results are then stored in a map within the provided {@link VisitsReport} object, categorized by order type and time interval.
+	 *
+	 * @param report The {@link VisitsReport} object to which the calculated summary will be added. This report must include
+	 *               the park ID, month, and year for which the visit summary is requested.
+	 * @return true if the operation successfully retrieves and processes the data, adding the resulting summary to the report;
+	 *         false if an SQL exception occurs or no data is found for the specified criteria.
+	 */
 	private boolean getParkVisitsSummaryByEnterTime(VisitsReport report) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -425,11 +511,18 @@ public class ReportsQueries {
 
 			return true;
 		} catch (SQLException ex) {
-//			serverController.printToLogConsole("Query search for user failed");
 			return false;
 		}
 	}
-
+	
+	/**
+	 * Retrieves a summary of visitor idle times by type for a given park, month, and year. This method aggregates
+	 * the duration visitors spent in the park, categorized into intervals, and differentiates between types of visits
+	 * (Solo, Family, Group) and their methods of entry (Occasional, Preorder).
+	 *
+	 * @param report The {@link VisitsReport} object that includes park identification and the time frame for the report.
+	 * @return true if the summary was successfully retrieved and set in the report object, false if there was an error or no data.
+	 */
 	private boolean getParkIdleVisitTimeSummary(VisitsReport report) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -502,7 +595,14 @@ public class ReportsQueries {
 				return false;
 			}
 	}
-
+	
+	/**
+	 * Inserts or updates a generated cancellations report into the database for a specific park, month, and year.
+	 * This method ensures that only one report exists for a given time period and park by overwriting any existing report.
+	 *
+	 * @param report The {@link CancellationsReport} containing the generated report details including the park, time frame, and the PDF blob.
+	 * @return true if the report was successfully inserted or updated in the database, false otherwise.
+	 */
 	private boolean insertGeneratedCancellationsReportToDatabase(CancellationsReport report) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -527,7 +627,14 @@ public class ReportsQueries {
 			return false;
 		}
 	}
-
+	
+	/**
+	 * Inserts or updates a generated visits amount report into the database for a specified park, month, and year.
+	 * Utilizes the ON DUPLICATE KEY UPDATE mechanism to ensure unique reports per time period and park, updating existing entries if necessary.
+	 *
+	 * @param report The {@link VisitsReport} containing details of the generated report including park information, time frame, and the PDF content.
+	 * @return true if the report was successfully inserted or updated in the database, false in case of any errors.
+	 */
 	private boolean insertVisitsAmountReportToDatabase(VisitsReport report) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -552,7 +659,14 @@ public class ReportsQueries {
 			return false;
 		}
 	}
-
+	
+	/**
+	 * Inserts or updates the generated total amount division report into the database for a designated park, month, and year.
+	 * If a report for the specified criteria already exists, it updates the existing record with the new PDF content.
+	 *
+	 * @param report The {@link AmountDivisionReport} containing the generated report's details, such as park ID, time frame, and the report's PDF blob.
+	 * @return true if the report was successfully inserted or updated, false if the operation failed.
+	 */
 	private boolean insertTotalAmountReportToDatabase(AmountDivisionReport report) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -573,11 +687,16 @@ public class ReportsQueries {
 
 			return true;
 		} catch (SQLException ex) {
-//		serverController.printToLogConsole("Query search for user failed");
 			return false;
 		}
 	}
 	
+	/**
+	 * Retrieves the blob content of a previously generated cancellations report from the database.
+	 *
+	 * @param report The {@link CancellationsReport} identifying the report to retrieve.
+	 * @return An array of bytes representing the PDF content of the report, or null if the report could not be found or an error occurred.
+	 */
 	public byte[] getRequestedCancellationsReport(CancellationsReport report) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -614,6 +733,12 @@ public class ReportsQueries {
 		}
 	}
 	
+	/**
+	 * Retrieves the blob content of a previously generated visits report from the database.
+	 *
+	 * @param report The {@link VisitsReport} identifying the report to retrieve.
+	 * @return An array of bytes representing the PDF content of the report, or null if the report could not be found or an error occurred.
+	 */
 	public byte[] getRequestedVisitsReport(VisitsReport report) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -650,6 +775,12 @@ public class ReportsQueries {
 		}
 	}
 	
+	/**
+	 * Retrieves the blob content of a previously generated total amount division report from the database.
+	 *
+	 * @param report The {@link AmountDivisionReport} identifying the report to retrieve.
+	 * @return An array of bytes representing the PDF content of the report, or null if the report could not be found or an error occurred.
+	 */
 	public byte[] getRequestedTotalAmountReport(AmountDivisionReport report) {
 			try {
 				Connection con = MySqlConnection.getInstance().getConnection();

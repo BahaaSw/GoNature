@@ -37,8 +37,22 @@ import logic.ParkFullDaySummary;
 import logic.UsageReport;
 import logic.VisitsReport;
 
+/**
+ * The {@code ReportGenerator} class is responsible for generating various reports related to park visitations,
+ * usage, cancellations, and visitor amount divisions. It supports generating these reports in PDF format,
+ * utilizing JFreeChart for graphical representations and iTextPDF for PDF generation.
+ * @author Tamer Amer, Gal Bitton, Rabea Lahham, Bahaldeen Swied, Ron Sisso, Nadav Reubens.
+ */
 public class ReportGenerator {
 	
+	/**
+	 * Generates a usage report for a specified park and time period as a PDF blob.
+	 * The report includes information on park usage, highlighting days and times
+	 * that did not reach full capacity, along with visual representations through bar charts.
+	 * 
+	 * @param report The {@link UsageReport} object containing usage data for the park.
+	 * @return A byte array representing the generated PDF report, or {@code null} if an error occurs.
+	*/
 	public static byte[] generateUsageReportAsPdfBlob(UsageReport report)
 	{
 		Document document = new Document();
@@ -174,7 +188,15 @@ public class ReportGenerator {
 
 		}
 	}
-
+	
+	/**
+	 * Generates a cancellations report for a specified park and time period as a PDF blob.
+	 * The report details cancellation metrics, including total cancellations, cancellations over time,
+	 * and total orders, complemented by graphical line charts for a clearer overview.
+	 * 
+	 * @param report The {@link CancellationsReport} object containing cancellation data for the park.
+	 * @return A byte array representing the generated PDF report, or {@code null} if an error occurs.
+	 */
 	public static byte[] generateCancellationsReportAsPdfBlob(CancellationsReport report) {
 
 		Document document = new Document();
@@ -295,6 +317,14 @@ public class ReportGenerator {
 
 	}
 	
+	/**
+	 * Generates a comprehensive visits report for a specified park and time period as a PDF.
+	 * The report outlines the distribution of visitor types across different times and their idle times within the park,
+	 * featuring both tabular data and graphical bar charts for an intuitive understanding of park visits.
+	 * 
+	 * @param report The {@link VisitsReport} object containing visitation data for the park.
+	 * @return A byte array representing the generated PDF report, or {@code null} if an error occurs.
+	 */
 	public static byte[] generateVisitsReportAsPdf(VisitsReport report) {
 		Document document = new Document();
 		// Create a temporary file
@@ -513,6 +543,14 @@ public class ReportGenerator {
 		}
 	}
 	
+	/**
+	 * Generates a report on the total number of visitors, segmented by visitor type, for a specified park
+	 * and time period, rendered as a PDF. The report includes a pie chart visualizing the distribution
+	 * of different visitor types as percentages of the total.
+	 * 
+	 * @param report The {@link AmountDivisionReport} object containing visitor distribution data for the park.
+	 * @return A byte array representing the generated PDF report, or {@code null} if an error occurs.
+	 */
 	@SuppressWarnings("unchecked")
 	public static byte[] generateTotalVisitorsAmountReportAsPdf(AmountDivisionReport report) {
 		Document document = new Document();
@@ -591,6 +629,16 @@ public class ReportGenerator {
 
 	}
 	
+	/**
+	 * Creates a bar chart based on the provided dataset, with customizable chart title, X-axis label, and Y-axis label.
+	 * This method configures the chart appearance, including label positions and item margins, for optimal readability.
+	 * 
+	 * @param dataset  The {@link CategoryDataset} containing the data to plot.
+	 * @param charTitle The title of the chart.
+	 * @param xAxis     The label for the X-axis.
+	 * @param yAxis     The label for the Y-axis.
+	 * @return A {@link JFreeChart} object representing the configured bar chart.
+	 */
 	private static JFreeChart createBarChart(final CategoryDataset dataset,String charTitle, String xAxis,
 			String yAxis) {
 	    // Create the chart

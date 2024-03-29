@@ -15,14 +15,21 @@ import utils.enums.OrderTypeEnum;
 import utils.enums.ParkNameEnum;
 import utils.enums.ServerResponse;
 
+/**
+ * Provides methods for querying, inserting, and updating occasional visit orders
+ * in the database. Occasional orders are those not made in advance and typically
+ * involve visitors who arrive without a pre-existing reservation.
+ * @author Tamer Amer, Gal Bitton, Rabea Lahham, Bahaldeen Swied, Ron Sisso, Nadav Reubens.
+ */
+
 public class OccasionalQueries {
 	/**
-	 * Gets an occasional order and checks if it's in DB
-	 * 
-	 * @param order - the order to search for, must include the orderId
-	 * @return on Success: returns Order_Found_Successfully
-	 *         on Failure: returns Such_Order_Does_Not_Exists
-	 *         exception: returns Exception_Was_Thrown
+	 * Fetches an occasional visit order by its ID from the database. This method is
+	 * useful for retrieving details about a specific occasional visit that has been
+	 * recorded.
+	 *
+	 * @param order An Order object that contains the ID of the occasional visit order to be fetched.
+	 * @return A ServerResponse enum indicating the outcome of the operation (e.g., Order_Found, Order_Not_Found, Query_Failed).
 	 */
 	
 	//NOTICE : NOT USED THAT QUERY!!
@@ -60,8 +67,10 @@ public class OccasionalQueries {
 	}
 	
 	/**
+	 * Calculates the total number of occasional visits recorded in the database.
+	 * This includes all occasional visits, regardless of their current status.
 	 *
-	 * @return returns the amount of occasional visits in the system
+	 * @return The total number of occasional visits as an integer.
 	 */
 	public int ReturnTotalOccasionalVisits() {
 		int occasionalVisits = 0;
@@ -84,8 +93,10 @@ public class OccasionalQueries {
 	}
 	
 	/**
+	 * Determines the total number of occasional visitors currently present in the park.
+	 * This count includes only those visitors whose orders are marked as 'In Park'.
 	 *
-	 * @return returns the amount of occasional visits in park at the moment
+	 * @return The total number of occasional visitors currently in the park.
 	 */
 	
 	//NOTICE : NOT USED THAT QUERY!!
@@ -173,6 +184,13 @@ public class OccasionalQueries {
 		}
 	}
 	
+	/**
+	 * Inserts a new occasional visit order into the database. This method is used
+	 * to record the details of a new occasional visit, including the visitor's information and visit details.
+	 *
+	 * @param order The new occasional visit order to be added to the database.
+	 * @return A ServerResponse enum indicating the outcome of the operation (e.g., Occasional_Visit_Added_Successfully, Query_Failed).
+	 */
 	public ServerResponse insertOccasionalOrder(Order order) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -206,7 +224,14 @@ public class OccasionalQueries {
 			return ServerResponse.Exception_Was_Thrown;
 		}
 	}
-
+	
+	/**
+	 * Retrieves all occasional visit orders for a specific park that are marked as 'In Park' on the current date.
+	 * This method is useful for obtaining a list of all visitors currently in the park on an occasional visit.
+	 *
+	 * @param parkId The ID of the park for which to retrieve the occasional visit orders.
+	 * @return An ArrayList of Order objects representing all occasional visitors currently in the specified park; null if there are none or in case of an error.
+	 */
 	//NOTICE : NOT USED THAT QUERY!!
 	public ArrayList<Order> getAllOccasionalOrdersInPark(int parkId) {
 		LocalDate today = LocalDateTime.now().toLocalDate();

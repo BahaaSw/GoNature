@@ -13,9 +13,22 @@ import utils.enums.RequestStatusEnum;
 import utils.enums.RequestTypeEnum;
 import utils.enums.ServerResponse;
 
+/**
+ * Handles database queries related to requests, including fetching, updating, and inserting new requests.
+ * This class is primarily used for managing park manager requests, such as changes in park parameters or settings.
+ * @author Tamer Amer, Gal Bitton, Rabea Lahham, Bahaldeen Swied, Ron Sisso, Nadav Reubens.
+ */
 public class RequestQueries {
 	private ParkQueries parkQueries= new ParkQueries();
 	
+	/**
+	 * Retrieves all pending requests from the database. This method is intended for park managers to view
+	 * and act on requests that are currently awaiting approval.
+	 *
+	 * @param request An empty {@link ArrayList} of {@link Request} that will be filled with the found requests.
+	 * @return {@link ServerResponse} indicating the outcome of the fetch operation, whether it was successful,
+	 *         there are no pending requests, or the query failed.
+	 */
 	public ServerResponse ShowAllParkManagerRequests(ArrayList<Request> request) //Method to pull all the requests with pending status. (Tamir/Siso)
 	{
 		try {
@@ -53,6 +66,14 @@ public class RequestQueries {
 		}
 	}
 	
+	/**
+	 * Updates the status of a specific request in the database to a new status provided by the caller. If the new status
+	 * is 'Approved', it also triggers the update of the relevant park parameter to the new value specified in the request.
+	 *
+	 * @param request The {@link Request} object containing the request details, including the request ID.
+	 * @param status The new status to be set for the request, typically 'Approved' or 'Denied'.
+	 * @return {@link ServerResponse} indicating whether the update was successful, failed, or if the query resulted in no changes.
+	 */
 	public ServerResponse UpdateStatusRequest(Request request,String status)
 	{
 		try {
@@ -79,6 +100,15 @@ public class RequestQueries {
 		}
 	}
 	
+	/**
+	 * Inserts a new request into the database, provided there's no existing pending request of the same type for the same park.
+	 * This method ensures that duplicate requests are not created while a similar request is still under consideration.
+	 *
+	 * @param request The {@link Request} object to be inserted, containing all necessary details such as park ID, request type,
+	 *                old and new values, request status, and request date.
+	 * @return A boolean value indicating the success of the insert operation. Returns {@code true} if the insert was successful,
+	 *         or {@code false} if a matching pending request already exists or if the insert operation failed.
+	 */
 	public boolean InsertNewRequest(Request request) {
 	    try {
 	        Connection con = MySqlConnection.getInstance().getConnection();

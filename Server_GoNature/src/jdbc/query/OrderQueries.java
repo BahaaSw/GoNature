@@ -19,6 +19,10 @@ import utils.enums.ParkNameEnum;
 import utils.enums.ServerResponse;
 import utils.enums.UserTypeEnum;
 
+/**
+ * Handles all database operations related to orders, including fetching, inserting, updating, and deleting orders within the park management system. This class provides methods to interact with both preorder and occasional visit tables, manage order statuses, search for available dates, and more, ensuring the orders are correctly processed and managed in the database.
+ * Tamer Amer, Gal Bitton, Rabea Lahham, Bahaldeen Swied, Ron Sisso, Nadav Reubens.
+ */
 public class OrderQueries {
 
 	private ParkQueries parkQueries = new ParkQueries();
@@ -110,7 +114,13 @@ public class OrderQueries {
 		}
 
 	}
-
+	
+	/**
+	 * Searches for available dates for an order within the next 7 days from the specified enter date in the order. This method checks the availability based on the park's current capacity and estimated visit time, ensuring there are enough spots for the number of visitors in the order.
+	 *
+	 * @param order The order for which the available dates are being searched. The order must contain the park's ID, enter date, and the number of visitors.
+	 * @return A list of LocalDateTime objects representing the available dates and times for the next 7 days where the order can be placed. The list will be empty if no available dates are found.
+	 */
 	public ArrayList<LocalDateTime> searchForAvailableDates7DaysForward(Order order) {
 		ArrayList<LocalDateTime> availableDates = new ArrayList<LocalDateTime>();
 		int parkId = order.getParkName().getParkId();
@@ -124,7 +134,15 @@ public class OrderQueries {
 		}
 		return availableDates;
 	}
-
+	
+	/**
+	 * Checks if a specific date and time is available for a new order in a given park, considering the number of visitors and the park's capacity at that time.
+	 *
+	 * @param parkId The ID of the park where the availability is being checked.
+	 * @param enterTime The LocalDateTime representing the desired entry date and time for the visit.
+	 * @param amountOfVisitors The number of visitors for which the availability needs to be checked.
+	 * @return true if the date and time are available for the specified number of visitors, false otherwise.
+	 */
 	public boolean isThisDateAvailable(int parkId, LocalDateTime enterTime, int amountOfVisitors) {
 		Park requestedPark = new Park(parkId);
 		boolean foundPark = parkQueries.getParkById(requestedPark);
@@ -231,7 +249,14 @@ public class OrderQueries {
 			return false;
 		}
 	}
-
+	
+	/**
+	 * Checks if a new order can be placed on the requested date considering the park's capacity and the number of visitors already scheduled for that day.
+	 * It calculates if the number of visitors in the park, including the potential new order, would exceed the park's capacity at any time during the visit.
+	 *
+	 * @param order The order to be checked, containing the park ID, the number of visitors, and the enter date.
+	 * @return ServerResponse indicating whether the requested date is available, unavailable, has too many visitors, or if a failure occurred during the process.
+	 */
 	public ServerResponse checkIfNewOrderAvailableAtRequestedDate(Order order) {
 		Park requestedPark = new Park(order.getParkName().getParkId());
 		ServerResponse response = ServerResponse.Requested_Order_Date_Is_Available;
@@ -530,7 +555,14 @@ public class OrderQueries {
 
 		return ordersCount;
 	}
-
+	
+	/**
+	 * Retrieves a list of orders that have been notified or are in the notified waiting list for a specific client.
+	 * This method is useful for fetching orders that might require action or acknowledgment from the client's side.
+	 *
+	 * @param customerId The ID of the customer whose notified orders are to be retrieved.
+	 * @return An ArrayList of Order objects that have been either notified or are in the notified waiting list for the specified customer. Returns null if an SQLException occurs or if there are no such orders.
+	 */
 	public ArrayList<Order> searchForNotifiedOrdersOfSpecificClient(String customerId) {
 		ArrayList<Order> retList = new ArrayList<Order>();
 
@@ -563,7 +595,15 @@ public class OrderQueries {
 			return null;
 		}
 	}
-
+	
+	/**
+	 * Notifies the next orders in the waiting list for a specific park and enter date. This method is typically called
+	 * when there is a cancellation, and spots open up in the park, allowing waiting list orders to be potentially moved to confirmed status.
+	 *
+	 * @param enterDate The enter date for which the waiting list orders are being notified.
+	 * @param parkId The ID of the park where the waiting list orders are placed.
+	 * @return An ArrayList of Order objects that are next in line on the waiting list for the specified enter date and park. Returns null if an SQLException occurs or if there are no orders in the waiting list.
+	 */
 	public ArrayList<Order> notifyTheNextOrdersInWaitingList(LocalDateTime enterDate, int parkId) {
 		ArrayList<Order> ordersInWaitingList = new ArrayList<Order>();
 		try {
@@ -597,7 +637,14 @@ public class OrderQueries {
 			return null;
 		}
 	}
-
+	
+	/**
+	 * Retrieves all orders, both from preorders and occasional visits, that are scheduled for today at a specific park.
+	 * This method is useful for park management to get a quick overview of all the expected visits for the current day.
+	 *
+	 * @param parkId The ID of the park for which the orders are to be retrieved.
+	 * @return An ArrayList of Order objects that are scheduled for today for the specified park. Returns an empty list if there are no orders for today or null if an SQLException occurs.
+	 */
 	public ArrayList<Order> importAllOrdersForToday(int parkId) {
 		ArrayList<Order> retList = new ArrayList<Order>();
 
@@ -639,7 +686,14 @@ public class OrderQueries {
 			return null;
 		}
 	}
-
+	
+	/**
+	 * Deletes a specific order from the preorders table in the database. This operation is irreversible and should
+	 * be used with caution, typically in scenarios where an order is cancelled or needs to be removed for some reason.
+	 *
+	 * @param order The Order object containing the ID of the order to be deleted.
+	 * @return true if the order was successfully deleted; false if the deletion failed, either because the order does not exist or due to an SQLException.
+	 */
 	public boolean deleteOrderFromTable(Order order) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
