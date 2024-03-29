@@ -7,16 +7,16 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
-import jdbc.DatabaseResponse;
 import jdbc.MySqlConnection;
 import logic.Request;
 import utils.enums.RequestStatusEnum;
 import utils.enums.RequestTypeEnum;
+import utils.enums.ServerResponse;
 
 public class RequestQueries {
 	private ParkQueries parkQueries= new ParkQueries();
 	
-	public DatabaseResponse ShowAllParkManagerRequests(ArrayList<Request> request) //Method to pull all the requests with pending status. (Tamir/Siso)
+	public ServerResponse ShowAllParkManagerRequests(ArrayList<Request> request) //Method to pull all the requests with pending status. (Tamir/Siso)
 	{
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -26,7 +26,7 @@ public class RequestQueries {
 
 			// if the query ran successfully, but returned as empty table.
 			if (!rs.first()) {
-				return DatabaseResponse.No_Pending_Request_Exists;
+				return ServerResponse.There_Are_Not_Pending_Requests;
 			}
 			
 			rs.previous();
@@ -45,15 +45,15 @@ public class RequestQueries {
 	            request.add(newRequest);
 	        }
 			
-			return DatabaseResponse.Pending_Request_Pulled;
+			return ServerResponse.Pending_Requests_Found_Successfully;
 			
 		} catch (SQLException ex) {
 //			serverController.printToLogConsole("Query search for user failed");
-			return DatabaseResponse.Failed;
+			return ServerResponse.Query_Failed;
 		}
 	}
 	
-	public DatabaseResponse UpdateStatusRequest(Request request,String status)
+	public ServerResponse UpdateStatusRequest(Request request,String status)
 	{
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -64,18 +64,18 @@ public class RequestQueries {
 
 			// if the query ran successfully, but returned as empty table.
 			if (rs==0) {
-				return DatabaseResponse.No_Request_Exists;
+				return ServerResponse.Updated_Requests_Failed;
 			}
 			
 			if(status.equals("Approved")) {
 				parkQueries.InsertNewValueInRequestedPark(request);
 			}
 
-			return DatabaseResponse.Request_Was_Updated;
+			return ServerResponse.Updated_Requests_Successfully;
 			
 		} catch (SQLException ex) {
 //			serverController.printToLogConsole("Query search for user failed");
-			return DatabaseResponse.Failed;
+			return ServerResponse.Query_Failed;
 		}
 	}
 	

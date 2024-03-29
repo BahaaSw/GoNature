@@ -61,6 +61,7 @@ public class GoNatureServer extends AbstractServer {
 	 *                         server gui view.
 	 * @param dbConn           - The Connection instance to the database.
 	 */
+	@SuppressWarnings("static-access")
 	private GoNatureServer(int port, ServerScreenController serverController) {
 		super(port);
 		this.serverController = serverController;
