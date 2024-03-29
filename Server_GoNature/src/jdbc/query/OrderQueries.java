@@ -10,13 +10,13 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
-import jdbc.DatabaseResponse;
 import jdbc.MySqlConnection;
 import logic.Order;
 import logic.Park;
 import utils.enums.OrderStatusEnum;
 import utils.enums.OrderTypeEnum;
 import utils.enums.ParkNameEnum;
+import utils.enums.ServerResponse;
 import utils.enums.UserTypeEnum;
 
 public class OrderQueries {
@@ -33,7 +33,7 @@ public class OrderQueries {
 	 * @return on Success: returns Order_Found_Successfully on Failure: returns
 	 *         Such_Order_Does_Not_Exists exception: returns Exception_Was_Thrown
 	 */
-	public DatabaseResponse fetchOrderByOrderID(Order order) {
+	public ServerResponse fetchOrderByOrderID(Order order) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
 			PreparedStatement stmt = con.prepareStatement("SELECT * FROM preorders WHERE orderId = ?"
@@ -44,7 +44,7 @@ public class OrderQueries {
 
 			// if the query ran successfully, but returned as empty table.
 			if (!rs.next()) {
-				return DatabaseResponse.Such_Order_Does_Not_Exists;
+				return ServerResponse.Order_Not_Found;
 			}
 
 			order.setOrderId(rs.getInt(1));
@@ -63,11 +63,10 @@ public class OrderQueries {
 			order.setNumberOfVisitors(rs.getInt(14));
 			order.setPrice(rs.getDouble(15));
 
-			return DatabaseResponse.Order_Found_Successfully;
+			return ServerResponse.Order_Found;
 
 		} catch (SQLException ex) {
-//			serverController.printToLogConsole("Query search for user failed");
-			return DatabaseResponse.Exception_Was_Thrown;
+			return ServerResponse.Query_Failed;
 		}
 	}
 
@@ -165,7 +164,7 @@ public class OrderQueries {
 	 */
 
 	// NOTICE : NOT USED THAT QUERY!!
-	public DatabaseResponse fetchOrderByOwnerID(Order order) {
+	public ServerResponse fetchOrderByOwnerID(Order order) {
 
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -176,7 +175,7 @@ public class OrderQueries {
 
 			// if the query ran successfully, but returned as empty table.
 			if (!rs.next()) {
-				return DatabaseResponse.Such_Order_Does_Not_Exists;
+				return ServerResponse.Order_Not_Found;
 			}
 
 			order.setOrderId(rs.getInt(1));
@@ -195,10 +194,10 @@ public class OrderQueries {
 			order.setNumberOfVisitors(rs.getInt(14));
 			order.setPrice(rs.getDouble(15));
 
-			return DatabaseResponse.Order_Found_Successfully;
+			return ServerResponse.Order_Found;
 
 		} catch (SQLException ex) {
-			return DatabaseResponse.Exception_Was_Thrown;
+			return ServerResponse.Query_Failed;
 		}
 	}
 
@@ -233,13 +232,13 @@ public class OrderQueries {
 		}
 	}
 
-	public DatabaseResponse checkIfNewOrderAvailableAtRequestedDate(Order order) {
+	public ServerResponse checkIfNewOrderAvailableAtRequestedDate(Order order) {
 		Park requestedPark = new Park(order.getParkName().getParkId());
-		DatabaseResponse response = DatabaseResponse.Requested_Date_Is_Available;
+		ServerResponse response = ServerResponse.Requested_Order_Date_Is_Available;
 		boolean foundPark = parkQueries.getParkById(requestedPark);
 		if (foundPark) {
 			if (order.getNumberOfVisitors() > requestedPark.getCurrentMaxCapacity()) {
-				return DatabaseResponse.Number_Of_Visitors_More_Than_Max_Capacity;
+				return ServerResponse.Too_Many_Visitors;
 			}
 			double estimatedVisitTime = requestedPark.getCurrentEstimatedStayTime();
 			// Split the estimatedVisitTime into whole days and fractional day components
@@ -263,11 +262,11 @@ public class OrderQueries {
 				Integer[] ret = checkAvailableSpotInParkAtSpecificHour(order.getEnterDate().plusHours(hour),
 						order.getParkName().getParkId());
 				if (ret[0] != null && ret[0] + order.getNumberOfVisitors() > ret[1])
-					return DatabaseResponse.Current_Date_Is_Full;
+					return ServerResponse.Requested_Order_Date_Unavaliable;
 			}
 
 			order.setPrice(requestedPark.getPrice());
-			return DatabaseResponse.Requested_Date_Is_Available;
+			return ServerResponse.Requested_Order_Date_Is_Available;
 
 		}
 
@@ -341,7 +340,7 @@ public class OrderQueries {
 	 */
 
 	// NOTICE : NOT USED THAT QUERY!!
-	public DatabaseResponse updateOrderPhoneNumber(Order order) {
+	public ServerResponse updateOrderPhoneNumber(Order order) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
 			PreparedStatement stmt = con.prepareStatement("UPDATE preorders SET Phone = ? WHERE (OrderId = ?);");
@@ -350,12 +349,12 @@ public class OrderQueries {
 			int rs = stmt.executeUpdate();
 			// if the query ran successfully, but returned as empty table.
 			if (rs == 0) {
-				return DatabaseResponse.Failed;
+				return ServerResponse.Query_Failed;
 			}
-			return DatabaseResponse.Order_PhoneNumber_Updated;
+			return ServerResponse.Order_PhoneNumber_Updated;
 
 		} catch (SQLException ex) {
-			return DatabaseResponse.Exception_Was_Thrown;
+			return ServerResponse.Exception_Was_Thrown;
 		}
 	}
 
@@ -368,7 +367,7 @@ public class OrderQueries {
 	 */
 
 	// NOTICE : NOT USED THAT QUERY!!
-	public DatabaseResponse updateOrderEmail(Order order) {
+	public ServerResponse updateOrderEmail(Order order) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
 			PreparedStatement stmt = con.prepareStatement("UPDATE preorders SET Email = ? WHERE (OrderId = ?);");
@@ -377,12 +376,12 @@ public class OrderQueries {
 			int rs = stmt.executeUpdate();
 			// if the query ran successfully, but returned as empty table.
 			if (rs == 0) {
-				return DatabaseResponse.Failed;
+				return ServerResponse.Query_Failed;
 			}
-			return DatabaseResponse.Order_Email_Updated;
+			return ServerResponse.Order_Email_Updated;
 
 		} catch (SQLException ex) {
-			return DatabaseResponse.Exception_Was_Thrown;
+			return ServerResponse.Exception_Was_Thrown;
 		}
 	}
 
@@ -394,7 +393,7 @@ public class OrderQueries {
 	 *         returns Failed exception: returns Exception_Was_Thrown
 	 */
 	// NOTICE : NOT USED THAT QUERY!!
-	public DatabaseResponse updateOrderNumberOfVisitors(Order order) {
+	public ServerResponse updateOrderNumberOfVisitors(Order order) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
 			PreparedStatement stmt = con.prepareStatement("UPDATE preorders SET Amount = ? WHERE (OrderId = ?);");
@@ -403,12 +402,12 @@ public class OrderQueries {
 			int rs = stmt.executeUpdate();
 			// if the query ran successfully, but returned as empty table.
 			if (rs == 0) {
-				return DatabaseResponse.Failed;
+				return ServerResponse.Query_Failed;
 			}
-			return DatabaseResponse.Order_Number_Of_Visitors_Updated;
+			return ServerResponse.Order_Number_Of_Visitors_Updated;
 
 		} catch (SQLException ex) {
-			return DatabaseResponse.Exception_Was_Thrown;
+			return ServerResponse.Exception_Was_Thrown;
 		}
 	}
 
@@ -427,7 +426,7 @@ public class OrderQueries {
 	 */
 
 	// NOTICE : NOT USED THAT QUERY!!
-	public DatabaseResponse updateOrderType(Order order, OrderTypeEnum requestedType) {
+	public ServerResponse updateOrderType(Order order, OrderTypeEnum requestedType) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
 			PreparedStatement stmt = con.prepareStatement("UPDATE preorders SET OrderType = ? WHERE (OrderId = ?);");
@@ -436,12 +435,12 @@ public class OrderQueries {
 			int rs = stmt.executeUpdate();
 			// if the query ran successfully, but returned as empty table.
 			if (rs == 0) {
-				return DatabaseResponse.Failed;
+				return ServerResponse.Query_Failed;
 			}
-			return DatabaseResponse.Order_Type_Updated;
+			return ServerResponse.Order_Type_Updated;
 
 		} catch (SQLException ex) {
-			return DatabaseResponse.Exception_Was_Thrown;
+			return ServerResponse.Query_Failed;
 		}
 	}
 
@@ -455,7 +454,7 @@ public class OrderQueries {
 	 */
 
 	// NOTICE : NOT USED THAT QUERY!!
-	public DatabaseResponse updateOrderEnterDate(Order order, LocalDateTime enterDate) {
+	public ServerResponse updateOrderEnterDate(Order order, LocalDateTime enterDate) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
 			PreparedStatement stmt = con.prepareStatement("UPDATE preorders SET EnterDate = ? WHERE (OrderId = ?);");
@@ -464,12 +463,12 @@ public class OrderQueries {
 			int rs = stmt.executeUpdate();
 			// if the query ran successfully, but returned as empty table.
 			if (rs == 0) {
-				return DatabaseResponse.Failed;
+				return ServerResponse.Query_Failed;
 			}
-			return DatabaseResponse.Order_EnterDate_Updated;
+			return ServerResponse.Order_EnterDate_Updated;
 
 		} catch (SQLException ex) {
-			return DatabaseResponse.Exception_Was_Thrown;
+			return ServerResponse.Exception_Was_Thrown;
 		}
 	}
 
@@ -483,7 +482,7 @@ public class OrderQueries {
 	 */
 
 	// NOTICE : NOT USED THAT QUERY!!
-	public DatabaseResponse updateOrderExitDate(Order order, LocalDateTime exitDate) {
+	public ServerResponse updateOrderExitDate(Order order, LocalDateTime exitDate) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
 			PreparedStatement stmt = con.prepareStatement("UPDATE preorders SET ExitDate = ? WHERE (OrderId = ?);");
@@ -492,12 +491,12 @@ public class OrderQueries {
 			int rs = stmt.executeUpdate();
 			// if the query ran successfully, but returned as empty table.
 			if (rs == 0) {
-				return DatabaseResponse.Failed;
+				return ServerResponse.Query_Failed;
 			}
-			return DatabaseResponse.Order_ExitDate_Updated;
+			return ServerResponse.Order_ExitDate_Updated;
 
 		} catch (SQLException ex) {
-			return DatabaseResponse.Exception_Was_Thrown;
+			return ServerResponse.Exception_Was_Thrown;
 		}
 	}
 

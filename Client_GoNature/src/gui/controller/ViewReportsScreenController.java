@@ -25,7 +25,6 @@ import logic.Report;
 import logic.ServerResponseBackToClient;
 import logic.UsageReport;
 import logic.VisitsReport;
-import utils.AlertPopUp;
 import utils.CurrentDateAndTime;
 import utils.enums.ClientRequest;
 import utils.enums.EmployeeTypeEnum;
@@ -145,7 +144,6 @@ public class ViewReportsScreenController implements Initializable {
 
 	@SuppressWarnings("incomplete-switch")
 	public void onViewReportClicked() {
-		AlertPopUp alert;
 		requestedReport = null;
 		ClientRequest reportToOpen = null;
 		if (!validateGuiFields()) {

@@ -18,6 +18,10 @@ public enum ServerResponse {
 	Updated_Guides_To_Approved_Successfully,
 	Updated_Guides_To_Approved_Failed,
 	
+	Order_PhoneNumber_Updated,
+	Order_Paid_And_Confirmed,
+	Order_Not_Paid,
+	Order_Not_Confirmed,
 	Order_Not_Found,
 	Order_Found,
 	Order_Added_Successfully,
@@ -30,6 +34,12 @@ public enum ServerResponse {
 	Occasional_Visit_Order_Ready,
 	Occasional_Visit_Added_Successfully,
 	No_Orders_For_Today,
+	Order_ExitDate_Updated,
+	Order_Email_Updated,
+	Order_Number_Of_Visitors_Updated,
+	Order_Type_Updated,
+	Order_EnterDate_Updated,
+	
 	
 	Such_Report_Not_Found,
 	Cancellations_Report_Found,
@@ -39,6 +49,9 @@ public enum ServerResponse {
 	//Park Section
 	Fetched_Park_Details_Successfully,
 	Fetched_Park_Details_Failed,
+	Park_Table_Is_Empty,
+	Park_List_Names_Is_Created,
+	Park_Price_Returned_Successfully,
 	
 	Order_Updated_Successfully,
 	Order_Updated_Failed,

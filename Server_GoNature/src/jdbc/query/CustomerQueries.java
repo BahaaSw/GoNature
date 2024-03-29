@@ -5,10 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import jdbc.DatabaseResponse;
 import jdbc.MySqlConnection;
 import logic.Guide;
 import logic.Visitor;
+import utils.enums.ServerResponse;
 import utils.enums.UserStatus;
 import utils.enums.UserTypeEnum;
 
@@ -17,7 +17,7 @@ public class CustomerQueries {
 	public CustomerQueries() {
 	}
 
-	public DatabaseResponse searchForApprovedGuide(Guide guide) {
+	public ServerResponse searchForApprovedGuide(Guide guide) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
 			PreparedStatement stmt = con.prepareStatement("SELECT * FROM users WHERE Username = ? AND UserType = 'Guide'");
@@ -26,15 +26,15 @@ public class CustomerQueries {
 
 			// if the query ran successfully, but returned as empty table.
 			if (!rs.next()) {
-				return DatabaseResponse.Such_Guide_Not_Found;
+				return ServerResponse.User_Does_Not_Found;
 			}
 			
 			if(!guide.getPassword().equals(rs.getString(3))) {
-				return DatabaseResponse.Password_Incorrect;
+				return ServerResponse.Password_Incorrect;
 			}
 			
 			if(rs.getString(8).equals("Pending")) {
-				return DatabaseResponse.Guide_Not_Approve_Yet;
+				return ServerResponse.Guide_Status_Pending;
 			}
 			
 			guide.setUserId(rs.getString(1));
@@ -45,15 +45,15 @@ public class CustomerQueries {
 			guide.setUserStatus(UserStatus.Approved);
 			guide.setUserType(UserTypeEnum.Guide);
 			
-			return DatabaseResponse.Guide_Connected_Successfully;
+			return ServerResponse.Guide_Connected_Successfully;
 			
 		} catch (SQLException ex) {
 //			serverController.printToLogConsole("Query search for user failed");
-			return DatabaseResponse.Failed;
+			return ServerResponse.Query_Failed;
 		}
 	}
 	
-	public DatabaseResponse searchAccessForVisitor(Visitor visitor) {
+	public ServerResponse searchAccessForVisitor(Visitor visitor) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
 			PreparedStatement stmt = con.prepareStatement("SELECT * FROM preorders WHERE OwnerId = ? AND OrderStatus != 'Cancelled' AND OrderStatus != 'Time Passed'");
@@ -62,7 +62,7 @@ public class CustomerQueries {
 
 			// if the query ran successfully, but returned as empty table.
 			if (!rs.next()) {
-				return DatabaseResponse.Doesnt_Have_Active_Order;
+				return ServerResponse.Visitor_Have_No_Orders_Yet;
 			}
 			
 			visitor.setFirstName(rs.getString(11));
@@ -72,11 +72,11 @@ public class CustomerQueries {
 			visitor.setUserType(UserTypeEnum.Visitor);
 			visitor.setVisitorId(rs.getString(3));
 			
-			return DatabaseResponse.Visitor_Connected_Successfully;
+			return ServerResponse.Visitor_Connected_Successfully;
 			
 		} catch (SQLException ex) {
 //			serverController.printToLogConsole("Query search for user failed");
-			return DatabaseResponse.Failed;
+			return ServerResponse.Query_Failed;
 		}
 	}
 }

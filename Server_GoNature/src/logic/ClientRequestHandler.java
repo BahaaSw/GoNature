@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 import gui.controller.ServerScreenController;
 import javafx.application.Platform;
-import jdbc.DatabaseResponse;
 import jdbc.query.QueryControl;
 import ocsf.ConnectionToClient;
 import utils.enums.ClientRequest;
@@ -72,6 +71,7 @@ public class ClientRequestHandler {
 			break;
 		case Update_Order_Status_Confirmed:
 			response = handleUpdateOrderStatusConfirmed(data,client);
+			break;
 
 		// Service Employee Section
 		case Update_Guide_As_Approved:
@@ -225,16 +225,15 @@ public class ClientRequestHandler {
 		Integer orderId = (Integer) data.getData();
 		Order order = new Order(orderId);
 		ServerResponseBackToClient response;
-		DatabaseResponse DbResponse = QueryControl.orderQueries.fetchOrderByOrderID(order);
-		if (DbResponse == DatabaseResponse.Such_Order_Does_Not_Exists) {
-			response = new ServerResponseBackToClient(ServerResponse.Order_Not_Found, order);
-		} else if (DbResponse == DatabaseResponse.Order_Found_Successfully) {
-			response = new ServerResponseBackToClient(ServerResponse.Order_Found, order);
-		} else {
+		ServerResponse DbResponse = QueryControl.orderQueries.fetchOrderByOrderID(order);
+		if(DbResponse==ServerResponse.Query_Failed) {
 			serverController.printToLogConsole("SQL Exception was thrown during search relevant order query");
 			response = new ServerResponseBackToClient(ServerResponse.Query_Failed, null);
 		}
+		else
+			response = new ServerResponseBackToClient(DbResponse,order);
 		return response;
+
 	}
 
 	private ServerResponseBackToClient handleUpdateOrderStatusCompleted(ClientRequestDataContainer data,
@@ -416,16 +415,14 @@ public class ClientRequestHandler {
 		@SuppressWarnings("unchecked")
 		ArrayList<Request> requestList = (ArrayList<Request>) data.getData();
 		ServerResponseBackToClient response = null;
-		DatabaseResponse dbResponse = QueryControl.requestsQueries.ShowAllParkManagerRequests(requestList);
-		switch (dbResponse) {
-		case No_Pending_Request_Exists:
-			response = new ServerResponseBackToClient(ServerResponse.There_Are_Not_Pending_Requests, requestList);
-			break;
-		case Pending_Request_Pulled:
-			response = new ServerResponseBackToClient(ServerResponse.Pending_Requests_Found_Successfully, requestList);
-			break;
+		ServerResponse dbResponse = QueryControl.requestsQueries.ShowAllParkManagerRequests(requestList);
+		
+		if(dbResponse==ServerResponse.Query_Failed) {
+			return new ServerResponseBackToClient(dbResponse, null);
 		}
+		response = new ServerResponseBackToClient(dbResponse, requestList);
 		return response;
+		
 
 	}
 
@@ -433,11 +430,11 @@ public class ClientRequestHandler {
 			ConnectionToClient client) {
 		@SuppressWarnings("unchecked")
 		ArrayList<Request> requestList = (ArrayList<Request>) data.getData();
-		DatabaseResponse dbResponse;
+		ServerResponse dbResponse;
 		for (int i = 0; i < requestList.size(); i++) {
 			dbResponse = QueryControl.requestsQueries.UpdateStatusRequest(requestList.get(i),
 					requestList.get(i).getRequestStatus().name());
-			if (dbResponse == DatabaseResponse.No_Request_Exists || dbResponse == DatabaseResponse.Failed)
+			if (dbResponse == ServerResponse.Query_Failed || dbResponse == ServerResponse.Updated_Requests_Failed)
 				return new ServerResponseBackToClient(ServerResponse.Updated_Requests_Failed, null);
 		}
 		return new ServerResponseBackToClient(ServerResponse.Updated_Requests_Successfully, null);
@@ -583,16 +580,13 @@ public class ClientRequestHandler {
 		@SuppressWarnings("unchecked")
 		ArrayList<Guide> guidesList = (ArrayList<Guide>) data.getData();
 		ServerResponseBackToClient response = null;
-		DatabaseResponse dbResponse = QueryControl.employeeQueries.ShowAllGuidesWithPendingStatus(guidesList);
-		switch (dbResponse) {
-		case No_Pending_Request_Exists:
-			response = new ServerResponseBackToClient(ServerResponse.Guides_With_Status_Pending_Not_Found, guidesList);
-			break;
-		case Pending_Request_Pulled:
-			response = new ServerResponseBackToClient(ServerResponse.Guides_With_Status_Pending_Found, guidesList);
-			break;
-		}
+		ServerResponse dbResponse = QueryControl.employeeQueries.ShowAllGuidesWithPendingStatus(guidesList);
+		if(dbResponse==ServerResponse.Query_Failed)
+			return new ServerResponseBackToClient(dbResponse, dbResponse);
+		
+		response = new ServerResponseBackToClient(dbResponse, guidesList);
 		return response;
+
 
 	}
 
@@ -600,10 +594,10 @@ public class ClientRequestHandler {
 			ConnectionToClient client) {
 		@SuppressWarnings("unchecked")
 		ArrayList<Guide> guidesList = (ArrayList<Guide>) data.getData();
-		DatabaseResponse dbResponse;
+		ServerResponse dbResponse;
 		for (int i = 0; i < guidesList.size(); i++) {
 			dbResponse = QueryControl.employeeQueries.UpdateGuideStatusToApprove(guidesList.get(i));
-			if (dbResponse == DatabaseResponse.Failed)
+			if (dbResponse != ServerResponse.Updated_Guides_To_Approved_Successfully)
 				return new ServerResponseBackToClient(ServerResponse.Updated_Guides_To_Approved_Failed, null);
 		}
 		return new ServerResponseBackToClient(ServerResponse.Updated_Guides_To_Approved_Successfully, null);
@@ -620,64 +614,44 @@ public class ClientRequestHandler {
 			ConnectionToClient client) {
 		Order order = (Order) data.getData();
 		ServerResponseBackToClient response;
-		DatabaseResponse DbResponse = QueryControl.orderQueries.checkIfNewOrderAvailableAtRequestedDate(order);
-		switch (DbResponse) {
-		case Such_Park_Does_Not_Exists:
-		case Failed:
-			return null;
-		case Current_Date_Is_Full:
-			response = new ServerResponseBackToClient(ServerResponse.Requested_Order_Date_Unavaliable, order);
-			break;
-		case Requested_Date_Is_Available:
-			response = new ServerResponseBackToClient(ServerResponse.Requested_Order_Date_Is_Available, order);
-			break;
-		case Number_Of_Visitors_More_Than_Max_Capacity:
-			response = new ServerResponseBackToClient(ServerResponse.Too_Many_Visitors, order);
-			break;
-		default:
-			return null;
-		}
+		ServerResponse DbResponse = QueryControl.orderQueries.checkIfNewOrderAvailableAtRequestedDate(order);
+		response = new ServerResponseBackToClient(DbResponse, order);
 		return response;
+
 	}
 
 	private ServerResponseBackToClient handleLoginAsEmployee(ClientRequestDataContainer data,
 			ConnectionToClient client) {
 		Employee employee = (Employee) data.getData();
 		ServerResponseBackToClient response;
-		DatabaseResponse DbResponse = QueryControl.employeeQueries.searchForApprovedEmployee(employee);
-		if (DbResponse == DatabaseResponse.Such_Employee_Not_Found) {
-			response = new ServerResponseBackToClient(ServerResponse.User_Does_Not_Found, employee);
-
-		} else if (DbResponse == DatabaseResponse.Password_Incorrect) {
-			response = new ServerResponseBackToClient(ServerResponse.Password_Incorrect, employee);
-
-		} else if (DbResponse == DatabaseResponse.Employee_Connected_Successfully) {
+		ServerResponse DbResponse = QueryControl.employeeQueries.searchForApprovedEmployee(employee);
+		
+		if(DbResponse==ServerResponse.Employee_Connected_Successfully) {
 			response = new ServerResponseBackToClient(ServerResponse.Employee_Connected_Successfully, employee);
-
 			for (ClientConnection cl : serverController.getClientsList()) {
 				if (cl.isAlreadyConnected(new ClientConnection(employee.getUsername(), client))) {
 					response.setRensponse(ServerResponse.User_Already_Connected);
 					break;
 				}
 			}
-		} else {
+		}
+		else if(DbResponse==ServerResponse.Query_Failed) {
 			serverController.printToLogConsole("SQL Exception was thrown during search for approved employee query");
 			response = new ServerResponseBackToClient(ServerResponse.Query_Failed, null);
 		}
+		else {
+			response = new ServerResponseBackToClient(DbResponse, employee);
+		}
 		return response;
+	
 	}
 
 	private ServerResponseBackToClient handleLoginAsGuide(ClientRequestDataContainer data, ConnectionToClient client) {
 		Guide guide = (Guide) data.getData();
 		ServerResponseBackToClient response;
-		DatabaseResponse DbResponse = QueryControl.customerQueries.searchForApprovedGuide(guide);
-		if (DbResponse == DatabaseResponse.Such_Guide_Not_Found) {
-			response = new ServerResponseBackToClient(ServerResponse.User_Does_Not_Found, guide);
-
-		} else if (DbResponse == DatabaseResponse.Password_Incorrect) {
-			response = new ServerResponseBackToClient(ServerResponse.Password_Incorrect, guide);
-
-		} else if (DbResponse == DatabaseResponse.Guide_Connected_Successfully) {
+		ServerResponse DbResponse = QueryControl.customerQueries.searchForApprovedGuide(guide);
+		
+		if(DbResponse == ServerResponse.Guide_Connected_Successfully) {
 			response = new ServerResponseBackToClient(ServerResponse.Guide_Connected_Successfully, guide);
 			for (ClientConnection cl : serverController.getClientsList()) {
 				if (cl.isAlreadyConnected(new ClientConnection(guide.getUsername(), client))) {
@@ -685,15 +659,15 @@ public class ClientRequestHandler {
 					break;
 				}
 			}
-
-		} else if (DbResponse == DatabaseResponse.Guide_Not_Approve_Yet) {
-			response = new ServerResponseBackToClient(ServerResponse.Guide_Status_Pending, guide);
 		}
-
-		else {
+		else if(DbResponse == ServerResponse.Query_Failed) {
 			serverController.printToLogConsole("SQL Exception was thrown during search for approved guide query");
 			response = new ServerResponseBackToClient(ServerResponse.Query_Failed, null);
 		}
+		else {
+			response = new ServerResponseBackToClient(DbResponse, guide);
+		}
+	
 		return response;
 	}
 
@@ -701,38 +675,32 @@ public class ClientRequestHandler {
 			ConnectionToClient client) {
 		Visitor visitor = (Visitor) data.getData();
 		ServerResponseBackToClient response;
-		DatabaseResponse DbResponse = QueryControl.customerQueries.searchAccessForVisitor(visitor);
-		if (DbResponse == DatabaseResponse.Doesnt_Have_Active_Order) {
-			response = new ServerResponseBackToClient(ServerResponse.Visitor_Have_No_Orders_Yet, visitor);
-
-		} else if (DbResponse == DatabaseResponse.Visitor_Connected_Successfully) {
-			response = new ServerResponseBackToClient(ServerResponse.Visitor_Connected_Successfully, visitor);
-			for (ClientConnection cl : serverController.getClientsList()) {
-				if (cl.isAlreadyConnected(new ClientConnection("Visitor " + visitor.getCustomerId(), client))) {
-					response.setRensponse(ServerResponse.User_Already_Connected);
-					break;
-				}
-			}
-		} else {
+		ServerResponse DbResponse = QueryControl.customerQueries.searchAccessForVisitor(visitor);
+		
+		if(DbResponse==ServerResponse.Query_Failed) {
 			serverController.printToLogConsole("SQL Exception was thrown during search for login visitor query");
 			response = new ServerResponseBackToClient(ServerResponse.Query_Failed, null);
 		}
+		else {
+			response = new ServerResponseBackToClient(DbResponse, visitor);
+		}
 		return response;
+		
 	}
 
 	private ServerResponseBackToClient handleSearchForRelevantOrder(ClientRequestDataContainer data,
 			ConnectionToClient client) {
 		Order order = (Order) data.getData();
 		ServerResponseBackToClient response;
-		DatabaseResponse DbResponse = QueryControl.orderQueries.fetchOrderByOrderID(order);
-		if (DbResponse == DatabaseResponse.Such_Order_Does_Not_Exists) {
-			response = new ServerResponseBackToClient(ServerResponse.Order_Not_Found, order);
-		} else if (DbResponse == DatabaseResponse.Order_Found_Successfully) {
-			response = new ServerResponseBackToClient(ServerResponse.Order_Found, order);
-		} else {
-			serverController.printToLogConsole("SQL Exception was thrown during search relevant order query");
+		ServerResponse DbResponse = QueryControl.orderQueries.fetchOrderByOrderID(order);
+		if(DbResponse==ServerResponse.Query_Failed) {
 			response = new ServerResponseBackToClient(ServerResponse.Query_Failed, null);
 		}
+		else {
+			response = new ServerResponseBackToClient(DbResponse, order);
+		}
 		return response;
+		
+
 	}
 }

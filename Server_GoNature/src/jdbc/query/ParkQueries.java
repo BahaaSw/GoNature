@@ -7,14 +7,12 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-import jdbc.DatabaseResponse;
 import jdbc.MySqlConnection;
 import jdbc.QueryType;
-import logic.Order;
 import logic.Park;
 import logic.Request;
-import utils.enums.OrderStatusEnum;
 import utils.enums.ParkNameEnum;
+import utils.enums.ServerResponse;
 
 public class ParkQueries {
 
@@ -48,7 +46,7 @@ public class ParkQueries {
 	}
 	
 	//NOTICE : NOT USED THAT QUERY!!
-	public DatabaseResponse getParkByName(Park park) {
+	public ServerResponse getParkByName(Park park) {
 		
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -58,7 +56,7 @@ public class ParkQueries {
 
 			// if the query ran successfully, but returned as empty table.
 			if (!rs.next()) {
-				return DatabaseResponse.Such_Park_Does_Not_Exists;
+				return ServerResponse.Fetched_Park_Details_Failed;
 			}
 			
 			park.setParkId(rs.getInt(1));
@@ -69,16 +67,16 @@ public class ParkQueries {
 			park.setCurrentInPark(rs.getInt(6));
 			park.setPrice(rs.getInt(7));
 			
-			return DatabaseResponse.Park_Found_Successfully;
+			return ServerResponse.Fetched_Park_Details_Successfully;
 			
 		} catch (SQLException ex) {
 //			serverController.printToLogConsole("Query search for park failed");
-			return DatabaseResponse.Failed;
+			return ServerResponse.Query_Failed;
 		}
 	}
 	
 	//NOTICE : NOT USED THAT QUERY!!
-	public DatabaseResponse getParksNames(ArrayList<ParkNameEnum> parkList) {
+	public ServerResponse getParksNames(ArrayList<ParkNameEnum> parkList) {
 		
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -88,7 +86,7 @@ public class ParkQueries {
 
 			// if the query ran successfully, but returned as empty table.
 			if (!rs.next()) {
-				return DatabaseResponse.Park_Table_Is_Empty;
+				return ServerResponse.Park_Table_Is_Empty;
 			}
 			
 			while(rs.next())
@@ -96,17 +94,17 @@ public class ParkQueries {
 				parkList.add(ParkNameEnum.fromParkId(rs.getInt(2)));
 			}
 			
-			return DatabaseResponse.Park_List_Names_Is_Created;
+			return ServerResponse.Park_List_Names_Is_Created;
 			
 		} catch (SQLException ex) {
 //			serverController.printToLogConsole("Query search for park failed");
-			return DatabaseResponse.Failed;
+			return ServerResponse.Query_Failed;
 		}
 	}
 	
 	
 	//NOTICE : NOT USED THAT QUERY!!
-	public DatabaseResponse returnParkPrice(Park park)
+	public ServerResponse returnParkPrice(Park park)
 	{
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -116,7 +114,7 @@ public class ParkQueries {
 
 			// if the query ran successfully, but returned as empty table.
 			if (!rs.next()) {
-				return DatabaseResponse.Such_Park_Does_Not_Exists;
+				return ServerResponse.Fetched_Park_Details_Failed;
 			}
 			
 			park.setParkId(rs.getInt(1));
@@ -127,15 +125,15 @@ public class ParkQueries {
 			park.setCurrentInPark(rs.getInt(6));
 			park.setPrice(rs.getInt(7));
 			
-			return DatabaseResponse.Park_Price_Returned_Successfully;
+			return ServerResponse.Park_Price_Returned_Successfully;
 			
 		} catch (SQLException ex) {
 //			serverController.printToLogConsole("Query search for park failed");
-			return DatabaseResponse.Failed;
+			return ServerResponse.Query_Failed;
 		}
 	}
 	
-	public DatabaseResponse InsertNewValueInRequestedPark(Request request)
+	public ServerResponse InsertNewValueInRequestedPark(Request request)
 	{
 		try {
 
@@ -150,13 +148,13 @@ public class ParkQueries {
 
 			// if the query ran successfully, but returned as empty table.
 			if (rs==0) {
-				return DatabaseResponse.Such_Park_Does_Not_Exists;
+				return ServerResponse.Fetched_Park_Details_Failed;
 			}
-			return DatabaseResponse.Park_Parameter_Updated_Successfully;
+			return ServerResponse.Updated_Requests_Successfully;
 
 		} catch (SQLException ex) {
 //			serverController.printToLogConsole("Query search for park failed");
-			return DatabaseResponse.Failed;
+			return ServerResponse.Query_Failed;
 		}
 	}
 	
@@ -217,89 +215,51 @@ public class ParkQueries {
 		}
 	}
 	
-	//NOTICE : NOT USED THAT QUERY!!
-	public DatabaseResponse checkParkIsFull(int parkId, LocalDate date) {
-		try {
-			Connection con = MySqlConnection.getInstance().getConnection();
-			PreparedStatement selectStmt = con
-					.prepareStatement("SELECT ParkName, MaxCapacity, CurrentInPark From parks WHERE ParkId = ?;");
-			selectStmt.setInt(1, parkId);
-			ResultSet rs = selectStmt.executeQuery();
-
-			if (!rs.next()) {
-				return DatabaseResponse.Such_Park_Does_Not_Exists;
-			}
-
-			rs.previous();
-			int maxCapacity = rs.getInt("MaxCapacity");
-			int currentInPark = rs.getInt("CurrentInPark");
-			selectStmt.close();
-			if (maxCapacity == currentInPark) {
-				PreparedStatement updateStmt = con.prepareStatement("SELECT * FROM parkfulldates WHERE Date = ?;");
-				updateStmt.setString(1, date.toString());
-				ResultSet updateRS = updateStmt.executeQuery();
-				if (!updateRS.first()) {
-					if (!updateParkFullDateTable(QueryType.Insert, date, rs.getString("ParkName"))) {
-						return DatabaseResponse.Park_Reached_Full_Capacity_Updated_Failed;
-					}
-				}
-				if (!updateParkFullDateTable(QueryType.Update, date, rs.getString("ParkName"))) {
-					return DatabaseResponse.Park_Reached_Full_Capacity_Updated_Failed;
-				}
-				return DatabaseResponse.Park_Is_Full;
-			}
-			return DatabaseResponse.Park_Is_Not_Full;
-
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-			return DatabaseResponse.Failed;
-		}
-	}
 	
-	/**
-	 * @param order
-	 * @param direction - if true means the customer is entering the park, false
-	 *                  means customer is exiting the park
-	 * @return
-	 */
-	
-	//NOTICE : NOT USED THAT QUERY!!
-	public DatabaseResponse updateCurrentInParkValue(Order order, boolean direction) {
-		try {
-			Connection con = MySqlConnection.getInstance().getConnection();
-			PreparedStatement selectStmt = con.prepareStatement("SELECT CurrentInPark FROM parks WHERE (ParkId = ?);");
-			selectStmt.setInt(1, order.getParkName().getParkId());
-			ResultSet rs = selectStmt.executeQuery();
-
-			if (!rs.next()) {
-				return DatabaseResponse.Such_Park_Does_Not_Exists;
-			}
-
-			rs.previous();
-			int currentInParkUpdated = rs.getInt("CurrentInPark");
-			if (direction) {
-				currentInParkUpdated += order.getNumberOfVisitors();
-				QueryControl.orderQueries.updateOrderStatus(order, OrderStatusEnum.In_Park); // update the order to be in park
-			} else {
-				currentInParkUpdated -= order.getNumberOfVisitors();
-				QueryControl.orderQueries.updateOrderStatus(order, OrderStatusEnum.Completed); // update the order to be completed
-			}
-			selectStmt.close();
-			rs.close();
-			PreparedStatement updateStmt = con.prepareStatement("UPDATE parks SET CurrentInPark = ? WHERE ParkId = ?;");
-			updateStmt.setInt(1, currentInParkUpdated);
-			int updateRS = updateStmt.executeUpdate();
-
-			if (updateRS == 0) {
-				return DatabaseResponse.Current_In_Park_Update_Failed;
-			}
-			return DatabaseResponse.Current_In_Park_Updated_Successfully;
-
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-			return DatabaseResponse.Failed;
-		}
-	}
+//	/**
+//	 * @param order
+//	 * @param direction - if true means the customer is entering the park, false
+//	 *                  means customer is exiting the park
+//	 * @return
+//	 */
+//	
+//	//NOTICE : NOT USED THAT QUERY!!
+//	public ServerResponse updateCurrentInParkValue(Order order, boolean direction) {
+//		try {
+//			Connection con = MySqlConnection.getInstance().getConnection();
+//			PreparedStatement selectStmt = con.prepareStatement("SELECT CurrentInPark FROM parks WHERE (ParkId = ?);");
+//			selectStmt.setInt(1, order.getParkName().getParkId());
+//			ResultSet rs = selectStmt.executeQuery();
+//
+//			if (!rs.next()) {
+//				return ServerResponse.Such_Park_Does_Not_Exists;
+//			}
+//
+//			rs.previous();
+//			int currentInParkUpdated = rs.getInt("CurrentInPark");
+//			if (direction) {
+//				currentInParkUpdated += order.getNumberOfVisitors();
+//				QueryControl.orderQueries.updateOrderStatus(order, OrderStatusEnum.In_Park); // update the order to be in park
+//			} else {
+//				currentInParkUpdated -= order.getNumberOfVisitors();
+//				QueryControl.orderQueries.updateOrderStatus(order, OrderStatusEnum.Completed); // update the order to be completed
+//			}
+//			selectStmt.close();
+//			rs.close();
+//			PreparedStatement updateStmt = con.prepareStatement("UPDATE parks SET CurrentInPark = ? WHERE ParkId = ?;");
+//			updateStmt.setInt(1, currentInParkUpdated);
+//			int updateRS = updateStmt.executeUpdate();
+//
+//			if (updateRS == 0) {
+//				return DatabaseResponse.Current_In_Park_Update_Failed;
+//			}
+//			return DatabaseResponse.Current_In_Park_Updated_Successfully;
+//
+//		} catch (SQLException ex) {
+//			ex.printStackTrace();
+//			return DatabaseResponse.Failed;
+//		}
+//	}
 	
 
 }

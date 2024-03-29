@@ -548,9 +548,11 @@ public class ReportGenerator {
 			// pie Chart
 			@SuppressWarnings("rawtypes")
 			DefaultPieDataset dataset = new DefaultPieDataset();
-			dataset.setValue("Solo", report.getReportData().getAmountSolo());
-	        dataset.setValue("Family", report.getReportData().getAmountFamily());
-	        dataset.setValue("Group", report.getReportData().getAmountGroup());
+			int sum = report.getReportData().getAmountSolo()+report.getReportData().getAmountFamily()+report.getReportData().getAmountGroup();
+			
+			dataset.setValue(String.format("Solo - %.2f%%", (double)report.getReportData().getAmountSolo()/sum*100), report.getReportData().getAmountSolo());
+	        dataset.setValue(String.format("Family - %.2f%%", (double)report.getReportData().getAmountFamily()/sum*100), report.getReportData().getAmountFamily());
+	        dataset.setValue(String.format("Group - %.2f%%", (double)report.getReportData().getAmountGroup()/sum*100), report.getReportData().getAmountGroup());
 
 	        JFreeChart pieChart = ChartFactory.createPieChart(
 	                "Order Distribution", // chart title

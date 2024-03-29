@@ -8,12 +8,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-import jdbc.DatabaseResponse;
 import jdbc.MySqlConnection;
 import logic.Order;
 import utils.enums.OrderStatusEnum;
 import utils.enums.OrderTypeEnum;
 import utils.enums.ParkNameEnum;
+import utils.enums.ServerResponse;
 
 public class OccasionalQueries {
 	/**
@@ -26,7 +26,7 @@ public class OccasionalQueries {
 	 */
 	
 	//NOTICE : NOT USED THAT QUERY!!
-	public DatabaseResponse FetchOccasioanlOrderById(Order order) {
+	public ServerResponse FetchOccasioanlOrderById(Order order) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
 			PreparedStatement stmt = con.prepareStatement("SELECT * FROM occasionalvisits WHERE OrderId = ?;");
@@ -35,7 +35,7 @@ public class OccasionalQueries {
 
 			// if the query ran successfully, but returned as empty table.
 			if (!rs.next()) {
-				return DatabaseResponse.Such_Order_Does_Not_Exists;
+				return ServerResponse.Order_Not_Found;
 			}
 
 			order.setOrderId(rs.getInt(1));
@@ -51,11 +51,11 @@ public class OccasionalQueries {
 			order.setNumberOfVisitors(rs.getInt(11));
 			order.setPrice(rs.getDouble(12));
 
-			return DatabaseResponse.Order_Found_Successfully;
+			return ServerResponse.Order_Found;
 
 		} catch (SQLException ex) {
 //			serverController.printToLogConsole("Query search for user failed");
-			return DatabaseResponse.Exception_Was_Thrown;
+			return ServerResponse.Query_Failed;
 		}
 	}
 	
@@ -154,7 +154,7 @@ public class OccasionalQueries {
 	 */
 	
 	//NOTICE : NOT USED THAT QUERY!!
-	public DatabaseResponse UpdateOrderExitDate(Order order, LocalDateTime exitDate) {
+	public ServerResponse UpdateOrderExitDate(Order order, LocalDateTime exitDate) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
 			PreparedStatement stmt = con
@@ -164,16 +164,16 @@ public class OccasionalQueries {
 			int rs = stmt.executeUpdate();
 			// if the query ran successfully, but returned as empty table.
 			if (rs == 0) {
-				return DatabaseResponse.Failed;
+				return ServerResponse.Query_Failed;
 			}
-			return DatabaseResponse.Order_ExitDate_Updated;
+			return ServerResponse.Order_ExitDate_Updated;
 
 		} catch (SQLException ex) {
-			return DatabaseResponse.Exception_Was_Thrown;
+			return ServerResponse.Query_Failed;
 		}
 	}
 	
-	public DatabaseResponse insertOccasionalOrder(Order order) {
+	public ServerResponse insertOccasionalOrder(Order order) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
 			PreparedStatement stmt = con.prepareStatement(
@@ -198,12 +198,12 @@ public class OccasionalQueries {
 
 			// if the query ran successfully, but returned as empty table.
 			if (rs == 0) {
-				return DatabaseResponse.Failed;
+				return ServerResponse.Query_Failed;
 			}
-			return DatabaseResponse.Order_Added_Into_Table;
+			return ServerResponse.Occasional_Visit_Added_Successfully;
 
 		} catch (SQLException ex) {
-			return DatabaseResponse.Exception_Was_Thrown;
+			return ServerResponse.Exception_Was_Thrown;
 		}
 	}
 
