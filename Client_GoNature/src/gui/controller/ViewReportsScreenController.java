@@ -31,6 +31,13 @@ import utils.enums.EmployeeTypeEnum;
 import utils.enums.ParkNameEnum;
 import utils.enums.ReportType;
 
+/**
+ * This class is responsible for controlling the view reports screen in the
+ * application. It allows users, particularly park managers and department
+ * managers, to select and view different types of reports for parks, including
+ * usage, visits, cancellations, and total visitors reports for specific months
+ * and years.
+ */
 public class ViewReportsScreenController implements Initializable {
 
 	@FXML
@@ -63,6 +70,14 @@ public class ViewReportsScreenController implements Initializable {
 	private String selectedMonth = "";
 	private Employee employee;
 
+	/**
+	 * Constructor for the ViewReportsScreenController. Initializes the controller
+	 * with the employee object and adjusts the available reports and parks based on
+	 * the employee's role.
+	 *
+	 * @param employee The employee object, used to determine available reports and
+	 *                 parks based on role.
+	 */
 	public ViewReportsScreenController(Object employee) {
 		this.employee = (Employee) employee;
 		if (this.employee.getEmployeeType() == EmployeeTypeEnum.Park_Manager) {
@@ -76,6 +91,15 @@ public class ViewReportsScreenController implements Initializable {
 		}
 	}
 
+	/**
+	 * Initializes the controller class. This method is called after the FXML fields
+	 * have been loaded.
+	 *
+	 * @param location  The location used to resolve relative paths for the root
+	 *                  object, or null if the location is not known.
+	 * @param resources The resources used to localize the root object, or null if
+	 *                  the root object was not localized.
+	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		dateLabel.setText(CurrentDateAndTime.getCurrentDate("'Today' yyyy-MM-dd"));
@@ -92,6 +116,11 @@ public class ViewReportsScreenController implements Initializable {
 
 	}
 
+	/**
+	 * Handles the selection change of the report type.
+	 *
+	 * @param event The event triggered when the report type selection changes.
+	 */
 	private void onReportChangeSelection(ActionEvent event) {
 		selectedReport = reportSelector.getValue();
 		if (this.employee.getEmployeeType() == EmployeeTypeEnum.Department_Manager) {
@@ -109,18 +138,42 @@ public class ViewReportsScreenController implements Initializable {
 		}
 	}
 
+	/**
+	 * Handles the selection change of the park.
+	 *
+	 * @param event The event triggered when the park selection changes.
+	 */
 	private void onParkChangeSelection(ActionEvent event) {
 		selectedPark = parkSelector.getValue();
 	}
 
+	/**
+	 * Handles the selection change of the year.
+	 *
+	 * @param event The event triggered when the year selection changes.
+	 */
 	private void onYearChangeSelection(ActionEvent event) {
 		selectedYear = yearSelector.getValue();
 	}
 
+	/**
+	 * Handles the selection change of the month.
+	 *
+	 * @param event The event triggered when the month selection changes.
+	 */
 	private void onMonthChangeSelection(ActionEvent event) {
 		selectedMonth = monthSelector.getValue();
 	}
 
+	/**
+	 * Validates the input fields in the graphical user interface (GUI) for
+	 * generating a report. Checks if the report type, park, year, and month are
+	 * properly selected.
+	 *
+	 * @return {@code true} if all required fields are selected or entered
+	 *         correctly; {@code false} otherwise, along with an error message
+	 *         displayed for the invalid field(s).
+	 */
 	private boolean validateGuiFields() {
 		if (selectedReport == ReportType.Unsupported) {
 			showErrorMessage("You must select reportType");
@@ -142,6 +195,11 @@ public class ViewReportsScreenController implements Initializable {
 		return true;
 	}
 
+	/**
+	 * Handles the action of viewing the selected report. Based on the selections
+	 * made by the user, this method requests the report from the server and
+	 * displays it.
+	 */
 	@SuppressWarnings("incomplete-switch")
 	public void onViewReportClicked() {
 		requestedReport = null;
@@ -205,11 +263,23 @@ public class ViewReportsScreenController implements Initializable {
 		}
 	}
 
+	/**
+	 * Hides the error message label and error section in the graphical user
+	 * interface (GUI). This method is typically used to clear any previously
+	 * displayed error messages.
+	 */
 	private void hideErrorMessage() {
 		errorMessageLabel.setText("");
 		errorSection.setVisible(false);
 	}
 
+	/**
+	 * Displays an error message in the graphical user interface (GUI). This method
+	 * sets the specified error message text and makes the error section visible in
+	 * the GUI.
+	 *
+	 * @param error The error message to be displayed in the GUI.
+	 */
 	private void showErrorMessage(String error) {
 		errorSection.setVisible(true);
 		errorMessageLabel.setText(error);

@@ -30,6 +30,11 @@ import utils.enums.EmployeeTypeEnum;
 import utils.enums.ParkNameEnum;
 import utils.enums.ReportType;
 
+/**
+ * Controller class responsible for managing the UI interactions related to
+ * report generation. Implements the Initializable interface to initialize
+ * JavaFX components.
+ */
 public class CreateReportsScreenController implements Initializable {
 	@FXML
 	public Label dateLabel;
@@ -64,6 +69,12 @@ public class CreateReportsScreenController implements Initializable {
 	private ReportType selectedReportType = ReportType.Unsupported;
 	private ObservableList<ReportType> reportList = FXCollections.observableArrayList();
 
+	/**
+	 * Constructs a new CreateReportsScreenController with the given employee.
+	 * Adjusts available reports and parks based on the employee's type.
+	 * 
+	 * @param employee The employee for whom the controller is created.
+	 */
 	public CreateReportsScreenController(Object employee) {
 		this.employee = (Employee) employee;
 		if (this.employee.getEmployeeType() == EmployeeTypeEnum.Park_Manager) {
@@ -77,6 +88,14 @@ public class CreateReportsScreenController implements Initializable {
 		}
 	}
 
+	/**
+	 * Initializes the controller after its root element has been completely
+	 * processed. Initializes UI components and sets event handlers.
+	 * 
+	 * @param location  The location used to resolve relative paths for the root
+	 *                  object.
+	 * @param resources The resources used to localize the root object.
+	 */
 	@SuppressWarnings("incomplete-switch")
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -101,18 +120,43 @@ public class CreateReportsScreenController implements Initializable {
 		monthSelector.setOnAction(this::onMonthChangeSelection);
 	}
 
+	/**
+	 * Event handler triggered when the user selects a park from the park selection
+	 * ComboBox. Updates the selectedPark field with the newly selected park.
+	 * 
+	 * @param event The ActionEvent triggered by selecting a park.
+	 */
 	private void onParkChangeSelection(ActionEvent event) {
 		selectedPark = parkSelector.getValue();
 	}
 
+	/**
+	 * Event handler triggered when the user selects a year from the year selection
+	 * ComboBox. Updates the selectedYear field with the newly selected year.
+	 * 
+	 * @param event The ActionEvent triggered by selecting a year.
+	 */
 	private void onYearChangeSelection(ActionEvent event) {
 		selectedYear = yearSelector.getValue();
 	}
 
+	/**
+	 * Event handler triggered when the user selects a month from the month
+	 * selection ComboBox. Updates the selectedMonth field with the newly selected
+	 * month.
+	 * 
+	 * @param event The ActionEvent triggered by selecting a month.
+	 */
 	private void onMonthChangeSelection(ActionEvent event) {
 		selectedMonth = monthSelector.getValue();
 	}
 
+	/**
+	 * Event handler invoked when the user selects a report type from the ComboBox.
+	 * Updates the selected report type accordingly.
+	 * 
+	 * @param event The ActionEvent triggered by selecting a report type.
+	 */
 	private void onChangeReportSelection(ActionEvent event) {
 		selectedReportType = selectReportComboBox.getValue();
 		if (this.employee.getEmployeeType() == EmployeeTypeEnum.Department_Manager) {
@@ -130,6 +174,10 @@ public class CreateReportsScreenController implements Initializable {
 		}
 	}
 
+	/**
+	 * Event handler invoked when the user clicks the "Generate Report" button.
+	 * Initiates the generation of the selected report.
+	 */
 	@SuppressWarnings("incomplete-switch")
 	public void onGenerateReportClicked() {
 		Report report;
@@ -171,6 +219,15 @@ public class CreateReportsScreenController implements Initializable {
 		}
 	}
 
+	/**
+	 * Validates the input fields in the graphical user interface (GUI) for
+	 * generating a report. Checks if the report type, park, year, and month are
+	 * properly selected.
+	 *
+	 * @return {@code true} if all fields are validated successfully, indicating
+	 *         that the user input is valid; {@code false} otherwise, along with an
+	 *         error message displayed for the invalid field(s).
+	 */
 	private boolean validateGuiFields() {
 		if (selectedReportType == ReportType.Unsupported) {
 			showErrorMessage("You must select reportType");
@@ -192,11 +249,23 @@ public class CreateReportsScreenController implements Initializable {
 		return true;
 	}
 
+	/**
+	 * Hides the error message section in the UI by clearing the error message text
+	 * and setting the error section to invisible. This method is typically called
+	 * when there are no errors to display.
+	 */
 	private void hideErrorMessage() {
 		errorMessageLabel.setText("");
 		errorSection.setVisible(false);
 	}
 
+	/**
+	 * Displays an error message in the UI by setting the error message text and
+	 * making the error section visible. This method is typically called when there
+	 * is an error to be displayed.
+	 * 
+	 * @param error The error message to be displayed.
+	 */
 	@SuppressWarnings("unused")
 	private void showErrorMessage(String error) {
 		errorSection.setVisible(true);

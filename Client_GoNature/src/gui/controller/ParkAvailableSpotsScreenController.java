@@ -20,6 +20,9 @@ import utils.CurrentDateAndTime;
 import utils.enums.ClientRequest;
 import utils.enums.ParkNameEnum;
 
+/**
+ * Controller class for the Park Available Spots screen.
+ */
 public class ParkAvailableSpotsScreenController implements Initializable {
 	@FXML
 	public Label dateLabel;
@@ -29,23 +32,32 @@ public class ParkAvailableSpotsScreenController implements Initializable {
 	public Label currentInParkLabel;
 	@FXML
 	public Label maxCapacityLabel;
-	
+
 	private ObservableList<ParkNameEnum> parks = FXCollections.observableArrayList();
-	
+
 	private Employee employee;
 	private Park selectedPark;
-	private ParkNameEnum selectedParkName=ParkNameEnum.None;
-	
-	public ParkAvailableSpotsScreenController(Object employee,Object park) {
-		this.employee=(Employee)employee;
-		selectedPark=(Park)park;
+	private ParkNameEnum selectedParkName = ParkNameEnum.None;
+
+	/**
+	 * Constructs a new ParkAvailableSpotsScreenController.
+	 * 
+	 * @param employee The Employee object.
+	 * @param park     The Park object.
+	 */
+	public ParkAvailableSpotsScreenController(Object employee, Object park) {
+		this.employee = (Employee) employee;
+		selectedPark = (Park) park;
 	}
-	
+
+	/**
+	 * Initializes the Park Available Spots screen.
+	 */
 	@SuppressWarnings("incomplete-switch")
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		dateLabel.setText(CurrentDateAndTime.getCurrentDate("'Today' yyyy-MM-dd"));
-		switch(employee.getEmployeeType()) {
+		switch (employee.getEmployeeType()) {
 		case Department_Manager:
 			parks.add(ParkNameEnum.Banias);
 			parks.add(ParkNameEnum.Herodium);
@@ -56,26 +68,32 @@ public class ParkAvailableSpotsScreenController implements Initializable {
 			parks.add(employee.getRelatedPark());
 			break;
 		}
-		
+
 		currentInParkLabel.setText("?");
 		maxCapacityLabel.setText("?");
-		
+
 		parkSelect.getItems().addAll(parks);
 		parkSelect.setOnAction(this::onChangeParkSelection);
-		
+
 	}
-	
+
+	/**
+	 * Handles the action when the park selection changes.
+	 * 
+	 * @param event The ActionEvent triggered by the park selection.
+	 */
 	private void onChangeParkSelection(ActionEvent event) {
-		if(!(parkSelect.getValue() instanceof ParkNameEnum))
+		if (!(parkSelect.getValue() instanceof ParkNameEnum))
 			return;
 
-		selectedParkName=parkSelect.getValue();
+		selectedParkName = parkSelect.getValue();
 		selectedPark = new Park(selectedParkName.getParkId());
-		ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Search_For_Specific_Park,selectedPark);
+		ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Search_For_Specific_Park,
+				selectedPark);
 		ClientApplication.client.accept(request);
 		ServerResponseBackToClient response = ClientCommunication.responseFromServer;
-		selectedPark = (Park)response.getMessage();
-		
+		selectedPark = (Park) response.getMessage();
+
 		currentInParkLabel.setText(String.format("%d", selectedPark.getCurrentInPark()));
 		maxCapacityLabel.setText(String.format("%d", selectedPark.getCurrentMaxCapacity()));
 
