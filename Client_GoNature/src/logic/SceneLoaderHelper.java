@@ -31,12 +31,30 @@ import utils.CurrentWindow;
 
 public class SceneLoaderHelper {
 	
+	private static SceneLoaderHelper guiHelper= null;
 	private AnchorPane centerScreen;
 	private IThreadController runningController=null;
+	
+	private SceneLoaderHelper() {
+		
+	}
+	
+	public static SceneLoaderHelper getInstance() {
+		if(guiHelper==null)
+			guiHelper=new SceneLoaderHelper();
+		return guiHelper;
+	}
 	
 	//UserType type
 	public AnchorPane loadRightScreenToBorderPaneWithController(BorderPane screen, String screenUrl,ApplicationViewType viewToLoad,EntitiesContainer data) {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource(screenUrl));
+		
+		//Close the IThreadController
+		if(runningController!=null) {
+			runningController.cleanUp();
+			runningController=null;
+		}
+		
 		switch(viewToLoad) {
 				
 			case Order_Summary_Screen:{
@@ -140,10 +158,6 @@ public class SceneLoaderHelper {
 			}
 		
 		try {
-			if(runningController!=null) {
-				runningController.cleanUp();
-				runningController=null;
-			}
 			
 			loader.load();
 			centerScreen = loader.getRoot();
@@ -158,6 +172,12 @@ public class SceneLoaderHelper {
 	public void setScreenAfterLogoutOrBack() {
 
 		try {
+			
+			if(runningController!=null) {
+				runningController.cleanUp();
+				runningController=null;
+			}
+			
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/view/LandingPageScreen.fxml"));
 			loader.setController(ClientApplication.landingPageController);
 			Scene scene = new Scene(loader.load());

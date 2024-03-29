@@ -76,7 +76,6 @@ public class ParkEntranceScreenController implements Initializable, IThreadContr
 	private TableColumn<OrderInTable, String> statusCol;
 
 	private ObservableList<OrderInTable> ordersForNow = FXCollections.observableArrayList();
-	private SceneLoaderHelper GuiHelper= new SceneLoaderHelper();
 
 	@FXML
 	public HBox errorSection;
@@ -150,12 +149,14 @@ public class ParkEntranceScreenController implements Initializable, IThreadContr
 
 			@SuppressWarnings("unchecked")
 			ArrayList<Order> listOfOrders = (ArrayList<Order>) response.getMessage();
-			ordersForNow.clear();
-			for (Order order : listOfOrders) {
-				ordersForNow.add(new OrderInTable(order));
-			}
+			if (listOfOrders != null) {
+				ordersForNow.clear();
+				for (Order order : listOfOrders) {
+					ordersForNow.add(new OrderInTable(order));
+				}
 
-			inParkTable.refresh();
+				inParkTable.refresh();
+			}
 		});
 	}
 
@@ -168,35 +169,51 @@ public class ParkEntranceScreenController implements Initializable, IThreadContr
 			showErrorMessage("You choose order already inside park");
 			return;
 		}
+		
+//		LocalDateTime currentTime = LocalDateTime.now().minusMinutes(5);
+//		LocalDateTime orderTime = LocalDateTime.parse(selectedOrder.getEstimatedEnterTime());
+//		// Calculate the time that is 5 minutes before the original enter time
+//		LocalDateTime fiveMinutesBeforeOrderTime = orderTime.minusMinutes(5);
+//
+//		// Check if the current time is within the 5-minute window before the order time or exactly at the order time
+//		if (currentTime.isBefore(fiveMinutesBeforeOrderTime) && currentTime.isAfter(orderTime)) {
+//			showErrorMessage("Orders can enter park maximum 5 minutes before their order");
+//			return;
+//		}
+
 
 		Integer orderId = Integer.parseInt(selectedOrder.getOrderId());
 		if (selectedOrder.getIsPaid().equals("No")) {
-			ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Show_Payment_At_Entrance, orderId);
+			ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Show_Payment_At_Entrance,
+					orderId);
 			ClientApplication.client.accept(request);
 			ServerResponseBackToClient response = ClientCommunication.responseFromServer;
-			Order order = (Order)response.getMessage();
-			
-			ButtonType payNow=new ButtonType("Pay Now");
+			Order order = (Order) response.getMessage();
+
+			ButtonType payNow = new ButtonType("Pay Now");
 			double price = calculatePriceByOrderType(order);
-	        Duration duration = Duration.between(order.getEnterDate(), order.getExitDate());
-	        long estimatedVisitTime = duration.toHours();
-	        
-	        //ParkNameEnum parkName,OrderTypeEnum type,String firstName,String lastName,double totalPrice,long estimatedTimeVisit
-			String paymentReceipt = NotificationMessageTemplate.entrancePaymentReceiptMessage(order.getParkName(),order.getOrderType(),order.getFirstName(), order.getLastName(),
-					order.getNumberOfVisitors(),price,estimatedVisitTime);
-			
-			AlertPopUp alert = new AlertPopUp(AlertType.CONFIRMATION,"Payment Notification", "Pay Now", paymentReceipt,payNow,ButtonType.CLOSE);
+			Duration duration = Duration.between(order.getEnterDate(), order.getExitDate());
+			long estimatedVisitTime = duration.toHours();
+
+			// ParkNameEnum parkName,OrderTypeEnum type,String firstName,String
+			// lastName,double totalPrice,long estimatedTimeVisit
+			String paymentReceipt = NotificationMessageTemplate.entrancePaymentReceiptMessage(order.getParkName(),
+					order.getOrderType(), order.getFirstName(), order.getLastName(), order.getNumberOfVisitors(), price,
+					estimatedVisitTime);
+
+			AlertPopUp alert = new AlertPopUp(AlertType.CONFIRMATION, "Payment Notification", "Pay Now", paymentReceipt,
+					payNow, ButtonType.CLOSE);
 			Optional<ButtonType> result = alert.showAndWait();
-			
-			if(result.isPresent() && result.get() == ButtonType.CLOSE) {
+
+			if (result.isPresent() && result.get() == ButtonType.CLOSE) {
 				return;
 			}
-			
+
 		}
 		selectedOrder.setIsPaid("Yes");
 		inParkTable.refresh();
-		ClientRequestDataContainer request = new ClientRequestDataContainer(
-				ClientRequest.Update_Order_Status_In_Park, orderId);
+		ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Update_Order_Status_In_Park,
+				orderId);
 		ClientApplication.client.accept(request);
 		@SuppressWarnings("unused")
 		ServerResponseBackToClient response = ClientCommunication.responseFromServer;
@@ -209,8 +226,9 @@ public class ParkEntranceScreenController implements Initializable, IThreadContr
 	public void onNewVisitClicked() {
 		// TODO: open handleoccasionalvisit screen
 		// TODO : create new order and mark status as "In Park".
-		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/HandleOccasionalVisitScreen.fxml",
-				ApplicationViewType.HandleOccasionalVisitScreen,new EntitiesContainer(employee));
+		AnchorPane dashboard = SceneLoaderHelper.getInstance().loadRightScreenToBorderPaneWithController(screen,
+				"/gui/view/HandleOccasionalVisitScreen.fxml", ApplicationViewType.HandleOccasionalVisitScreen,
+				new EntitiesContainer(employee));
 		screen.setCenter(dashboard);
 
 	}
@@ -290,12 +308,13 @@ public class ParkEntranceScreenController implements Initializable, IThreadContr
 
 	@SuppressWarnings("incomplete-switch")
 	private double calculatePriceByOrderType(Order order) {
-		double priceAtEntrance=0;
-		
+		double priceAtEntrance = 0;
+
 		switch (order.getOrderType()) {
 		case Solo_PreOrder:
 		case Family_PreOrder:
-			priceAtEntrance = order.getPrice() * order.getNumberOfVisitors()*EntranceDiscount.SOLO_FAMILY_PREORDER_DISCOUNT;
+			priceAtEntrance = order.getPrice() * order.getNumberOfVisitors()
+					* EntranceDiscount.SOLO_FAMILY_PREORDER_DISCOUNT;
 			break;
 		case Group_PreOrder:
 			priceAtEntrance = order.getPrice() * (order.getNumberOfVisitors() + 1)

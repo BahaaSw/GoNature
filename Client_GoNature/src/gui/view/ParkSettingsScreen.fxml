@@ -134,5 +134,16 @@
             </VBox>
          </children>
       </HBox>
+      <HBox fx:id="errorSection" layoutX="45.0" layoutY="669.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="53.0" prefWidth="850.0" styleClass="app_error_hbox">
+         <children>
+            <ImageView fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../utils/resources/errorIcon.png" />
+               </image>
+            </ImageView>
+            <Label styleClass="make_order_error" text="Error Message :" />
+            <Label fx:id="errorMessageLabel" text="..." textFill="#c60000" />
+         </children>
+      </HBox>
    </children>
 </AnchorPane>

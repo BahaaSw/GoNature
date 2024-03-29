@@ -43,7 +43,6 @@ public class IdenticationScreenController implements Initializable {
 
 	private BorderPane screen;
 	private ExternalUser customer;
-	private SceneLoaderHelper GuiHelper = new SceneLoaderHelper();
 
 	public IdenticationScreenController(BorderPane screen, Object customer) {
 		this.screen = screen;
@@ -99,7 +98,7 @@ public class IdenticationScreenController implements Initializable {
 				return;
 			}
 
-			AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,
+			AnchorPane dashboard = SceneLoaderHelper.getInstance().loadRightScreenToBorderPaneWithController(screen,
 					"/gui/view/HandleOrderScreen.fxml", ApplicationViewType.Handle_Order_Screen,
 					new EntitiesContainer((Order)response.getMessage(), currentCustomer));
 			screen.setCenter(dashboard);

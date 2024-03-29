@@ -56,7 +56,6 @@ public class CustomerScreenController implements Initializable, IScreenControlle
 	private ExternalUser customer;
 	@SuppressWarnings("unused")
 	private UserTypeEnum currentCustomer;
-	private SceneLoaderHelper GuiHelper = new SceneLoaderHelper();
 	private ICustomer customerDetails=null;
 
 	public CustomerScreenController(ExternalUser customer) {
@@ -108,27 +107,27 @@ public class CustomerScreenController implements Initializable, IScreenControlle
 
 	public void onBackClicked() {
 		if (customer.getUserType() == UserTypeEnum.ExternalUser) {
-			GuiHelper.setScreenAfterLogoutOrBack();
+			SceneLoaderHelper.getInstance().setScreenAfterLogoutOrBack();
 		} else
 			onLogoutClicked();
 	}
 
 	public void onHomeClicked() {
-		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,
+		AnchorPane dashboard = SceneLoaderHelper.getInstance().loadRightScreenToBorderPaneWithController(screen,
 				"/gui/view/CustomerHomepageScreen.fxml", ApplicationViewType.Customer_Homepage_Screen,
 				new EntitiesContainer(customer));
 		screen.setCenter(dashboard);
 	}
 
 	public void onMakeOrderClicked() {
-		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,
+		AnchorPane dashboard = SceneLoaderHelper.getInstance().loadRightScreenToBorderPaneWithController(screen,
 				"/gui/view/MakeOrderScreen.fxml", ApplicationViewType.Make_Order_Screen,
 				new EntitiesContainer(customer, customerDetails));
 		screen.setCenter(dashboard);
 	}
 
 	public void onManageOrdersClicked() {
-		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,
+		AnchorPane dashboard = SceneLoaderHelper.getInstance().loadRightScreenToBorderPaneWithController(screen,
 				"/gui/view/IdenticationScreen.fxml", ApplicationViewType.Identication_Screen,
 				new EntitiesContainer(customer));
 		screen.setCenter(dashboard);
@@ -137,7 +136,7 @@ public class CustomerScreenController implements Initializable, IScreenControlle
 	public void onLogoutClicked() {
 		ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Logout, customer);
 		ClientApplication.client.accept(request);
-		GuiHelper.setScreenAfterLogoutOrBack();
+		SceneLoaderHelper.getInstance().setScreenAfterLogoutOrBack();
 	}
 
 	public void onServerCrashed() {

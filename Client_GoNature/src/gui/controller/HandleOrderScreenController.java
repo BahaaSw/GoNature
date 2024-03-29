@@ -17,6 +17,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -78,7 +79,6 @@ public class HandleOrderScreenController implements Initializable {
 	private String selectedTime;
 	private OrderTypeEnum selectedVisitType;
 	private Order requestedOrder;
-	private SceneLoaderHelper GuiHelper = new SceneLoaderHelper();
 
 	@FXML
 	public ComboBox<ParkNameEnum> parksList;
@@ -141,6 +141,10 @@ public class HandleOrderScreenController implements Initializable {
 		case Wait_Notify:
 			confirmButton.setDisable(true);
 			break;
+		case Confirmed:
+			confirmButton.setDisable(true);
+			updateButton.setDisable(true);
+			break;
 		}
 	}
 
@@ -187,6 +191,17 @@ public class HandleOrderScreenController implements Initializable {
 		visitType.setValue(requestedOrder.getOrderType());
 		selectedVisitType = requestedOrder.getOrderType();
 		statusField.setText(requestedOrder.getStatus().toString());
+		
+		// initialize date picker up to 1 months forward.
+		pickDate.setDayCellFactory(picker -> new DateCell() {
+			LocalDate maxDate = requestedOrder.getEnterDate().toLocalDate().plusMonths(1);
+			LocalDate minDate = requestedOrder.getEnterDate().toLocalDate();
+			@Override
+			public void updateItem(LocalDate date, boolean empty) {
+				super.updateItem(date, empty);
+				setDisable(empty || date.compareTo(minDate) <= 0 || date.compareTo(maxDate) > 0);
+			}
+		});
 	}
 
 	private void hideErrorMessage() {
@@ -288,8 +303,7 @@ public class HandleOrderScreenController implements Initializable {
 			break;
 		}
 		
-		SceneLoaderHelper guiHelper = new SceneLoaderHelper();
-		AnchorPane view = guiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/CustomerHomepageScreen.fxml", ApplicationViewType.Customer_Homepage_Screen, null);
+		AnchorPane view = SceneLoaderHelper.getInstance().loadRightScreenToBorderPaneWithController(screen,"/gui/view/CustomerHomepageScreen.fxml", ApplicationViewType.Customer_Homepage_Screen, null);
 		screen.setCenter(view);
 		
 	}
@@ -318,8 +332,7 @@ public class HandleOrderScreenController implements Initializable {
 			alert.showAndWait();
 			break;
 		}
-		SceneLoaderHelper guiHelper = new SceneLoaderHelper();
-		AnchorPane view = guiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/CustomerHomepageScreen.fxml", ApplicationViewType.Customer_Homepage_Screen, null);
+		AnchorPane view = SceneLoaderHelper.getInstance().loadRightScreenToBorderPaneWithController(screen,"/gui/view/CustomerHomepageScreen.fxml", ApplicationViewType.Customer_Homepage_Screen, null);
 		screen.setCenter(view);
 		
 	}
@@ -328,6 +341,16 @@ public class HandleOrderScreenController implements Initializable {
 	public void onUpdateClicked() {
 		AlertPopUp alert;
 		if(!validateGuiFields()) {
+			return;
+		}
+		
+		LocalDateTime relevantDayToNewOrder = requestedOrder.getEnterDate().plusDays(2);
+		LocalDate date = pickDate.getValue();
+		String fullDateTime = date.toString() + "T" + selectedTime;
+		LocalDateTime newOrderDate = LocalDateTime.parse(fullDateTime);
+		if(newOrderDate.isBefore(relevantDayToNewOrder)) {
+			alert = new AlertPopUp(AlertType.WARNING, "Update New Order", "Date and Time Incorrect", "In case you want to update an order, it must be atleast 2 days forward");
+			alert.showAndWait();
 			return;
 		}
 		
@@ -349,7 +372,7 @@ public class HandleOrderScreenController implements Initializable {
 			request = new ClientRequestDataContainer(ClientRequest.Delete_Old_Order,
 					requestedOrder);
 			ClientApplication.client.accept(request);
-			view = GuiHelper.loadRightScreenToBorderPaneWithController(screen,
+			view = SceneLoaderHelper.getInstance().loadRightScreenToBorderPaneWithController(screen,
 					"/gui/view/OrderSummaryScreen.fxml", ApplicationViewType.Order_Summary_Screen,
 					new EntitiesContainer(response.getMessage()));
 			screen.setCenter(view);

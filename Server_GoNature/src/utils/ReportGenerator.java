@@ -473,13 +473,14 @@ public class ReportGenerator {
 			// Add the second grouped bar chart
 			dataset = new DefaultCategoryDataset();
 			for (int j=0;j<8;j++) {
-//				ArrayList<Integer> data = report.getEnterTimeData(j);
-				String column = String.format("%s:00-%s:59",8+j,8+j+1);
+				String column;
 			    Integer totalSolo = soloOccasional.get(j)+soloPreorder.get(j);
 			    Integer totalFamily = familyOccasional.get(j)+familyPreorder.get(j);
 			    Integer totalGroup = groupOccasional.get(j)+groupPreorder.get(j);
-				if(j==7)
-					column="15:00-16:00";
+				if(j!=7)
+					column = String.format("%s:00-%s:59",8+j,8+j);
+				else
+					column = "15:00-16:00";
 				dataset.addValue(totalSolo, "Solo",column);
 				dataset.addValue(totalFamily,"Family",column);
 				dataset.addValue(totalGroup,"Group",column);

@@ -4,12 +4,17 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import com.mysql.cj.admin.ServerController;
+
+import gui.controller.ServerScreenController;
+import javafx.application.Platform;
+
 public class MySqlConnection {
 
 	private Connection connection = null;
 	private static MySqlConnection instance = null;
 	private static DBConnectionDetails dbDetails;
-
+	private static ServerScreenController controller;
 	/*
 	 * * This method is trying to connect to mySQL database, using jdbc driver. This
 	 * method is being called from server, and return it's connection.
@@ -32,9 +37,9 @@ public class MySqlConnection {
 
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
-			System.out.println("Driver definition succeed");
+			Platform.runLater((()->controller.printToLogConsole("Driver definition succeed")));
 		} catch (Exception ex) {
-			System.out.println("Driver definition failed");
+			Platform.runLater((()->controller.printToLogConsole("Driver definition failed")));
 		}
 
 		try {
@@ -43,9 +48,11 @@ public class MySqlConnection {
 			connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 
 		} catch (SQLException ex) {
-			System.out.println("SQLException: " + ex.getMessage());
-			System.out.println("SQLState: " + ex.getSQLState());
-			System.out.println("VendorError: " + ex.getErrorCode());
+			Platform.runLater(()->{
+				controller.printToLogConsole("SQLException: " + ex.getMessage());
+				controller.printToLogConsole("SQLState: " + ex.getSQLState());
+				controller.printToLogConsole("VendorError: " + ex.getErrorCode());
+			});
 			connection = null;
 			throw ex;
 		}
@@ -65,6 +72,18 @@ public class MySqlConnection {
 	public static MySqlConnection getInstance() {
 		if (instance == null) {
 			try {
+				instance = new MySqlConnection();
+			} catch (SQLException e) {
+				instance = null;
+			}
+		}
+		return instance;
+	}
+	
+	public static MySqlConnection getInstance(ServerScreenController serverController) {
+		if (instance == null) {
+			try {
+				controller=serverController;
 				instance = new MySqlConnection();
 			} catch (SQLException e) {
 				instance = null;

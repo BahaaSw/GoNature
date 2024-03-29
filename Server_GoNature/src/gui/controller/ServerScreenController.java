@@ -1,6 +1,8 @@
 package gui.controller;
 
 import java.net.URL;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
 import javafx.collections.FXCollections;
@@ -69,10 +71,7 @@ public class ServerScreenController implements Initializable {
 	private int logLine=1;
 	
 	// Empty Constructor
-	public ServerScreenController() 
-	{
-		
-	}
+	public ServerScreenController() {}
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -90,7 +89,10 @@ public class ServerScreenController implements Initializable {
 	 */
 	public void printToLogConsole(String msg) {
 		System.out.println(msg);
-		serverLog.appendText(String.format("%d. %s\n", logLine++,msg));
+        LocalTime currentTime = LocalTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        String formattedTime = currentTime.format(formatter);
+		serverLog.appendText(String.format("%d. [%s] - %s\n", logLine++,formattedTime,msg));
 	}
 	
 	/**
