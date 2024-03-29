@@ -42,6 +42,7 @@ import utils.enums.ServerResponse;
 /**
  * The GoNatureServer class is the main system's server class. This class
  * extends AbstractServer ocsf class, and manage all the Client-Server design.
+ * @author Tamer Amer, Gal Bitton, Rabea Lahham, Bahaldeen Swied, Ron Sisso, Nadav Reubens.
  */
 public class GoNatureServer extends AbstractServer {
 
@@ -98,7 +99,18 @@ public class GoNatureServer extends AbstractServer {
 			}
 		}
 	}
-
+	
+	/**
+	 * Handles the logout process for a user from the application. This method identifies the user type, constructs
+	 * an appropriate user ID based on the instance type (Visitor or User), and logs the logout request and completion
+	 * in the server's log console. It removes the client's connection from the server's list of active connections
+	 * and sends a logout success response to the client. In case of an IOException during the communication process,
+	 * it logs the error details.
+	 *
+	 * @param user The user object attempting to logout, which can be an instance of Visitor or User.
+	 * @param client The connection to the client that is requesting the logout.
+	 * @param clientIp The IP address of the client requesting the logout, used for logging purposes.
+	 */
 	private void handleUserLogoutFromApplication(Object user, ConnectionToClient client, String clientIp) {
 		try {
 			if (!(user == null)) {
@@ -250,7 +262,13 @@ public class GoNatureServer extends AbstractServer {
 			server = null;
 		}
 	}
-
+	
+	/**
+	 * Clears all imported data from the 'users' table in the database. This method establishes a connection to the
+	 * database, executes a TRUNCATE TABLE SQL statement to remove all data from the 'users' table, and logs the
+	 * operation's success. If a SQLException occurs during the operation, it logs the exception's message using
+	 * the server controller's logging mechanism on the JavaFX Application thread.
+	 */
 	private static void clearImportedData() {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -262,6 +280,15 @@ public class GoNatureServer extends AbstractServer {
 		}
 	}
 	
+	/**
+	 * Imports user data from a CSV file into the 'users' table in the database. This method constructs a SQL query
+	 * for loading data from a predefined CSV file path into the database, including setting specific fields, handling
+	 * data enclosed in quotes, and processing line terminators. If the 'ParkId' field is empty, it is set to NULL.
+	 * Upon successful execution, it logs a success message and returns {@code true}. If any exception occurs during
+	 * the process, it prints the stack trace and returns {@code false}.
+	 *
+	 * @return {@code true} if the data import is successful, {@code false} otherwise.
+	 */
 	public static boolean importUsersData() {
 		try {
 			String csvFilePath = "@../../import/usersData.csv";
@@ -282,7 +309,17 @@ public class GoNatureServer extends AbstractServer {
 			return false;
 		}
 	}
-
+	
+	/**
+	 * Gracefully shuts down all active background threads managed by the application. This method attempts to interrupt
+	 * three specific threads - {@code sendNotifications24HoursBefore}, {@code cancelOrdersNotConfirmedWithin2Hours}, and
+	 * {@code cancelTimePassedWaitingListOrders} - if they are currently alive. It then waits for each of these threads to
+	 * terminate by calling the {@code join} method on them. If the current thread is interrupted while waiting for these
+	 * threads to finish, it restores the interrupted status by calling {@code Thread.currentThread().interrupt()}.
+	 * Note: The commented-out thread variables {@code sendNotifications24HoursBefore} and
+	 * {@code cancelOrdersNotConfirmedWithin2Hours} should be declared and initialized elsewhere in the application for
+	 * this method to function as intended.
+	 */
 	private static void closeAllThreads() {
 //		private static Thread sendNotifications24HoursBefore = null;
 //		private static Thread cancelOrdersNotConfirmedWithin2Hours = null;
@@ -354,7 +391,20 @@ public class GoNatureServer extends AbstractServer {
 			server = null;
 		}
 	}
-
+	
+	/**
+	 * Initializes and starts the background threads responsible for sending notifications, cancelling unconfirmed orders,
+	 * and managing waiting list orders based on specific time criteria. This method first ensures any previously running
+	 * instances of these threads are interrupted and terminated before starting new ones. Each thread performs its
+	 * designated task in a loop until interrupted:
+	 * 
+	 * 1. {@code sendNotifications24HoursBefore} sends notifications for orders 24 hours before their scheduled time.
+	 * 2. {@code cancelOrdersNotConfirmedWithin2Hours} cancels orders not confirmed within 2 hours of notification.
+	 * 3. {@code cancelTimePassedWaitingListOrders} manages waiting list orders, marking irrelevant ones based on the
+	 * current time.
+	 * 
+	 * If any thread is interrupted during execution, it logs a message to the server console and breaks its execution loop.
+	 */
 	private void initializeThreadsAndStartRun() {
 		if (sendNotifications24HoursBefore != null && sendNotifications24HoursBefore.isAlive()) {
 			sendNotifications24HoursBefore.interrupt();

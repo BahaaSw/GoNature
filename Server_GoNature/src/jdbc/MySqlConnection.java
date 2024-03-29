@@ -7,6 +7,12 @@ import java.sql.SQLException;
 import gui.controller.ServerScreenController;
 import javafx.application.Platform;
 
+/**
+ * This class manages the connection to a MySQL database using JDBC.
+ * It provides methods to establish a connection, retrieve the connection object,
+ * and close the connection.
+ * Tamer Amer, Gal Bitton, Rabea Lahham, Bahaldeen Swied, Ron Sisso, Nadav Reubens.
+ */
 public class MySqlConnection {
 
 	private Connection connection = null;
@@ -78,6 +84,16 @@ public class MySqlConnection {
 		return instance;
 	}
 	
+    /**
+     * Returns an instance of MySqlConnection, allowing the setting of the ServerScreenController.
+     * 
+     * @param serverController The ServerScreenController instance to set
+     * @return MySqlConnection object
+     * @throws SQLException           If an SQL error occurs during connection
+     * @throws ClassNotFoundException If the JDBC driver class cannot be found
+     * @throws InstantiationException If an instance of the JDBC driver cannot be created
+     * @throws IllegalAccessException If access to the JDBC driver is denied
+     */
 	public static MySqlConnection getInstance(ServerScreenController serverController) {
 		if (instance == null) {
 			try {
@@ -98,7 +114,10 @@ public class MySqlConnection {
 	public Connection getConnection() {
 		return this.connection;
 	}
-
+	
+    /**
+     * Closes the connection to the database.
+     */
 	public void closeConnection() {
 		try {
 			this.connection.close();
@@ -108,7 +127,12 @@ public class MySqlConnection {
 			e.printStackTrace();
 		}
 	}
-
+	
+    /**
+     * Sets the database connection details.
+     * 
+     * @param details The database connection details to set
+     */
 	public static void setDBConnectionDetails(DBConnectionDetails details) {
 		dbDetails = details;
 	}

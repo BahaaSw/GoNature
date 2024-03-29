@@ -14,8 +14,36 @@ import logic.Request;
 import utils.enums.ParkNameEnum;
 import utils.enums.ServerResponse;
 
-public class ParkQueries {
+/**
+ * Handles database operations related to parks within the system.
+ * This class provides methods for retrieving and updating park information,
+ * including fetching park details by ID, updating park parameters based on approved requests,
+ * and managing the fullness status of parks on specific dates. It operates by executing SQL queries
+ * against a MySQL database, utilizing the MySqlConnection class to establish connections.
+ * 
+ * Methods in this class include operations such as:
+ * - Retrieving park details by park ID or park name.
+ * - Updating park parameters like maximum capacity, estimated stay time, and the number of reserved spots
+ *   based on requests.
+ * - Inserting and updating records in the parkfulldates table to track when parks are fully booked.
+ * 
+ * This class is essential for maintaining accurate and up-to-date information about parks,
+ * which is critical for both administrative and operational functionalities of the system.
+ * Tamer Amer, Gal Bitton, Rabea Lahham, Bahaldeen Swied, Ron Sisso, Nadav Reubens.
+ */
 
+public class ParkQueries {
+	
+	/**
+	 * Retrieves the details of a park based on its ID and updates the provided Park object with these details.
+	 * This method searches for a park in the database using its unique ID. If found, it updates the Park object
+	 * with information such as park name, maximum capacity, estimated stay time, estimated reserved spots,
+	 * current number of visitors in the park, and the price.
+	 *
+	 * @param park The Park object to be updated with the retrieved details. This object must have its parkId set.
+	 * @return true if the park details were successfully retrieved and the Park object was updated; false if the park
+	 *         could not be found or if an SQL exception occurred.
+	 */
 	public boolean getParkById(Park park) {
 		
 		try {
@@ -46,6 +74,14 @@ public class ParkQueries {
 	}
 	
 	//NOTICE : NOT USED THAT QUERY!!
+	/**
+	 * Retrieves park details by park name from the database.
+	 * 
+	 * @param park The Park object containing the name of the park for which details are being fetched.
+	 * @return A ServerResponse indicating the outcome of the operation. Possible responses include
+	 * Fetched_Park_Details_Successfully if the park details are retrieved successfully,
+	 * Fetched_Park_Details_Failed if the park does not exist, and Query_Failed if an SQL exception occurs.
+	 */
 	public ServerResponse getParkByName(Park park) {
 		
 		try {
@@ -76,6 +112,14 @@ public class ParkQueries {
 	}
 	
 	//NOTICE : NOT USED THAT QUERY!!
+	/**
+	 * Retrieves a list of park names from the database.
+	 * 
+	 * @param parkList An ArrayList of ParkNameEnum to be populated with the names of the parks.
+	 * @return A ServerResponse indicating the outcome of the operation. Possible responses include
+	 * Park_List_Names_Is_Created if the park names are successfully retrieved and populated into parkList,
+	 * Park_Table_Is_Empty if no parks exist in the database, and Query_Failed if an SQL exception occurs.
+	 */
 	public ServerResponse getParksNames(ArrayList<ParkNameEnum> parkList) {
 		
 		try {
@@ -104,6 +148,14 @@ public class ParkQueries {
 	
 	
 	//NOTICE : NOT USED THAT QUERY!!
+	/**
+	 * Fetches the current price for a given park.
+	 * 
+	 * @param park The Park object containing the name of the park for which the price is being queried.
+	 * @return A ServerResponse indicating the outcome of the operation. Possible responses include
+	 * Park_Price_Returned_Successfully if the park price is successfully retrieved,
+	 * Fetched_Park_Details_Failed if the park does not exist, and Query_Failed if an SQL exception occurs.
+	 */
 	public ServerResponse returnParkPrice(Park park)
 	{
 		try {
@@ -133,6 +185,18 @@ public class ParkQueries {
 		}
 	}
 	
+	/**
+	 * Updates a specific field of a park in the database based on a request. The field to be updated is determined
+	 * by the type of the request, and the new value is applied as specified in the request. This method is typically
+	 * used to process approved requests that modify park parameters such as maximum capacity, estimated stay time,
+	 * or the number of reserved spots.
+	 *
+	 * @param request The Request object containing details about the update, including the park ID, the new value,
+	 *                and the type of request which determines the field to be updated.
+	 * @return ServerResponse.Updated_Requests_Successfully if the update was successful, 
+	 *         ServerResponse.Fetched_Park_Details_Failed if the update failed due to the park not being found,
+	 *         or ServerResponse.Query_Failed if an SQL exception occurred during the operation.
+	 */
 	public ServerResponse InsertNewValueInRequestedPark(Request request)
 	{
 		try {
@@ -159,6 +223,11 @@ public class ParkQueries {
 	}
 	
 	//NOTICE : NOT USED THAT QUERY!!
+	/**
+	 * Retrieves the current capacity and the number of visitors currently in the park.
+	 * @param parkId The ID of the park.
+	 * @return An array containing two integers: the first is the maximum capacity of the park, and the second is the current number of visitors in the park. Returns null if an error occurs.
+	 */
 	public int[] returnCapacityCurrentInParkForPark(int parkId) {
 		int[] values = new int[2];
 
@@ -183,7 +252,13 @@ public class ParkQueries {
 
 	}
 	
-	
+	/**
+	 * Updates the park full dates table based on the operation specified. It can insert a new full date or update an existing one.
+	 * @param operation The type of operation to perform (Insert or Update).
+	 * @param date The date to be updated or inserted as full.
+	 * @param parkName The name of the park.
+	 * @return true if the operation is successful, false if an error occurs.
+	 */
 	public boolean updateParkFullDateTable(QueryType operation, LocalDate date, String parkName) {
 
 		try {

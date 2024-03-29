@@ -15,6 +15,7 @@ package jdbc.query;
 /**
  * The DB Controller class is the way our application "talk" with the database.
  * This class use "mysql-connector-java-8.0.13".
+ * @author Tamer Amer, Gal Bitton, Rabea Lahham, Bahaldeen Swied, Ron Sisso, Nadav Reubens.
  */
 public class QueryControl {
 	

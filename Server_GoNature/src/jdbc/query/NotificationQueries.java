@@ -14,9 +14,23 @@ import logic.Order;
 import utils.enums.ParkNameEnum;
 import utils.enums.UserTypeEnum;
 
+/**
+ * This class handles database operations related to notifications for orders.
+ * It includes methods for checking and updating order statuses based on notification
+ * logic, such as automatic cancellation or marking orders as notified or irrelevant.
+ * @author Tamer Amer, Gal Bitton, Rabea Lahham, Bahaldeen Swied, Ron Sisso, Nadav Reubens.
+ */
 
 public class NotificationQueries {
 	
+	/**
+	 * Checks all orders with a 'Notified' status and updates them to 'Cancelled' if the current
+	 * date and time surpass the order's enter date. This method is intended to automate
+	 * the cancellation process for unconfirmed notified orders.
+	 *
+	 * @param localDateTime The current local date and time to compare order enter dates against.
+	 * @return A list of orders that were automatically cancelled due to being past the enter date.
+	 */
 	public ArrayList<Order> CheckAllOrdersAndChangeToCancelledIfNeeded(LocalDateTime localDateTime)
 	{
 		ArrayList<Order> cancelledOrders = new ArrayList<Order>();
@@ -61,6 +75,13 @@ public class NotificationQueries {
 		}
 	}
 	
+	/**
+	 * Automatically updates the status of a specified order to 'Cancelled'.
+	 * This method is typically used to cancel orders that have not been confirmed by the user
+	 * within a specific timeframe after being notified.
+	 *
+	 * @param order The order to be cancelled.
+	 */
 	public void automaticallyCancelAllNotifiedOrders(Order order) {
 		
 		try {
@@ -82,6 +103,13 @@ public class NotificationQueries {
 		}
 	}
 	
+	/**
+	 * Marks a specified order as 'Irrelevant'. This status change is typically used
+	 * for orders that no longer require action or attention, for instance, when an order
+	 * is outdated or has been superseded by another order.
+	 *
+	 * @param order The order to be marked as irrelevant.
+	 */
 	public void automaticallyMarkOrdersAsIrrelevant(Order order) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -102,6 +130,14 @@ public class NotificationQueries {
 		}
 	}
 	
+	/**
+	 * Checks orders with a 'Wait Notify' status to see if their enter date matches the current
+	 * date and time, and updates their status to 'Notified' accordingly. This method facilitates
+	 * the process of notifying users about their upcoming orders.
+	 *
+	 * @param localDateTime The current local date and time used to check against order enter dates.
+	 * @return A list of orders that have been updated to 'Notified' status.
+	 */
 	public ArrayList<Order> CheckAllOrdersAndChangeToNotifedfNeeded(LocalDateTime localDateTime)
 	{
 		Connection con = MySqlConnection.getInstance().getConnection();
@@ -142,6 +178,13 @@ public class NotificationQueries {
 		
 	}
 	
+	/**
+	 * Automatically cancels orders that have been in a 'Notified Waiting List' status
+	 * for a specific period (e.g., 2 hours) without confirmation from the user. This method
+	 * ensures that unconfirmed orders do not indefinitely occupy space in the waiting list.
+	 *
+	 * @return A list of orders that were automatically cancelled due to lack of confirmation.
+	 */
 	public ArrayList<Order> CheckAllWaitingListOrdersAndCancelAutomaticallyIfNotConfirmed()
 	{
 		ArrayList<Order> cancelledOrders = new ArrayList<Order>();
@@ -189,6 +232,13 @@ public class NotificationQueries {
 		
 	}
 	
+	/**
+	 * Updates the status of specified orders from 'Wait Notify' to 'Notified'. 
+	 * This is used to mark orders for which notifications should be sent out to the users,
+	 * indicating that they need to take action (e.g., confirm or cancel the order).
+	 *
+	 * @param orderToUpdate The order whose status is to be updated.
+	 */
 	public void UpdateAllWaitNotifyOrdersToNotify(Order orderToUpdate) {
 
 		try {
@@ -211,7 +261,14 @@ public class NotificationQueries {
 		
 }
 	
-	//TODO: USE THIS QUERY
+	/**
+	 * Checks all orders in the waiting list and marks them as irrelevant if their
+	 * enter date is earlier than the specified localDateTime. This cleanup operation
+	 * ensures that the waiting list does not contain orders that are no longer valid.
+	 *
+	 * @param localDateTime The current local date and time used for comparison.
+	 * @return A list of orders that were marked as irrelevant.
+	 */
 	public ArrayList<Order> CheckWaitingListAndRemoveAllIrrelcantOrders(LocalDateTime localDateTime)
 	{   
 		ArrayList<Order> irrelevantOrders = new ArrayList<Order>();
@@ -255,6 +312,15 @@ public class NotificationQueries {
 		}
 	}
 	
+	
+	/**
+	 * Checks if a specific order with the given OrderId has been in a 'Notified' status
+	 * for 24 hours. This method can be used to identify orders that may require further action
+	 * such as cancellation or follow-up notification.
+	 *
+	 * @param OrderId The ID of the order to check.
+	 * @return true if the order has been notified for 24 hours; false otherwise.
+	 */
 	//NOTICE : NOT USED THAT QUERY!!
 	public boolean CheckNotifiedFromServer24Hours(int OrderId)
     {

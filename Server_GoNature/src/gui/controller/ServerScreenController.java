@@ -147,6 +147,9 @@ public class ServerScreenController implements Initializable {
 
 	}
 	
+    /**
+     * This method is called when the import data button is clicked in the GUI screen.
+     */
 	public void onImportDataClicked() {
 		boolean imported = GoNatureServer.importUsersData();
 		if(imported) {

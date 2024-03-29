@@ -15,11 +15,27 @@ import utils.enums.ServerResponse;
 import utils.enums.UserStatus;
 import utils.enums.UserTypeEnum;
 
+/**
+ * This class is responsible for executing queries related to employees and guides
+ * in the system. It handles operations such as searching for approved employees,
+ * checking visitor order statuses, updating guide statuses, and retrieving lists
+ * of guides with specific statuses.
+ * @author Tamer Amer, Gal Bitton, Rabea Lahham, Bahaldeen Swied, Ron Sisso, Nadav Reubens.
+ */
+
 public class EmployeeQueries {
 
 	public EmployeeQueries() {
 	}
-
+	
+	/**
+	 * Searches for an employee by username and verifies their credentials. It updates
+	 * the provided Employee object with additional details if the employee exists and
+	 * is approved.
+	 *
+	 * @param employee An Employee object containing the username and password to be verified.
+	 * @return A ServerResponse indicating the outcome of the search and verification process.
+	 */
 	public ServerResponse searchForApprovedEmployee(Employee employee) {
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
@@ -54,6 +70,13 @@ public class EmployeeQueries {
 		}
 	}
 	
+	/**
+	 * Checks if a visitor's order is paid and confirmed.
+	 *
+	 * @param orderId The ID of the order to check.
+	 * @return A ServerResponse indicating whether the order is paid and confirmed, not paid,
+	 *         not confirmed, or if the order was not found.
+	 */
 	//NOTICE : NOT USED THAT QUERY!!
 	public ServerResponse checkIfVisitorPaidAndConfirmed(int orderId) {
 		try {
@@ -84,7 +107,13 @@ public class EmployeeQueries {
 		}
 	}
 	
-
+	/**
+	 * Updates the status of a guide from pending to approved.
+	 *
+	 * @param guide A Guide object containing the ID of the guide to be approved.
+	 * @return A ServerResponse indicating whether the guide's status was successfully updated
+	 *         to approved or if the operation failed.
+	 */
 	public ServerResponse UpdateGuideStatusToApprove(Guide guide) //Update guide permission from Pending to Approve (Tamir/Siso)
 	{
 		try {
@@ -105,7 +134,14 @@ public class EmployeeQueries {
 			return ServerResponse.Query_Failed;
 		}
 	}
-
+	
+	/**
+	 * Retrieves all guides with a status of 'Pending' and adds them to the provided list.
+	 *
+	 * @param guideList An ArrayList of Guide objects to be populated with the retrieved guides.
+	 * @return A ServerResponse indicating whether guides with a pending status were found
+	 *         and added to the list.
+	 */
 	public ServerResponse ShowAllGuidesWithPendingStatus(ArrayList<Guide> guideList) //Method to pull all the requests with pending status. (Tamir/Siso)
 	{
 		try {
