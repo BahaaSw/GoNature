@@ -25,7 +25,7 @@ public class NotificationQueries {
 		
 		try {
 			Connection con = MySqlConnection.getInstance().getConnection();
-			PreparedStatement stmt = con.prepareStatement("SELECT OrderId,ParkId,OwnerId,OwnerType,Email,Phone,FirstName,LastName,Amount FROM preorders WHERE OrderStatus = 'Notified' AND EnterDate <= ?");
+			PreparedStatement stmt = con.prepareStatement("SELECT OrderId,ParkId,OwnerId,OwnerType,Email,Phone,FirstName,LastName,Amount,EnterDate FROM preorders WHERE OrderStatus = 'Notified' AND EnterDate <= ?");
 			
 			stmt.setString(1, dateTimeString);
 			ResultSet rs= stmt.executeQuery();
@@ -48,6 +48,7 @@ public class NotificationQueries {
 				orderToAdd.setFirstName(rs.getString(7));
 				orderToAdd.setLastName(rs.getString(8));
 				orderToAdd.setNumberOfVisitors(rs.getInt(9));
+				orderToAdd.setEnterDate(rs.getTimestamp(10).toLocalDateTime());
 				cancelledOrders.add(orderToAdd);
 			}
 			
@@ -104,8 +105,6 @@ public class NotificationQueries {
 	public ArrayList<Order> CheckAllOrdersAndChangeToNotifedfNeeded(LocalDateTime localDateTime)
 	{
 		Connection con = MySqlConnection.getInstance().getConnection();
-//		LocalDateTime edge1 = localDateTime.plusHours(24).minusMinutes(1);
-//		LocalDateTime edge2 = localDateTime.plusHours(24).plusMinutes(1);
 
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:00");
 		String dateTimeString = localDateTime.format(formatter);
@@ -135,6 +134,53 @@ public class NotificationQueries {
 			
 			return notifiedOrders;
 			
+		} catch (SQLException ex) 
+		{
+			ex.printStackTrace();
+			return null;
+		}
+		
+	}
+	
+	public ArrayList<Order> CheckAllWaitingListOrdersAndCancelAutomaticallyIfNotConfirmed()
+	{
+		ArrayList<Order> cancelledOrders = new ArrayList<Order>();
+		
+		try {
+			Connection con = MySqlConnection.getInstance().getConnection();
+			PreparedStatement stmt = con.prepareStatement("SELECT p.OrderId, p.ParkId, p.OwnerId, p.OwnerType, p.Email, p.Phone, p.FirstName, p.LastName, p.Amount, p.EnterDate"
+					+ " FROM preorders AS p"
+					+ " JOIN waitinglist AS w ON p.OrderId = w.orderId"
+					+ " WHERE p.OrderStatus = 'Notified Waiting List'"
+					+ " AND w.notificationSentTime <= CURRENT_TIMESTAMP - INTERVAL '2' HOUR"
+					+ " AND w.notificationSentTime > CURRENT_TIMESTAMP - INTERVAL '2' HOUR - INTERVAL '1' MINUTE");
+			
+			ResultSet rs= stmt.executeQuery();
+
+			// if the query ran successfully, but returned as empty table.
+			if (!rs.next()) {
+				return null;
+			}
+			
+			rs.previous();
+			
+			while(rs.next()) {
+				Order orderToAdd = new Order();
+				orderToAdd.setOrderId(rs.getInt(1));
+				orderToAdd.setParkName(ParkNameEnum.fromParkId(rs.getInt(2)));
+				orderToAdd.setUserId(String.valueOf(rs.getInt(3)));
+				orderToAdd.setOwnerType(UserTypeEnum.fromString(rs.getString(4)));
+				orderToAdd.setEmail(rs.getString(5));
+				orderToAdd.setTelephoneNumber(rs.getString(6));
+				orderToAdd.setFirstName(rs.getString(7));
+				orderToAdd.setLastName(rs.getString(8));
+				orderToAdd.setNumberOfVisitors(rs.getInt(9));
+				orderToAdd.setEnterDate(rs.getTimestamp(10).toLocalDateTime());
+				cancelledOrders.add(orderToAdd);
+			}
+			
+			return cancelledOrders;
+	
 		} catch (SQLException ex) 
 		{
 			ex.printStackTrace();

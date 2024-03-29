@@ -69,7 +69,6 @@ public class RescheduleOrderScreenController implements Initializable, IThreadCo
 	@SuppressWarnings("unused")
 	private LocalDateTime selectedDate = null;
 	private Thread searchAvailableDates = null;
-	private SceneLoaderHelper GuiHelper = new SceneLoaderHelper();
 
 	public RescheduleOrderScreenController(BorderPane screen, Object order) {
 		this.screen = screen;
@@ -167,8 +166,7 @@ public class RescheduleOrderScreenController implements Initializable, IThreadCo
 
 		// Check which button was clicked and act accordingly
 		if (result.isPresent() && result.get() == ButtonType.YES) {
-			SceneLoaderHelper guiHelper = new SceneLoaderHelper();
-			AnchorPane view = guiHelper.loadRightScreenToBorderPaneWithController(screen,
+			AnchorPane view = SceneLoaderHelper.getInstance().loadRightScreenToBorderPaneWithController(screen,
 					"/gui/view/CustomerHomepageScreen.fxml", ApplicationViewType.Customer_Homepage_Screen,
 					new EntitiesContainer(order));
 			screen.setCenter(view);
@@ -185,7 +183,7 @@ public class RescheduleOrderScreenController implements Initializable, IThreadCo
 				return;
 			order.setEnterDate(selectedNewDate);
 			cleanUp();
-			AnchorPane view = GuiHelper.loadRightScreenToBorderPaneWithController(screen,
+			AnchorPane view = SceneLoaderHelper.getInstance().loadRightScreenToBorderPaneWithController(screen,
 					"/gui/view/OrderSummaryScreen.fxml", ApplicationViewType.Order_Summary_Screen,
 					new EntitiesContainer(order));
 			screen.setCenter(view);

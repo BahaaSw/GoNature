@@ -75,7 +75,6 @@ public class HandleOccasionalVisitorScreenController implements Initializable {
 			OrderTypeEnum.Family_Occasional,
 			OrderTypeEnum.Group_Occasional
 			);
-	private SceneLoaderHelper GuiHelper= new SceneLoaderHelper();
 	
 	public HandleOccasionalVisitorScreenController(BorderPane screen,Object employee) {
 		this.screen=screen;
@@ -130,7 +129,7 @@ public class HandleOccasionalVisitorScreenController implements Initializable {
 			response = ClientCommunication.responseFromServer;
 		}
 		
-		AnchorPane dashboard = GuiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/ParkEntranceScreen.fxml",
+		AnchorPane dashboard = SceneLoaderHelper.getInstance().loadRightScreenToBorderPaneWithController(screen,"/gui/view/ParkEntranceScreen.fxml",
 				ApplicationViewType.Park_Entrance_Screen,new EntitiesContainer(employee));
 		screen.setCenter(dashboard);
 	}
@@ -167,6 +166,11 @@ public class HandleOccasionalVisitorScreenController implements Initializable {
 		
 		if(selectedVisitType==OrderTypeEnum.Group_Occasional && Integer.parseInt(numberOfVisitorsField.getText())>15) {
 			showErrorMessage("Group order is limited up to 15 visitors");
+			return false;
+		}
+		
+		if(Integer.parseInt(numberOfVisitorsField.getText())>1 && selectedVisitType==OrderTypeEnum.Solo_Occasional) {
+			showErrorMessage("Solo Occasional should be an order for only 1 person");
 			return false;
 		}
 		

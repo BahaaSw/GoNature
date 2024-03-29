@@ -25,7 +25,7 @@ public class NotificationMessageTemplate {
 		return sb.toString();
 	}
 	
-	public static String orderSummaryMessage(String park,String date,
+	public static String orderSummaryMessage(String park,OrderTypeEnum orderType,String date,
 			String type, int amountOfVisitors,double priceAfterDiscount, double priceBeforeDiscount) {
 		StringBuilder sb= new StringBuilder();
 		sb.append("Thank you for your order!\n");
@@ -37,8 +37,13 @@ public class NotificationMessageTemplate {
 		sb.append(String.format("Date And Time: %s.\n", date));
 		sb.append(String.format("Type: %s.\n", type));
 		sb.append(String.format("Visitors: %d.\n", amountOfVisitors));
-		sb.append(String.format("Total Price (PrePayment): %.2f\n",priceAfterDiscount));
-		sb.append(String.format("Total Price (Pay Later): %.2f\n\n", priceBeforeDiscount));
+		if(orderType==OrderTypeEnum.Group_PreOrder) {
+			sb.append(String.format("Total Price (Pre Payment): %.2f\n",priceAfterDiscount));
+			sb.append(String.format("Total Price (Pay at Entrance): %.2f\n\n", priceBeforeDiscount));
+		}
+		else {
+			sb.append(String.format("Total Price (After Discount): %.2f\n",priceAfterDiscount));
+		}
 		sb.append("We will see you at the park,\n GoNature Group 9 !");
 
 		return sb.toString();
@@ -61,7 +66,7 @@ public class NotificationMessageTemplate {
 		return sb.toString();
 	}
 	
-	public static String prePaymentReceiptMessage(ParkNameEnum parkName,String orderDate, int amountOfVisitors,
+	public static String prePaymentReceiptMessage(ParkNameEnum parkName,OrderTypeEnum orderType, String orderDate, int amountOfVisitors,
 			String firstName,String lastName,double prepaidPrice,double entrancePrice,long estimatedTimeVisit) {
 		StringBuilder sb= new StringBuilder();
 		sb.append(String.format("Dear, %s %s\n\n",firstName,lastName));
@@ -71,8 +76,13 @@ public class NotificationMessageTemplate {
 		sb.append("Order Summary:\n");
 		sb.append(String.format("Order Date : %s\n",orderDate));
 		sb.append(String.format("Visitors: %d.\n", amountOfVisitors));
-		sb.append(String.format("Total Price (Pre Payment): %.2f\n",prepaidPrice));
-		sb.append(String.format("Total Price (Pay at Entrance): %.2f\n\n", entrancePrice));
+		if(orderType==OrderTypeEnum.Group_PreOrder) {
+			sb.append(String.format("Total Price (Pre Payment): %.2f\n",prepaidPrice));
+			sb.append(String.format("Total Price (Pay at Entrance): %.2f\n\n", entrancePrice));
+		}
+		else {
+			sb.append(String.format("Total Price (After Discount): %.2f\n",prepaidPrice));
+		}
 		sb.append(String.format("NOTE: Visit time duration is max %d hours long.\n\n",estimatedTimeVisit));
 		sb.append("Best Regards,\n");
 		sb.append("GoNature Group 9 !");

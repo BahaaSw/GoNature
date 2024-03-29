@@ -56,7 +56,7 @@ public class OrderSummaryScreenController implements Initializable {
         Duration duration = Duration.between(this.order.getEnterDate(), this.order.getExitDate());
         estimatedVisitTime = duration.toHours();
         
-		orderSummaryMessage=NotificationMessageTemplate.orderSummaryMessage(this.order.getParkName().name(), this.order.getEnterDate().toString(),
+		orderSummaryMessage=NotificationMessageTemplate.orderSummaryMessage(this.order.getParkName().name(),this.order.getOrderType(),this.order.getEnterDate().toString(),
 				this.order.getOrderType().name(), this.order.getNumberOfVisitors(), priceAfterDiscount, priceBeforeDiscount);
 	}
 	
@@ -69,8 +69,8 @@ public class OrderSummaryScreenController implements Initializable {
 			priceAfterDiscount = priceBeforeDiscount * EntranceDiscount.SOLO_FAMILY_PREORDER_DISCOUNT;
 			break;
 		case Group_PreOrder:
-			priceBeforeDiscount = order.getPrice()*order.getNumberOfVisitors();
-			priceAfterDiscount = priceBeforeDiscount * EntranceDiscount.GROUP_PREORDER_DISCOUNT*EntranceDiscount.ADDITIONAL_GROUP_DISCOUNT;
+			priceBeforeDiscount = order.getPrice()*order.getNumberOfVisitors()* EntranceDiscount.GROUP_PREORDER_DISCOUNT;
+			priceAfterDiscount = priceBeforeDiscount *EntranceDiscount.ADDITIONAL_GROUP_DISCOUNT;
 			break;
 		}
 		
@@ -88,8 +88,7 @@ public class OrderSummaryScreenController implements Initializable {
 
         // Check which button was clicked and act accordingly
         if (result.isPresent() && result.get() == ButtonType.YES) {
-    		SceneLoaderHelper guiHelper = new SceneLoaderHelper();
-    		AnchorPane view = guiHelper.loadRightScreenToBorderPaneWithController(screen,"/gui/view/CustomerHomepageScreen.fxml", ApplicationViewType.Customer_Homepage_Screen, new EntitiesContainer(order));
+    		AnchorPane view = SceneLoaderHelper.getInstance().loadRightScreenToBorderPaneWithController(screen,"/gui/view/CustomerHomepageScreen.fxml", ApplicationViewType.Customer_Homepage_Screen, new EntitiesContainer(order));
     		screen.setCenter(view);
         }
 
@@ -101,7 +100,7 @@ public class OrderSummaryScreenController implements Initializable {
 		ButtonType payNow=new ButtonType("Pay Now");
 		ButtonType payLater=new ButtonType("Pay Later");
 		
-		String paymentReceipt = NotificationMessageTemplate.prePaymentReceiptMessage(order.getParkName(),order.getEnterDate().toString(),order.getNumberOfVisitors(),
+		String paymentReceipt = NotificationMessageTemplate.prePaymentReceiptMessage(order.getParkName(),order.getOrderType(),order.getEnterDate().toString(),order.getNumberOfVisitors(),
 				order.getFirstName(),order.getLastName(),priceAfterDiscount, priceBeforeDiscount,estimatedVisitTime);
 		
 		AlertPopUp alert = new AlertPopUp(AlertType.CONFIRMATION,"Payment Notification", "Pay Now", paymentReceipt,payNow,payLater,ButtonType.CLOSE);

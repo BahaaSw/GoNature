@@ -26,7 +26,7 @@
          </image>
       </ImageView>
       <ComboBox fx:id="reportSelector" layoutX="395.0" layoutY="207.0" prefWidth="150.0" promptText="Select Report" />
-      <HBox fx:id="errorSection" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="53.0" prefWidth="850.0" styleClass="app_error_hbox" AnchorPane.bottomAnchor="100.0">
+      <HBox fx:id="errorSection" layoutX="10.0" layoutY="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="53.0" prefWidth="910.0" styleClass="app_error_hbox" AnchorPane.bottomAnchor="100.0">
          <children>
             <ImageView fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
                <image>

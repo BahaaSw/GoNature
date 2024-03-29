@@ -69,7 +69,6 @@ public class MakeOrderScreenController implements Initializable {
 	private String selectedTime = "";
 	private OrderTypeEnum selectedVisitType = OrderTypeEnum.None;
 	private UserTypeEnum customerType = UserTypeEnum.ExternalUser;
-	private SceneLoaderHelper GuiHelper = new SceneLoaderHelper();
 	private ICustomer customerDetails;
 
 	@FXML
@@ -100,7 +99,7 @@ public class MakeOrderScreenController implements Initializable {
 		parksList.setOnAction(this::onParkChangeSelection);
 		pickTime.getItems().addAll(timeForVisits);
 		pickTime.setOnAction(this::onTimeChangeSelection);
-		// initialize date picker up to 3 months forward.
+		// initialize date picker up to 1 months forward.
 		pickDate.setDayCellFactory(picker -> new DateCell() {
 			LocalDate maxDate = LocalDate.now().plusMonths(1);
 
@@ -207,6 +206,11 @@ public class MakeOrderScreenController implements Initializable {
 			return false;
 		}
 		
+		if(Integer.parseInt(numberOfVisitorsField.getText())>1 && selectedVisitType==OrderTypeEnum.Solo_PreOrder) {
+			showErrorMessage("Solo Preorder should be an order for only 1 person");
+			return false;
+		}
+		
 		return true;
 	}
 	
@@ -216,7 +220,7 @@ public class MakeOrderScreenController implements Initializable {
 		if(!validateGuiFields()) {
 			return;
 		}
-		
+		hideErrorMessage();
 		Order order = createOrderFromFields();
 		
 		ClientRequestDataContainer requestMessage = new ClientRequestDataContainer(ClientRequest.Add_New_Order_If_Available,order);
@@ -226,14 +230,14 @@ public class MakeOrderScreenController implements Initializable {
 		
 		switch(response.getRensponse()) {
 		case Requested_Order_Date_Is_Available:
-			view = GuiHelper.loadRightScreenToBorderPaneWithController(screen,
+			view = SceneLoaderHelper.getInstance().loadRightScreenToBorderPaneWithController(screen,
 					"/gui/view/OrderSummaryScreen.fxml", ApplicationViewType.Order_Summary_Screen,
 					new EntitiesContainer(response.getMessage()));
 			screen.setCenter(view);
 			break;
 			
 		case Requested_Order_Date_Unavaliable:
-			view = GuiHelper.loadRightScreenToBorderPaneWithController(screen,
+			view = SceneLoaderHelper.getInstance().loadRightScreenToBorderPaneWithController(screen,
 					"/gui/view/RescheduleOrderScreen.fxml", ApplicationViewType.Reschedule_Order_Screen,
 					new EntitiesContainer(response.getMessage()));
 			screen.setCenter(view);

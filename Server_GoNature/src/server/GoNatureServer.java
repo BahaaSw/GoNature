@@ -47,7 +47,7 @@ public class GoNatureServer extends AbstractServer {
 
 	// Use Singleton DesignPattern -> only 1 server may be running in our system.
 	private static GoNatureServer server = null;
-	private ServerScreenController serverController;
+	private static ServerScreenController serverController;
 	private ClientRequestHandler clientRequestHandler;
 	private static Thread sendNotifications24HoursBefore = null;
 	private static Thread cancelOrdersNotConfirmedWithin2Hours = null;
@@ -82,6 +82,7 @@ public class GoNatureServer extends AbstractServer {
 		String clientIp = client.getInetAddress().getHostAddress();
 		ClientRequestDataContainer data = (ClientRequestDataContainer) msg;
 		ClientRequest request = data.getRequest();
+		Platform.runLater((()->serverController.printToLogConsole(String.format("Request %s, was received from Client - %s",request,clientIp ))));
 		ServerResponseBackToClient response = null;
 		if (request == ClientRequest.Logout) {
 			handleUserLogoutFromApplication(data.getData(), client, clientIp);
@@ -92,8 +93,7 @@ public class GoNatureServer extends AbstractServer {
 				client.sendToClient(response);
 				return;
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Platform.runLater(()->serverController.printToLogConsole(String.format("IOException occured in handleMessageFromClient: %s", e.getMessage())));
 			}
 		}
 	}
@@ -116,6 +116,7 @@ public class GoNatureServer extends AbstractServer {
 			}
 			client.sendToClient(new ServerResponseBackToClient(ServerResponse.User_Logout_Successfully, null));
 		} catch (IOException ex) {
+			Platform.runLater(()->serverController.printToLogConsole(String.format("IOException occured in handleUserLogoutFromApplication: %s", ex.getMessage())));
 			serverController.printToLogConsole("Error while sending update message to client");
 			return;
 		}
@@ -169,7 +170,7 @@ public class GoNatureServer extends AbstractServer {
 				}
 			}
 		} catch (SocketException ex) {
-			ex.printStackTrace();
+			Platform.runLater(()->serverController.printToLogConsole(String.format("SocketExcpetion occured in getServerIpAddress: %s",ex.getMessage())));
 		}
 		return "Not found network addresses. please use ipconfig in commandline";
 	}
@@ -242,7 +243,7 @@ public class GoNatureServer extends AbstractServer {
 			server.close();
 
 		} catch (IOException ex) {
-			System.out.println("Error while closing server");
+			Platform.runLater(()->serverController.printToLogConsole(String.format("IOException occured in stopServer: %s",ex.getMessage())));
 		} finally {
 			MySqlConnection.getInstance().closeConnection();
 			server = null;
@@ -256,7 +257,7 @@ public class GoNatureServer extends AbstractServer {
 			stmt.execute("TRUNCATE TABLE users");
 			System.out.println("Imported data cleared successfully");
 		}catch(SQLException ex) {
-			ex.printStackTrace();
+			Platform.runLater(()->serverController.printToLogConsole(String.format("SQLException occured in clearImportedData: %s",ex.getMessage())));
 		}
 	}
 	
@@ -316,7 +317,7 @@ public class GoNatureServer extends AbstractServer {
 	public static void startServer(DBConnectionDetails db, Integer port, ServerScreenController serverController) {
 		// try to connect the database
 		MySqlConnection.setDBConnectionDetails(db);
-		Connection conn = (Connection) MySqlConnection.getInstance().getConnection();
+		Connection conn = (Connection) MySqlConnection.getInstance(serverController).getConnection();
 		// if failed -> can't start the server.
 		if (conn == null) {
 			serverController.printToLogConsole("Can't start server! Connection to database failed!");
@@ -325,11 +326,11 @@ public class GoNatureServer extends AbstractServer {
 
 		clearImportedData();
 		
-		serverController.printToLogConsole("Connection to database succeed");
+		Platform.runLater(()->serverController.printToLogConsole("Connection to database succeed"));
 
 		// Singleton DesignPattern. Only 1 instance of server is available.
 		if (server != null) {
-			serverController.printToLogConsole("There is already a connected server");
+			Platform.runLater(()->serverController.printToLogConsole("There is already a connected server"));
 			return;
 		}
 
@@ -345,8 +346,10 @@ public class GoNatureServer extends AbstractServer {
 			cancelTimePassedWaitingListOrders.start();
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			serverController.printToLogConsole("Error - could not listen for clients!");
-//			stopServer();
+			Platform.runLater(()->{
+				serverController.printToLogConsole(String.format("Exception in start Server: %s",ex.getMessage()));
+				serverController.printToLogConsole("Error - could not listen for clients!");
+			});
 			server = null;
 		}
 	}
@@ -358,6 +361,7 @@ public class GoNatureServer extends AbstractServer {
 				sendNotifications24HoursBefore.join();
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
+				Platform.runLater(()->serverController.printToLogConsole("Thread for send notifications was interrupted"));
 			}
 		}
 
@@ -367,6 +371,7 @@ public class GoNatureServer extends AbstractServer {
 				cancelOrdersNotConfirmedWithin2Hours.join();
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
+				Platform.runLater(()->serverController.printToLogConsole("Thread for automatically cancelled unconfirmed orders was interrupted"));
 			}
 		}
 
@@ -376,6 +381,7 @@ public class GoNatureServer extends AbstractServer {
 				cancelTimePassedWaitingListOrders.join();
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
+				Platform.runLater(()->serverController.printToLogConsole("Thread for cancel time passed waiting list orders was interrupted"));
 			}
 		}
 
@@ -394,7 +400,7 @@ public class GoNatureServer extends AbstractServer {
 						for (Order order : ordersToNotify) {
 							QueryControl.notificationQueries.UpdateAllWaitNotifyOrdersToNotify(order);
 							String message = String.format(
-									"Order: %d, Notification was sent by mail to %s and sms to %s", order.getOrderId(),
+									"Order: %d, Notification was sent by email to %s and SMS to %s", order.getOrderId(),
 									order.getEmail(), order.getTelephoneNumber());
 							Platform.runLater(() -> serverController.printToLogConsole(message));
 						}
@@ -415,13 +421,34 @@ public class GoNatureServer extends AbstractServer {
 					LocalDateTime relevantTimeTomorrowMinus2Hours = currentTime.plusHours(22);
 					ArrayList<Order> ordersToNotify = QueryControl.notificationQueries
 							.CheckAllOrdersAndChangeToCancelledIfNeeded(relevantTimeTomorrowMinus2Hours);
-
+					
+					ArrayList<Order> ordersNotifiedFromWaitingList = QueryControl.notificationQueries
+							.CheckAllWaitingListOrdersAndCancelAutomaticallyIfNotConfirmed();
+					
 					if (ordersToNotify != null && !ordersToNotify.isEmpty()) {
 						for (Order order : ordersToNotify) {
 							QueryControl.notificationQueries.automaticallyCancelAllNotifiedOrders(order);
-							Platform.runLater(() -> serverController.printToLogConsole("Notification On Cancel Sent"));
+							clientRequestHandler.notifyOrdersFromWaitingList(order.getEnterDate(), order.getParkName().getParkId());
+							String message = String.format(
+									"Order: %d, Notification on Automatically cancel becuase of unconfirmed order within 2 hours was sent by email to %s and SMS to %s", order.getOrderId(),
+									order.getEmail(), order.getTelephoneNumber());
+							Platform.runLater(() -> serverController.printToLogConsole(message));
 						}
 					}
+					
+					if(ordersNotifiedFromWaitingList!=null && !ordersNotifiedFromWaitingList.isEmpty()) {
+						for(Order order: ordersNotifiedFromWaitingList) {
+							QueryControl.notificationQueries.automaticallyCancelAllNotifiedOrders(order);
+							clientRequestHandler.notifyOrdersFromWaitingList(order.getEnterDate(), order.getParkName().getParkId());
+							String message = String.format(
+									"Order: %d, Notification on Automatically cancel becuase of unconfirmed order within 2 hours, was sent by email to %s and SMS to %s", order.getOrderId(),
+									order.getEmail(), order.getTelephoneNumber());
+							Platform.runLater(() -> serverController.printToLogConsole(message));
+						}
+					}
+					
+					
+					
 
 				} catch (InterruptedException e) {
 					Thread.currentThread().interrupt();
@@ -443,6 +470,10 @@ public class GoNatureServer extends AbstractServer {
 								"All orders in waiting list for %s marked as irrelevant", currentTime.toString())));
 						for (Order order : ordersToNotify) {
 							QueryControl.notificationQueries.automaticallyMarkOrdersAsIrrelevant(order);
+							String message = String.format(
+									"Order: %d, Notification on order Irrelevant because date passed was sent by email to %s and SMS to %s", order.getOrderId(),
+									order.getEmail(), order.getTelephoneNumber());
+							Platform.runLater(() -> serverController.printToLogConsole(message));
 						}
 					}
 

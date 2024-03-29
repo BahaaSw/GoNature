@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import gui.controller.ServerScreenController;
+import javafx.application.Platform;
 import jdbc.DatabaseResponse;
 import jdbc.query.QueryControl;
 import ocsf.ConnectionToClient;
@@ -21,7 +22,7 @@ public class ClientRequestHandler {
 	public ServerResponseBackToClient handleRequest(ClientRequestDataContainer data,ConnectionToClient client) {
 		ClientRequest request = data.getRequest();
 		ServerResponseBackToClient response = null;
-		//TODO : write to log
+		
 		switch (request) {
 		case Login_As_Employee:
 			response = handleLoginAsEmployee(data, client);
@@ -104,6 +105,7 @@ public class ClientRequestHandler {
 		case Add_Occasional_Visit_As_In_Park:
 			response = handleAddOccasionalVisitAsInPark(data,client);
 			break;
+			
 		// Requests Section
 		case Make_New_Park_Estimated_Visit_Time_Request:
 			response = handleMakeNewParkEstimatedVisitTimeRequest(data, client);
@@ -125,6 +127,7 @@ public class ClientRequestHandler {
 		case Create_Visits_Report:
 			response = handleCreateVisitsReport(data, client);
 			break;
+			
 		case Import_Visits_Report:
 			response = handleImportVisitsReport(data, client);
 			break;
@@ -148,10 +151,6 @@ public class ClientRequestHandler {
 			response = handleImportAllOrdersForNow(data, client);
 			break;
 
-		case Show_Payment_At_Entrance:
-			response = handleShowPaymentAtEntrance(data, client);
-			break;
-		// added by nadav
 		case Create_Total_Visitors_Report:
 			response = handleCreateTotalAmountDivisionReport(data, client);
 			break;
@@ -164,14 +163,20 @@ public class ClientRequestHandler {
 			response = handleSearchForNotifiedOrders(data, client);
 			break;
 
+		case Show_Payment_At_Entrance:
+			response = handleShowPaymentAtEntrance(data, client);
+			break;
+			
 		case Delete_Old_Order:
 			response = handleDeleteOldOrder(data,client);
 			break;
 
 		default:
-			// TODO: implement all relevant actions
 			break;
 		}
+		// Print to Log
+		String message = String.format("Client: %s, Sent request: %s, Server Response: %s",client.getInetAddress().getHostAddress(),request,response.getRensponse());
+		Platform.runLater(()->serverController.printToLogConsole(message));
 		return response;
 	}
 
@@ -284,15 +289,21 @@ public class ClientRequestHandler {
 		return response;
 	}
 
+	@SuppressWarnings("unused")
 	private ServerResponseBackToClient handleImportAllOrdersForNow(ClientRequestDataContainer data,
 			ConnectionToClient client) {
 		int parkId = (int) data.getData();
 		ServerResponseBackToClient response;
 		ArrayList<Order> listOfOrders = QueryControl.orderQueries.importAllOrdersForToday(parkId);
-		if (listOfOrders == null)
+		if(listOfOrders.isEmpty())
+			response = new ServerResponseBackToClient(ServerResponse.No_Orders_For_Today, listOfOrders);
+		
+		else if (listOfOrders == null)
 			response = new ServerResponseBackToClient(ServerResponse.Query_Failed, null);
+		
 		else
 			response = new ServerResponseBackToClient(ServerResponse.Import_All_Orders_Successfully, listOfOrders);
+		
 		return response;
 
 	}
@@ -326,7 +337,7 @@ public class ClientRequestHandler {
 		return response;
 	}
 
-	private void notifyOrdersFromWaitingList(LocalDateTime time, int parkId) {
+	public void notifyOrdersFromWaitingList(LocalDateTime time, int parkId) {
 		ArrayList<Order> ordersFromWaitingList = QueryControl.orderQueries.notifyTheNextOrdersInWaitingList(time,
 				parkId);
 		if (ordersFromWaitingList == null || ordersFromWaitingList.isEmpty())
@@ -362,8 +373,12 @@ public class ClientRequestHandler {
 		Order order = (Order) data.getData();
 		ServerResponseBackToClient response;
 		boolean addedToDatabase = QueryControl.orderQueries.insertOrderIntoDB(order);
-		if (addedToDatabase)
+		if (addedToDatabase) {
 			response = new ServerResponseBackToClient(ServerResponse.Order_Added_Successfully, order);
+			String message = String.format("Order: %d, Was created successfully, a confirmation message has been sent by email to %s and SMS to %s"
+					,order.getOrderId(),order.getEmail(),order.getTelephoneNumber());
+			Platform.runLater(()->serverController.printToLogConsole(message));
+		}
 		else
 			response = new ServerResponseBackToClient(ServerResponse.Order_Added_Failed, order);
 		return response;

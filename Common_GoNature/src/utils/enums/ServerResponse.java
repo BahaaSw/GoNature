@@ -29,6 +29,7 @@ public enum ServerResponse {
 	Too_Many_Visitors,
 	Occasional_Visit_Order_Ready,
 	Occasional_Visit_Added_Successfully,
+	No_Orders_For_Today,
 	
 	Such_Report_Not_Found,
 	Cancellations_Report_Found,
