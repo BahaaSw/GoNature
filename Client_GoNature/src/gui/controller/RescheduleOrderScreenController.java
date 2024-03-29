@@ -38,6 +38,10 @@ import utils.enums.ClientRequest;
 import utils.enums.OrderStatusEnum;
 import utils.enums.ServerResponse;
 
+/**
+ * Controller class for the Reschedule Order screen, responsible for managing
+ * the rescheduling of orders.
+ */
 public class RescheduleOrderScreenController implements Initializable, IThreadController {
 	@FXML
 	public Label dateLabel;
@@ -70,12 +74,23 @@ public class RescheduleOrderScreenController implements Initializable, IThreadCo
 	private LocalDateTime selectedDate = null;
 	private Thread searchAvailableDates = null;
 
+	/**
+	 * Constructs a new instance of RescheduleOrderScreenController with the
+	 * specified screen and order.
+	 * 
+	 * @param screen The BorderPane object representing the screen layout.
+	 * @param order  The Order object representing the order to be rescheduled.
+	 */
 	public RescheduleOrderScreenController(BorderPane screen, Object order) {
 		this.screen = screen;
 		this.order = (Order) order;
 
 	}
 
+	/**
+	 * Initializes the Reschedule Order screen, setting up the initial UI components
+	 * and event handlers.
+	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		dateLabel.setText(CurrentDateAndTime.getCurrentDate("'Today' yyyy-MM-dd"));
@@ -92,6 +107,11 @@ public class RescheduleOrderScreenController implements Initializable, IThreadCo
 
 	}
 
+	/**
+	 * Handles the action when the selection in the combo box changes.
+	 * 
+	 * @param event The ActionEvent triggered by the combo box selection change.
+	 */
 	private void onChangeSelection(ActionEvent event) {
 		if (selectOptionComboBox.getValue() == null)
 			return;
@@ -114,6 +134,9 @@ public class RescheduleOrderScreenController implements Initializable, IThreadCo
 		}
 	}
 
+	/**
+	 * Retrieves and displays the available dates for rescheduling the order.
+	 */
 	private void showAvailableDates() {
 		// Check if the previous thread is alive and interrupt it
 		if (searchAvailableDates != null && searchAvailableDates.isAlive()) {
@@ -154,11 +177,17 @@ public class RescheduleOrderScreenController implements Initializable, IThreadCo
 		searchAvailableDates.start();
 	}
 
+	/**
+	 * Displays a notification message for entering the waiting list.
+	 */
 	private void showWaitingListNotificationMessage() {
 		enterWaitingListMsg.setText(NotificationMessageTemplate.enterWaitingListMessage(order.getParkName().toString(),
 				order.getOrderDate(), String.format("%d", order.getNumberOfVisitors())));
 	}
 
+	/**
+	 * Handles the action when the "Cancel Reserve" button is clicked.
+	 */
 	public void onCancelReserveClicked() {
 		AlertPopUp alert = new AlertPopUp(AlertType.CONFIRMATION, "Order Cancel", "Are you sure?",
 				"Order will not be saved.", ButtonType.YES, ButtonType.CLOSE);
@@ -173,6 +202,9 @@ public class RescheduleOrderScreenController implements Initializable, IThreadCo
 		}
 	}
 
+	/**
+	 * Handles the action when the "Confirm" button is clicked.
+	 */
 	@SuppressWarnings("incomplete-switch")
 	public void onConfirmClicked() {
 		// TODO: update new order in database with it's relevant status
@@ -214,6 +246,10 @@ public class RescheduleOrderScreenController implements Initializable, IThreadCo
 
 	}
 
+	/**
+	 * Cleans up resources and stops any running threads when the controller is
+	 * destroyed.
+	 */
 	@Override
 	public void cleanUp() {
 		// Stop the searchAvailableDates thread if it's running

@@ -27,6 +27,10 @@ import utils.CurrentDateAndTime;
 import utils.enums.ClientRequest;
 import utils.enums.RequestStatusEnum;
 
+/**
+ * Controller class for the Request Table screen, responsible for managing and
+ * displaying requests.
+ */
 public class RequestTableScreenController implements Initializable {
 
 	@FXML
@@ -56,10 +60,20 @@ public class RequestTableScreenController implements Initializable {
 	private ArrayList<Request> requestsFromDatabase = new ArrayList<Request>();
 	private ObservableList<RequestInTable> requestsList = FXCollections.observableArrayList();
 
+	/**
+	 * Constructs a new instance of RequestTableScreenController with the specified
+	 * screen.
+	 * 
+	 * @param screen The BorderPane object representing the screen layout.
+	 */
 	public RequestTableScreenController(BorderPane screen) {
 		this.screen = screen;
 	}
 
+	/**
+	 * Initializes the Request Table screen, setting up the table and disabling the
+	 * save button.
+	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		dateLabel.setText(CurrentDateAndTime.getCurrentDate("'Today' yyyy-MM-dd"));
@@ -67,6 +81,9 @@ public class RequestTableScreenController implements Initializable {
 		saveButton.setDisable(true);
 	}
 
+	/**
+	 * Sets up the columns and cell factories for the requests table.
+	 */
 	private void setupTable() {
 		// User ID Column
 		requestIdCol.setCellValueFactory(new PropertyValueFactory<>("requestId"));
@@ -89,48 +106,55 @@ public class RequestTableScreenController implements Initializable {
 		// Status Column with ComboBox
 		statusCol.setCellValueFactory(new PropertyValueFactory<>("requestStatus"));
 		statusCol.setCellFactory(ComboBoxTableCell.forTableColumn("Pending", "Approved", "Denied"));
-		statusCol.setOnEditCommit((TableColumn.CellEditEvent<RequestInTable, String> t) -> (t.getTableView()
-				.getItems().get(t.getTablePosition().getRow())).setStatus(t.getNewValue()));
+		statusCol.setOnEditCommit((TableColumn.CellEditEvent<RequestInTable, String> t) -> (t.getTableView().getItems()
+				.get(t.getTablePosition().getRow())).setStatus(t.getNewValue()));
 
 		requestsTable.setItems(requestsList);
 		requestsTable.setEditable(true);
 	}
 
+	/**
+	 * Handles the action when the save button is clicked, updating the status of
+	 * selected requests.
+	 */
 	@SuppressWarnings("incomplete-switch")
 	public void onSaveClicked() {
 		AlertPopUp alert;
 		ArrayList<Request> requestsToCheck = new ArrayList<Request>();
-		for(RequestInTable req : requestsList) {
+		for (RequestInTable req : requestsList) {
 			req.getRequest().setRequestStatus(RequestStatusEnum.fromString(req.getRequestStatus()));
 			requestsToCheck.add(req.getRequest());
 		}
-		
-		if(requestsToCheck.isEmpty()) {
-			alert = new AlertPopUp(AlertType.INFORMATION,"Information", "Save Changes","You have to select guides to approve");
+
+		if (requestsToCheck.isEmpty()) {
+			alert = new AlertPopUp(AlertType.INFORMATION, "Information", "Save Changes",
+					"You have to select guides to approve");
 			alert.showAndWait();
-		}
-		else {
+		} else {
 			ClientRequestDataContainer request = new ClientRequestDataContainer(
 					ClientRequest.Update_Request_In_Database, requestsToCheck);
 			ClientApplication.client.accept(request);
 			ServerResponseBackToClient response = ClientCommunication.responseFromServer;
-			
-			switch(response.getRensponse()) {
+
+			switch (response.getRensponse()) {
 			case Updated_Requests_Successfully:
-				alert = new AlertPopUp(AlertType.INFORMATION,"Information", "Save Changes","Requests updated Successfully");
+				alert = new AlertPopUp(AlertType.INFORMATION, "Information", "Save Changes",
+						"Requests updated Successfully");
 				alert.showAndWait();
 				return;
 			case Updated_Requests_Failed:
-				alert = new AlertPopUp(AlertType.WARNING,"Warning", "Save Changes","Update failed");
+				alert = new AlertPopUp(AlertType.WARNING, "Warning", "Save Changes", "Update failed");
 				alert.showAndWait();
 				return;
 			}
 		}
-		
-		
-		
+
 	}
 
+	/**
+	 * Handles the action when the refresh button is clicked, updating the list of
+	 * requests.
+	 */
 	@SuppressWarnings({ "incomplete-switch", "unchecked" })
 	public void onRefreshClicked() {
 		ArrayList<RequestInTable> observeRequests = new ArrayList<RequestInTable>();

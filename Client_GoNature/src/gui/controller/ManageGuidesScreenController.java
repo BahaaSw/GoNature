@@ -27,6 +27,10 @@ import utils.AlertPopUp;
 import utils.CurrentDateAndTime;
 import utils.enums.ClientRequest;
 
+/**
+ * Controller class for managing guides in the system, including approving
+ * pending guides.
+ */
 public class ManageGuidesScreenController implements Initializable {
 	@FXML
 	public BorderPane screen;
@@ -57,13 +61,21 @@ public class ManageGuidesScreenController implements Initializable {
 	@FXML
 	public Label errorMessageLabel;
 
-	private ArrayList<Guide> guidesFromDatabase= new ArrayList<Guide>();
+	private ArrayList<Guide> guidesFromDatabase = new ArrayList<Guide>();
 	private ObservableList<GuideInTable> guidesList = FXCollections.observableArrayList();
 
+	/**
+	 * Constructor for the ManageGuidesScreenController.
+	 * 
+	 * @param screen The BorderPane representing the screen.
+	 */
 	public ManageGuidesScreenController(BorderPane screen) {
 		this.screen = screen;
 	}
 
+	/**
+	 * Initializes the controller.
+	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		dateLabel.setText(CurrentDateAndTime.getCurrentDate("'Today' yyyy-MM-dd"));
@@ -73,6 +85,9 @@ public class ManageGuidesScreenController implements Initializable {
 
 	}
 
+	/**
+	 * Sets up the TableView with columns and cell value factories.
+	 */
 	private void setupTable() {
 		// User ID Column
 		userIdCol.setCellValueFactory(new PropertyValueFactory<>("userId"));
@@ -102,39 +117,46 @@ public class ManageGuidesScreenController implements Initializable {
 		pendingGuidesTable.setEditable(true);
 	}
 
+	/**
+	 * Handles the action when the "Save" button is clicked.
+	 */
 	@SuppressWarnings("incomplete-switch")
 	public void onSaveClicked() {
 		AlertPopUp alert;
 		ArrayList<Guide> approvedGuides = new ArrayList<Guide>();
-		for(GuideInTable guide: guidesList) {
-			if(guide.getStatus().equals("Approved")) {
+		for (GuideInTable guide : guidesList) {
+			if (guide.getStatus().equals("Approved")) {
 				approvedGuides.add(guide.getGuide());
 			}
 		}
-		if(approvedGuides.isEmpty()) {
-			alert = new AlertPopUp(AlertType.INFORMATION,"Information", "Save Changes","You have to select guides to approve");
+		if (approvedGuides.isEmpty()) {
+			alert = new AlertPopUp(AlertType.INFORMATION, "Information", "Save Changes",
+					"You have to select guides to approve");
 			alert.showAndWait();
-		}
-		else {
-			ClientRequestDataContainer request = new ClientRequestDataContainer(
-					ClientRequest.Update_Guide_As_Approved, approvedGuides);
+		} else {
+			ClientRequestDataContainer request = new ClientRequestDataContainer(ClientRequest.Update_Guide_As_Approved,
+					approvedGuides);
 			ClientApplication.client.accept(request);
 			ServerResponseBackToClient response = ClientCommunication.responseFromServer;
-			
-			switch(response.getRensponse()) {
+
+			switch (response.getRensponse()) {
 			case Updated_Guides_To_Approved_Successfully:
-				alert = new AlertPopUp(AlertType.INFORMATION,"Information", "Save Changes","Guides added Successfully");
+				alert = new AlertPopUp(AlertType.INFORMATION, "Information", "Save Changes",
+						"Guides added Successfully");
 				alert.showAndWait();
 				return;
 			case Updated_Guides_To_Approved_Failed:
-				alert = new AlertPopUp(AlertType.WARNING,"Warning", "Save Changes","Update failed");
+				alert = new AlertPopUp(AlertType.WARNING, "Warning", "Save Changes", "Update failed");
 				alert.showAndWait();
 				return;
 			}
 		}
-		
+
 	}
 
+	/**
+	 * Handles the action when the "Search Guides" button is clicked.
+	 */
 	@SuppressWarnings({ "incomplete-switch", "unchecked" })
 	public void onSearchGuidesClicked() {
 		ArrayList<GuideInTable> observeGuides = new ArrayList<GuideInTable>();
@@ -152,17 +174,17 @@ public class ManageGuidesScreenController implements Initializable {
 			alert.showAndWait();
 			saveButton.setDisable(true);
 			return;
-			
+
 		case Guides_With_Status_Pending_Found:
 			guidesFromDatabase = (ArrayList<Guide>) response.getMessage();
 			for (Guide guide : guidesFromDatabase) {
-				GuideInTable guideToView = new GuideInTable(guide.getUserId(), guide.getUsername(), guide.getFirstName(),
-						guide.getLastName(), guide.getEmailAddress(), guide.getPhoneNumber(),
+				GuideInTable guideToView = new GuideInTable(guide.getUserId(), guide.getUsername(),
+						guide.getFirstName(), guide.getLastName(), guide.getEmailAddress(), guide.getPhoneNumber(),
 						guide.getUserStatus().name());
 				guideToView.setGuide(guide);
 				observeGuides.add(guideToView);
 			}
-			
+
 			guidesList.addAll(observeGuides);
 			pendingGuidesTable.refresh();
 			saveButton.setDisable(false);
@@ -171,11 +193,19 @@ public class ManageGuidesScreenController implements Initializable {
 
 	}
 
+	/**
+	 * Hides the error message section in the GUI.
+	 */
 	private void hideErrorMessage() {
 		errorMessageLabel.setText("");
 		errorSection.setVisible(false);
 	}
 
+	/**
+	 * Displays an error message in the GUI.
+	 * 
+	 * @param error The error message to display.
+	 */
 	@SuppressWarnings("unused")
 	private void showErrorMessage(String error) {
 		errorSection.setVisible(true);
