@@ -9,6 +9,11 @@ import utils.enums.UserTypeEnum;
  */
 public class Visitor extends ExternalUser implements ICustomer {
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Unique identifier for the visitor.
 	 */
 	private String visitorId;
