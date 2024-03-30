@@ -11,7 +11,7 @@ import javafx.application.Platform;
  * This class manages the connection to a MySQL database using JDBC.
  * It provides methods to establish a connection, retrieve the connection object,
  * and close the connection.
- * Tamer Amer, Gal Bitton, Rabea Lahham, Bahaldeen Swied, Ron Sisso, Nadav Reubens.
+ * TamerAmer, GalBitton, RabeaLahham, BahaldeenSwied, RonSisso, NadavReubens.
  */
 public class MySqlConnection {
 
@@ -19,24 +19,8 @@ public class MySqlConnection {
 	private static MySqlConnection instance = null;
 	private static DBConnectionDetails dbDetails;
 	private static ServerScreenController controller;
-	/*
-	 * * This method is trying to connect to mySQL database, using jdbc driver. This
-	 * method is being called from server, and return it's connection.
-	 * 
-	 * @param db - class which contains the required information for database
-	 * (hostname,username,password)
-	 * 
-	 * @return if connected successfully -> return the new Connection. else ->
-	 * return null.
-	 */
-	/**
-	 * private constructor
-	 * 
-	 * @throws SQLException           If got SQL error
-	 * @throws ClassNotFoundException If failed to create jdbc driver
-	 * @throws InstantiationException if failed to connect to the database
-	 * @throws IllegalAccessException if failed to connect to the database
-	 */
+	
+	
 	private MySqlConnection() throws SQLException {
 
 		try {
