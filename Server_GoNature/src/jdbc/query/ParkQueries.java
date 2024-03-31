@@ -222,7 +222,6 @@ public class ParkQueries {
 		}
 	}
 	
-	//NOTICE : NOT USED THAT QUERY!!
 	/**
 	 * Retrieves the current capacity and the number of visitors currently in the park.
 	 * @param parkId The ID of the park.

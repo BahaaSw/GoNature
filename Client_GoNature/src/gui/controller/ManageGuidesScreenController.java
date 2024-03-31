@@ -144,6 +144,7 @@ public class ManageGuidesScreenController implements Initializable {
 				alert = new AlertPopUp(AlertType.INFORMATION, "Information", "Save Changes",
 						"Guides added Successfully");
 				alert.showAndWait();
+				onSearchGuidesClicked();
 				return;
 			case Updated_Guides_To_Approved_Failed:
 				alert = new AlertPopUp(AlertType.WARNING, "Warning", "Save Changes", "Update failed");

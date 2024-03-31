@@ -190,8 +190,14 @@ public class ValidationRules {
 	 *         otherwise.
 	 */
 	public static boolean isPositiveNumeric(String number) {
-		if (isNumeric(number))
+		if (isNumeric(number)) {
+			try {
+				Integer.parseInt(number);
+			}catch(Exception ex) {
+				return false;
+			}
 			return Integer.parseInt(number) > 0;
+		}
 		return false;
 	}
 

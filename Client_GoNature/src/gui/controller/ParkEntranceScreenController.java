@@ -273,8 +273,6 @@ public class ParkEntranceScreenController implements Initializable, IThreadContr
 	 * on-the-spot park visit.
 	 */
 	public void onNewVisitClicked() {
-		// TODO: open handleoccasionalvisit screen
-		// TODO : create new order and mark status as "In Park".
 		AnchorPane dashboard = SceneLoaderHelper.getInstance().loadRightScreenToBorderPaneWithController(screen,
 				"/gui/view/HandleOccasionalVisitScreen.fxml", ApplicationViewType.HandleOccasionalVisitScreen,
 				new EntitiesContainer(employee));

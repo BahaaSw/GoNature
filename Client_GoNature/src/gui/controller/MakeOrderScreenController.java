@@ -290,7 +290,7 @@ public class MakeOrderScreenController implements Initializable {
 		ClientApplication.client.accept(requestMessage);
 		ServerResponseBackToClient response = ClientCommunication.responseFromServer;
 		AnchorPane view;
-
+		AlertPopUp alert;
 		switch (response.getRensponse()) {
 		case Requested_Order_Date_Is_Available:
 			view = SceneLoaderHelper.getInstance().loadRightScreenToBorderPaneWithController(screen,
@@ -300,13 +300,15 @@ public class MakeOrderScreenController implements Initializable {
 			break;
 
 		case Requested_Order_Date_Unavaliable:
+			alert = new AlertPopUp(AlertType.INFORMATION, "Information", "Requested Date is Unavaliable", "Please select Choose new Date or Enter Waiting List");
+			alert.showAndWait();
 			view = SceneLoaderHelper.getInstance().loadRightScreenToBorderPaneWithController(screen,
 					"/gui/view/RescheduleOrderScreen.fxml", ApplicationViewType.Reschedule_Order_Screen,
 					new EntitiesContainer(response.getMessage()));
 			screen.setCenter(view);
 			break;
 		case Too_Many_Visitors:
-			AlertPopUp alert = new AlertPopUp(AlertType.INFORMATION, "Notification", "Order Limit",
+			alert = new AlertPopUp(AlertType.INFORMATION, "Notification", "Order Limit",
 					"This are too many visitors for our park");
 			alert.showAndWait();
 			break;

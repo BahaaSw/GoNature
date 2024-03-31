@@ -87,7 +87,7 @@ public class ServerScreenController implements Initializable {
 	 * This method write to log.
 	 * @param msg - The String message we want to write to log screen.
 	 */
-	public void printToLogConsole(String msg) {
+	public synchronized void printToLogConsole(String msg) {
 		System.out.println(msg);
         LocalTime currentTime = LocalTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");

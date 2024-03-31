@@ -1,5 +1,6 @@
 package logic;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -222,8 +223,11 @@ public class ClientRequestHandler {
 	private ServerResponseBackToClient handleDeleteOldOrder(ClientRequestDataContainer data, ConnectionToClient client) {
 		Order order = (Order)data.getData();
 		boolean isDeleted = QueryControl.orderQueries.deleteOrderFromTable(order);
-		if(isDeleted)
+		if(isDeleted) {
+			// notify next in waiting list.
+			notifyOrdersFromWaitingList(order.getEnterDate(), order.getParkName().getParkId());
 			return new ServerResponseBackToClient(ServerResponse.Order_Deleted_Successfully, order);
+		}
 		else
 			return new ServerResponseBackToClient(ServerResponse.Order_Deleted_Failed, order);
 	}
@@ -253,7 +257,10 @@ public class ClientRequestHandler {
 			LocalDateTime exitTime = enterTime.plusHours(estimatedVisitTimeInHours);
 			order.setExitDate(exitTime);
 			order.setPrice(requestedPark.getPrice());
-			response = new ServerResponseBackToClient(ServerResponse.Occasional_Visit_Order_Ready, order);
+			if(requestedPark.getCurrentInPark()+order.getNumberOfVisitors()>requestedPark.getCurrentMaxCapacity())
+				response = new ServerResponseBackToClient(ServerResponse.Park_Is_Full_For_Such_Occasional_Order, order);
+			else
+				response = new ServerResponseBackToClient(ServerResponse.Occasional_Visit_Order_Ready, order);
 		} else
 			response = new ServerResponseBackToClient(ServerResponse.Query_Failed, order);
 		return response;
@@ -272,7 +279,6 @@ public class ClientRequestHandler {
 			ConnectionToClient client) {
 		Order order = (Order) data.getData();
 		ServerResponseBackToClient response;
-
 		QueryControl.occasionalQueries.insertOccasionalOrder(order);
 		response = new ServerResponseBackToClient(ServerResponse.Occasional_Visit_Added_Successfully, order);
 		return response;
@@ -418,9 +424,24 @@ public class ClientRequestHandler {
 			ConnectionToClient client) {
 		Order order = (Order) data.getData();
 		ServerResponseBackToClient response;
-		boolean isUpdated = QueryControl.orderQueries.updateOrderStatus(order, OrderStatusEnum.Confirmed);
+		OrderStatusEnum statusToUpdate = OrderStatusEnum.Confirmed;
+		if(order.getStatus()==OrderStatusEnum.Notified_Waiting_List) {
+			statusToUpdate = OrderStatusEnum.Wait_Notify;
+			Duration tillOrder = Duration.between(order.getEnterDate(), LocalDateTime.now());
+			if(tillOrder.toHours()<24)
+				statusToUpdate=OrderStatusEnum.Confirmed;
+		}
+		boolean isUpdated = QueryControl.orderQueries.updateOrderStatus(order, statusToUpdate);
 		if (isUpdated) {
 			response = new ServerResponseBackToClient(ServerResponse.Order_Updated_Successfully, order);
+			String message;
+			if(statusToUpdate==OrderStatusEnum.Wait_Notify)
+				message = String.format("Order: %d, Was created successfully, a confirmation message has been sent by email to %s and SMS to %s"
+						,order.getOrderId(),order.getEmail(),order.getTelephoneNumber());
+			else
+				message = String.format("Order: %d, Was confirmed successfully, a summary order message has been sent by email to %s and SMS to %s",
+						order.getOrderId(),order.getEmail(),order.getTelephoneNumber());
+			Platform.runLater(()->serverController.printToLogConsole(message));
 		} else
 			response = new ServerResponseBackToClient(ServerResponse.Order_Updated_Failed, order);
 

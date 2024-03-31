@@ -33,6 +33,7 @@ public enum ServerResponse {
 	Too_Many_Visitors,
 	Occasional_Visit_Order_Ready,
 	Occasional_Visit_Added_Successfully,
+	Park_Is_Full_For_Such_Occasional_Order,
 	No_Orders_For_Today,
 	Order_ExitDate_Updated,
 	Order_Email_Updated,

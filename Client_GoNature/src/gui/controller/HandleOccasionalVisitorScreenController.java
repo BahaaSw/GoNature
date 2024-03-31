@@ -38,6 +38,7 @@ import utils.enums.ClientRequest;
 import utils.enums.OrderStatusEnum;
 import utils.enums.OrderTypeEnum;
 import utils.enums.ParkNameEnum;
+import utils.enums.ServerResponse;
 import utils.enums.UserTypeEnum;
 
 /**
@@ -121,12 +122,17 @@ public class HandleOccasionalVisitorScreenController implements Initializable {
 		}
 
 		Order order = createOrderFromFields();
-
+		AlertPopUp alert;
 		ClientRequestDataContainer requestMessage = new ClientRequestDataContainer(
 				ClientRequest.Prepare_New_Occasional_Order, order);
 		ClientApplication.client.accept(requestMessage);
 		ServerResponseBackToClient response = ClientCommunication.responseFromServer;
-
+		if(response.getRensponse()==ServerResponse.Park_Is_Full_For_Such_Occasional_Order) {
+			alert = new AlertPopUp(AlertType.WARNING,"Warning","Can't create Occasional Order","Can't make such order, you exceed the park max capacity");
+			alert.showAndWait();
+			return;
+		}
+		
 		order = (Order) response.getMessage();
 
 		ButtonType payNow = new ButtonType("Pay Now");
@@ -134,13 +140,11 @@ public class HandleOccasionalVisitorScreenController implements Initializable {
 		Duration duration = Duration.between(order.getEnterDate(), order.getExitDate());
 		long estimatedVisitTime = duration.toHours();
 
-		// ParkNameEnum parkName,OrderTypeEnum type,String firstName,String
-		// lastName,double totalPrice,long estimatedTimeVisit
 		String paymentReceipt = NotificationMessageTemplate.entrancePaymentReceiptMessage(order.getParkName(),
 				order.getOrderType(), order.getFirstName(), order.getLastName(), order.getNumberOfVisitors(), price,
 				estimatedVisitTime);
 
-		AlertPopUp alert = new AlertPopUp(AlertType.CONFIRMATION, "Payment Notification", "Pay Now", paymentReceipt,
+		alert = new AlertPopUp(AlertType.CONFIRMATION, "Payment Notification", "Pay Now", paymentReceipt,
 				payNow, ButtonType.CLOSE);
 		Optional<ButtonType> result = alert.showAndWait();
 

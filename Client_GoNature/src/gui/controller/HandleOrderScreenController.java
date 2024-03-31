@@ -151,12 +151,12 @@ public class HandleOrderScreenController implements Initializable {
 	@SuppressWarnings("incomplete-switch")
 	private void enableGuiAccordingToStatus() {
 		switch (requestedOrder.getStatus()) {
-		case In_Waiting_List:
 		case Notified:
 		case Notified_Waiting_List:
 			updateButton.setDisable(true);
 			break;
 		case Wait_Notify:
+		case In_Waiting_List:
 			confirmButton.setDisable(true);
 			break;
 		case Confirmed:
@@ -389,7 +389,7 @@ public class HandleOrderScreenController implements Initializable {
 		ServerResponseBackToClient response = ClientCommunication.responseFromServer;
 		switch (response.getRensponse()) {
 		case Order_Updated_Successfully:
-			alert = new AlertPopUp(AlertType.INFORMATION, "Notification", "Confirm Order", "Your Order was cancelled");
+			alert = new AlertPopUp(AlertType.INFORMATION, "Notification", "Confirm Order", "Your Order was confirmed!");
 			alert.showAndWait();
 			break;
 
@@ -452,13 +452,13 @@ public class HandleOrderScreenController implements Initializable {
 
 		case Requested_Order_Date_Unavaliable:
 			alert = new AlertPopUp(AlertType.INFORMATION, "Notification", "Date Unavailable",
-					"Sorry, this date is unavailable");
+					"Sorry, this date is unavailable, your last order still up!");
 			alert.showAndWait();
 			break;
 		case Too_Many_Visitors:
 
 			alert = new AlertPopUp(AlertType.INFORMATION, "Notification", "Order Limit",
-					"This are too many visitors for our park");
+					"This are too many visitors for our park,your last order still up!");
 			alert.showAndWait();
 			break;
 		}

@@ -141,6 +141,7 @@ public class RequestTableScreenController implements Initializable {
 				alert = new AlertPopUp(AlertType.INFORMATION, "Information", "Save Changes",
 						"Requests updated Successfully");
 				alert.showAndWait();
+				onRefreshClicked();
 				return;
 			case Updated_Requests_Failed:
 				alert = new AlertPopUp(AlertType.WARNING, "Warning", "Save Changes", "Update failed");

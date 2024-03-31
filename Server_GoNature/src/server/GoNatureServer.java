@@ -1,5 +1,6 @@
 package server;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -85,7 +86,7 @@ public class GoNatureServer extends AbstractServer {
 		ClientRequestDataContainer data = (ClientRequestDataContainer) msg;
 		ClientRequest request = data.getRequest();
 		Platform.runLater((()->serverController.printToLogConsole(String.format("Request %s, was received from Client - %s",request,clientIp ))));
-		ServerResponseBackToClient response = null;
+		ServerResponseBackToClient response = new ServerResponseBackToClient(ServerResponse.User_Logout_Successfully, null);
 		if (request == ClientRequest.Logout) {
 			handleUserLogoutFromApplication(data.getData(), client, clientIp);
 		} else {
@@ -291,9 +292,11 @@ public class GoNatureServer extends AbstractServer {
 	 */
 	public static boolean importUsersData() {
 		try {
-			String csvFilePath = "@../../import/usersData.csv";
-
-			String sql = "LOAD DATA LOCAL INFILE '" + csvFilePath + "' INTO TABLE users "
+			String desktopPath = System.getProperty("user.home") + File.separator + "Desktop";
+			String csvFilePath = desktopPath + File.separator + "usersData.csv";
+			String sqlCompatiblePath = csvFilePath.replace("\\", "\\\\");
+			
+			String sql = "LOAD DATA LOCAL INFILE '" + sqlCompatiblePath + "' INTO TABLE users "
 			           + "FIELDS TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\n' "
 			           + "(UserId, Username, Password, FirstName, LastName, Phone, Email, Status, UserType, @ParkId, EmployeeType) "
 			           + "SET ParkId = NULLIF(@ParkId, '')";
@@ -305,6 +308,7 @@ public class GoNatureServer extends AbstractServer {
 			System.out.println("Data imported successfully");
 			return true;
 		} catch (Exception e) {
+			Platform.runLater(()->serverController.printToLogConsole(e.getMessage()));
 			e.printStackTrace();
 			return false;
 		}
@@ -365,7 +369,6 @@ public class GoNatureServer extends AbstractServer {
 		clearImportedData();
 		
 		Platform.runLater(()->serverController.printToLogConsole("Connection to database succeed"));
-
 		// Singleton DesignPattern. Only 1 instance of server is available.
 		if (server != null) {
 			Platform.runLater(()->serverController.printToLogConsole("There is already a connected server"));

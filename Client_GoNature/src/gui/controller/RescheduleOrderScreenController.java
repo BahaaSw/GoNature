@@ -46,6 +46,8 @@ public class RescheduleOrderScreenController implements Initializable, IThreadCo
 	@FXML
 	public Label dateLabel;
 	@FXML
+	public HBox comboBoxHbox;
+	@FXML
 	public ComboBox<String> selectOptionComboBox;
 	private ObservableList<String> options = FXCollections.observableArrayList("Choose New Date", "Enter Waiting List");
 	@FXML
@@ -104,6 +106,7 @@ public class RescheduleOrderScreenController implements Initializable, IThreadCo
 				// Perform actions based on the selected date here
 			}
 		});
+		hideErrorMessage();
 
 	}
 
@@ -237,6 +240,8 @@ public class RescheduleOrderScreenController implements Initializable, IThreadCo
 						orderFullDetailed.getNumberOfVisitors(), orderFullDetailed.getPrice(),
 						orderFullDetailed.isPaid());
 				enterWaitingListMsg.setText(orderSummaryAfterPaymentMessage);
+				confirmButton.setVisible(false);
+				comboBoxHbox.setVisible(false);
 				break;
 			case Order_Added_Failed:
 				break;
@@ -262,6 +267,24 @@ public class RescheduleOrderScreenController implements Initializable, IThreadCo
 			}
 		}
 
+	}
+	
+	/**
+	 * Hides the error message section in the GUI.
+	 */
+	private void hideErrorMessage() {
+		errorMessageLabel.setText("");
+		errorSection.setVisible(false);
+	}
+
+	/**
+	 * Displays an error message in the GUI.
+	 * 
+	 * @param error The error message to display.
+	 */
+	private void showErrorMessage(String error) {
+		errorSection.setVisible(true);
+		errorMessageLabel.setText(error);
 	}
 
 }
