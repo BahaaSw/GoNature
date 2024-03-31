@@ -45,6 +45,7 @@ public class NotificationMessageTemplate {
 	 * Generates a summary message for an order.
 	 * 
 	 * @param park                The name of the park.
+	 * @param orderType			  The type of the requested order.
 	 * @param date                The date and time of the visit.
 	 * @param type                The type of the order.
 	 * @param amountOfVisitors    The number of visitors.
@@ -108,6 +109,7 @@ public class NotificationMessageTemplate {
 	 * Generates a message for pre-payment receipt.
 	 * 
 	 * @param parkName           The name of the park.
+	 * @param orderType			  The type of the requested order.
 	 * @param orderDate          The date of the order.
 	 * @param amountOfVisitors   The number of visitors.
 	 * @param firstName          The first name of the customer.
@@ -148,7 +150,7 @@ public class NotificationMessageTemplate {
 	 * @param amountOfVisitors The number of visitors.
 	 * @return The generated waiting list message.
 	 */
-	public static String enterWaitingListMessage(String park, String dateAndTime, String amoutOfVisitors) {
+	public static String enterWaitingListMessage(String park, String dateAndTime, String amountOfVisitors) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Enter waiting list\n");
 		sb.append("You are now in the waiting list\n");
@@ -156,7 +158,7 @@ public class NotificationMessageTemplate {
 		sb.append("Your order information:\n");
 		sb.append(String.format("Park: %s.\n", park));
 		sb.append(String.format("Visit Date and Time: %s.\n", dateAndTime));
-		sb.append(String.format("Visitors: %s.\n", amoutOfVisitors));
+		sb.append(String.format("Visitors: %s.\n", amountOfVisitors));
 		sb.append("Thank you!\n");
 		sb.append("GoNature Group 9 !");
 

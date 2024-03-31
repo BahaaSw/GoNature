@@ -30,7 +30,7 @@ public enum OrderTypeEnum {
 	/**
 	 * Group visit preordered.
 	 */
-	Group_PreOrder("Guide Preorder"),
+	Group_PreOrder("Group Preorder"),
 	/**
 	 * Group visit occasional.
 	 */

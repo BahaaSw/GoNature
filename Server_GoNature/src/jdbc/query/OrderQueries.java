@@ -655,7 +655,7 @@ public class OrderQueries {
 							+ "FROM occasionalvisits "
 							+ "WHERE DATE(EnterDate) = CURDATE() AND (OrderStatus = 'Confirmed' OR OrderStatus = 'In Park') AND ParkId = ? "
 							+ "UNION ALL "
-							+ "SELECT OrderId, PayStatus AS isPaid, Amount, Phone, EnterDate, ExitDate, OrderStatus,OrderType "
+							+ "SELECT OrderId, PayStatus AS isPaid, Amount AS amountOfVisitors, Phone AS ownerPhone, EnterDate AS EnterTime, ExitDate AS ExitTime, OrderStatus, OrderType "
 							+ "FROM preorders "
 							+ "WHERE DATE(EnterDate) = CURDATE() AND (OrderStatus = 'Confirmed' OR OrderStatus = 'In Park') AND ParkId = ?");
 			stmt.setInt(1, parkId);

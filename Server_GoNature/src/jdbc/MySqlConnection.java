@@ -51,11 +51,6 @@ public class MySqlConnection {
 	 * This function returns an MysqlConnection instance
 	 * 
 	 * @return MysqlConnection object
-	 * 
-	 * @throws SQLException           If got SQL error
-	 * @throws ClassNotFoundException If failed to create JDBC driver
-	 * @throws InstantiationException if failed to connect to the database
-	 * @throws IllegalAccessException if failed to connect to the database
 	 */
 	public static MySqlConnection getInstance() {
 		if (instance == null) {
@@ -73,10 +68,6 @@ public class MySqlConnection {
      * 
      * @param serverController The ServerScreenController instance to set
      * @return MySqlConnection object
-     * @throws SQLException           If an SQL error occurs during connection
-     * @throws ClassNotFoundException If the JDBC driver class cannot be found
-     * @throws InstantiationException If an instance of the JDBC driver cannot be created
-     * @throws IllegalAccessException If access to the JDBC driver is denied
      */
 	public static MySqlConnection getInstance(ServerScreenController serverController) {
 		if (instance == null) {
