@@ -207,9 +207,9 @@ public class ServerScreenController implements Initializable {
 	private void disableFields(boolean flag) {
 		connectServer.setDisable(flag);
 		portField.setEditable(flag);
-		dbNameField.setEditable(flag);
-		dbUsernameField.setEditable(flag);
-		dbPasswordField.setEditable(flag);
+		dbNameField.setEditable(!flag);
+		dbUsernameField.setEditable(!flag);
+		dbPasswordField.setEditable(!flag);
 	}
 
 
