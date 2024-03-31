@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
@@ -31,6 +32,9 @@ public class ServerApplication extends Application {
 		
 		primaryStage.setScene(scene);
 		primaryStage.setResizable(false);
+		primaryStage.getIcons().add(new Image("/utils/serverIcon.png"));
+		
+		
 		// disconnect before closing waiting to run on main javaFX thread.
 		primaryStage.setOnCloseRequest(e -> Platform.runLater(()->GoNatureServer.stopServer()));
 		primaryStage.setTitle("GoNature - Parks&Vacations - Server Side");

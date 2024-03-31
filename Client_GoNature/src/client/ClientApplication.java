@@ -6,6 +6,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 /**
@@ -42,6 +43,7 @@ public class ClientApplication extends Application {
 			runningController = landingPageController;
 			loader.load();
 			Parent p = loader.getRoot();
+			primaryStage.getIcons().add(new Image("/utils/resources/clientIcon.png"));
 			primaryStage.setTitle("GoNature Client - Landing Page");
 			primaryStage.setOnCloseRequest(e -> runningController.onCloseApplication());
 			primaryStage.setScene(new Scene(p));
