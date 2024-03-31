@@ -3,6 +3,7 @@ package gui.controller;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ResourceBundle;
 
 import client.ClientApplication;
@@ -131,6 +132,9 @@ public class MakeOrderScreenController implements Initializable {
 			}
 		});
 
+	    // Add a listener to pickDate to adjust pickTime based on the selected date
+	    pickDate.valueProperty().addListener((obs, oldValue, newValue) -> updatePickTimeOptions(newValue));
+		
 		initializeGuiByCustomerType();
 		visitType.setItems(visitTypesList);
 		visitType.setOnAction(this::onVisitTypeChangeSelection);
@@ -138,6 +142,36 @@ public class MakeOrderScreenController implements Initializable {
 		hideErrorMessage();
 	}
 
+	/**
+	 * Updates the options in the pickTime ComboBox based on the selected date.
+	 * If the date is tomorrow, only times 24 hours forward are shown.
+	 * If the date is 2 or more days forward, all times are shown.
+	 *
+	 * @param selectedDate The date selected by the user.
+	 */
+	private void updatePickTimeOptions(LocalDate selectedDate) {
+	    LocalDate today = LocalDate.now();
+	    LocalDate tomorrow = today.plusDays(1);
+
+	    if (selectedDate != null) {
+	        if (selectedDate.equals(tomorrow)) {
+	            // Filter times for 24 hours forward
+	            ObservableList<String> filteredTimes = FXCollections.observableArrayList();
+	            LocalTime currentTime = LocalTime.now();
+	            timeForVisits.forEach(time -> {
+	                LocalTime timeOption = LocalTime.parse(time);
+	                if (timeOption.isAfter(currentTime.plusHours(24))) {
+	                    filteredTimes.add(time);
+	                }
+	            });
+	            pickTime.setItems(filteredTimes);
+	        } else if (selectedDate.isAfter(tomorrow)) {
+	            // Show all times for dates 2 days forward and beyond
+	            pickTime.setItems(timeForVisits);
+	        }
+	    }
+	}
+	
 	/**
 	 * Initializes the GUI components based on the type of customer. Sets up
 	 * appropriate visit types and disables fields if necessary.
