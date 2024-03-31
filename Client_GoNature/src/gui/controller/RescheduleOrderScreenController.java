@@ -282,6 +282,7 @@ public class RescheduleOrderScreenController implements Initializable, IThreadCo
 	 * 
 	 * @param error The error message to display.
 	 */
+	@SuppressWarnings("unused")
 	private void showErrorMessage(String error) {
 		errorSection.setVisible(true);
 		errorMessageLabel.setText(error);
