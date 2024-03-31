@@ -231,7 +231,6 @@ public class RescheduleOrderScreenController implements Initializable, IThreadCo
 					ClientRequest.Insert_New_Order_As_Wait_Notify, order);
 			ClientApplication.client.accept(request);
 			ServerResponseBackToClient response = ClientCommunication.responseFromServer;
-			Order orderFullDetailed = (Order) response.getMessage();
 			switch (response.getRensponse()) {
 			case Order_Added_Successfully:
 				enterWaitingListMsg.setText("Added successfully to waiting list");
