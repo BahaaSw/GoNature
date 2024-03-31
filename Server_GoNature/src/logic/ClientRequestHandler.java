@@ -490,7 +490,7 @@ public class ClientRequestHandler {
 			if (canAdd) {
 				QueryControl.orderQueries.updateOrderStatus(order, OrderStatusEnum.Notified_Waiting_List);
 				serverController.printToLogConsole(String
-						.format("Order :%d, notified about available spots from waiting list", order.getOrderId()));
+						.format("Order :%d, notified about available spots from waiting list by Email %s and SMS %s", order.getOrderId(),order.getEmail(),order.getTelephoneNumber()));
 			}
 		}
 

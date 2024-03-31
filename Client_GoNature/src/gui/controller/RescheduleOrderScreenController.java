@@ -234,12 +234,7 @@ public class RescheduleOrderScreenController implements Initializable, IThreadCo
 			Order orderFullDetailed = (Order) response.getMessage();
 			switch (response.getRensponse()) {
 			case Order_Added_Successfully:
-				String orderSummaryAfterPaymentMessage = NotificationMessageTemplate.orderConfirmMessage(
-						orderFullDetailed.getOrderId(), orderFullDetailed.getParkName().name(),
-						orderFullDetailed.getEnterDate().toString(), orderFullDetailed.getOrderType().name(),
-						orderFullDetailed.getNumberOfVisitors(), orderFullDetailed.getPrice(),
-						orderFullDetailed.isPaid());
-				enterWaitingListMsg.setText(orderSummaryAfterPaymentMessage);
+				enterWaitingListMsg.setText("Added successfully to waiting list");
 				confirmButton.setVisible(false);
 				comboBoxHbox.setVisible(false);
 				break;

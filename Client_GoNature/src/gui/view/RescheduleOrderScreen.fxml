@@ -21,7 +21,7 @@
          </font>
       </Label>
       <Separator layoutX="10.0" layoutY="10.0" prefWidth="200.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="140.0" />
-      <HBox fx:id="comboBoxHbox" layoutX="15.0" layoutY="190.0" prefHeight="84.0" prefWidth="910.0">
+      <HBox fx:id="comboBoxHbox" layoutX="15.0" layoutY="154.0" prefHeight="84.0" prefWidth="910.0">
          <children>
             <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                <image>
