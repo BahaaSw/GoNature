@@ -3,6 +3,7 @@ package jdbc;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import gui.controller.ServerScreenController;
 import javafx.application.Platform;
@@ -43,6 +44,13 @@ public class MySqlConnection {
 			});
 			connection = null;
 			throw ex;
+		}
+		try {
+			Statement stmt = connection.createStatement();
+			stmt.execute("SET GLOBAL local_infile=1;");
+			Platform.runLater(()->controller.printToLogConsole("Successfully set GLOBAL local_infile to 1"));
+		}catch(SQLException ex) {
+			Platform.runLater(()->controller.printToLogConsole("Could not set GLOBAL local_infile to 1: "+ex.getMessage()));
 		}
 
 	}
