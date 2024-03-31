@@ -217,8 +217,8 @@ public class ClientRequestHandler {
 	 *               This parameter is currently not used in the method but allows for future extensions, such as
 	 *               sending acknowledgments or error messages directly to the client.
 	 * @return A {@link ServerResponseBackToClient} object indicating the result of the operation. Returns
-	 *         {@link ServerResponse.Order_Deleted_Successfully} if the order was successfully deleted, or
-	 *         {@link ServerResponse.Order_Deleted_Failed} if the deletion failed.
+	 *         ServerResponse.Order_Deleted_Successfully if the order was successfully deleted, or
+	 *         ServerResponse.Order_Deleted_Failed if the deletion failed.
 	 */
 	private ServerResponseBackToClient handleDeleteOldOrder(ClientRequestDataContainer data, ConnectionToClient client) {
 		Order order = (Order)data.getData();

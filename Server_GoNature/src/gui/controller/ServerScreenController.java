@@ -162,6 +162,7 @@ public class ServerScreenController implements Initializable {
 	/**
 	 * This method add specific client to the connected clients table view in the gui screen.
 	 * @param client- The ConnectionToClient instance which include the details of the client.
+	 * @param username- The connected user's username.
 	 */
 	public void addToConnected(ConnectionToClient client,String username) {
 		connectedClientsList.add(new ClientConnection(username,client));

@@ -75,12 +75,12 @@ public class OrderQueries {
 	}
 
 	/**
-	 * gets an order and checks if the current date & time is available for a
-	 * specific park
+	 * gets an order and checks if the current date and time is available for a specific park
 	 * 
-	 * @param order - contains the order EnterDate and parkId
-	 * @return The amount of visitors that are currently in the park, returns -1 in
-	 *         case of failure
+	 * @param timeToCheck The LocalDateTime representing the specific hour to check for available spots.
+	 * @param parkId The Integer ID of the park for which to check the available spots.
+	 * @return An array of Integer, where the first element is the number of spots currently occupied (null if no data is found)
+	 * and the second element is the calculated number of available spots at the given time. Returns null in case of a database error.
 	 */
 	public Integer[] checkAvailableSpotInParkAtSpecificHour(LocalDateTime timeToCheck, Integer parkId) {
 		Integer[] amountAndCapacity = new Integer[2];
@@ -224,8 +224,8 @@ public class OrderQueries {
 	 * changes the status in the given entity order.
 	 * 
 	 * @param order - the order where the change of its status will be made
-	 * @return on success returns Order_Status_Updated on failure returns
-	 *         Such_Order_Does_Not_Exists on exception returns Excpetion_Was_Thrown
+	 * @param statusToUpdate - the status we should change the order to.
+	 * @return on success returns true on failure returns false
 	 */
 	public boolean updateOrderStatus(Order order, OrderStatusEnum statusToUpdate) {
 		try {
@@ -436,19 +436,6 @@ public class OrderQueries {
 		}
 	}
 
-	/**
-	 * Gets an order and updates its type in the DB according to the given requested
-	 * type
-	 * 
-	 * @param order - the order to update
-	 * @return on success returns Order_Type_Updated on Failure: returns Failed
-	 *         exception: returns Exception_Was_Thrown
-	 */
-	/**
-	 * @param order
-	 * @param requestedType
-	 * @return
-	 */
 
 	// NOTICE : NOT USED THAT QUERY!!
 	public ServerResponse updateOrderType(Order order, OrderTypeEnum requestedType) {
@@ -469,15 +456,6 @@ public class OrderQueries {
 		}
 	}
 
-	/**
-	 * Gets an order and updates its entry date time to the park in the DB according
-	 * to the requested enter date time
-	 * 
-	 * @param order - the order to update
-	 * @return on success returns Order_EnterDate_Updated on Failure: returns Failed
-	 *         exception: returns Exception_Was_Thrown
-	 */
-
 	// NOTICE : NOT USED THAT QUERY!!
 	public ServerResponse updateOrderEnterDate(Order order, LocalDateTime enterDate) {
 		try {
@@ -497,14 +475,6 @@ public class OrderQueries {
 		}
 	}
 
-	/**
-	 * Gets an order and updates its exit date time from the park in the DB
-	 * according to the requested exit date time
-	 * 
-	 * @param order - the order to update
-	 * @return on success returns Order_ExitDate_Updated on Failure: returns Failed
-	 *         exception: returns Exception_Was_Thrown
-	 */
 
 	// NOTICE : NOT USED THAT QUERY!!
 	public ServerResponse updateOrderExitDate(Order order, LocalDateTime exitDate) {
@@ -525,11 +495,6 @@ public class OrderQueries {
 		}
 	}
 
-	/**
-	 * @param status - requested order status
-	 * @return the amount of preorder made in the system which currently have the
-	 *         requested status
-	 */
 
 	// NOTICE : NOT USED THAT QUERY!!
 	public int returnTotalPreOrdersWithStatus(OrderStatusEnum status) {

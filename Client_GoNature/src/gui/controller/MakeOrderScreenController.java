@@ -269,12 +269,10 @@ public class MakeOrderScreenController implements Initializable {
 	}
 
 	/**
-	 * Validates the input fields in the GUI for making an order. Checks if all
-	 * required fields are filled, if the input values are valid, and if the
-	 * selected options are within constraints. Displays error messages for invalid
-	 * fields.
-	 * 
-	 * @return {@code true} if all fields are valid, {@code false} otherwise.
+	 * Handles the event triggered by clicking the "Make Order" button.
+	 * Validates input fields, creates an order, and sends it to the server.
+	 * Depending on the server's response, it either navigates to the Order Summary screen,
+	 * shows a message to reschedule due to unavailability, or alerts the user that the park is at capacity.
 	 */
 	@SuppressWarnings("incomplete-switch")
 	public void onMakeOrderClicked() {

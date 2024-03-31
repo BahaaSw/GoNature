@@ -60,7 +60,7 @@ public class VisitsReport extends Report implements Serializable {
 	/**
 	 * Retrieves the total visits by enter time.
 	 * 
-	 * @return HashMap<Integer, ArrayList<Integer>> containing total visits by enter
+	 * @return HashMap&lt;Integer, ArrayList&lt;Integer&gt;&gt; containing total visits by enter
 	 *         time.
 	 */
 	public HashMap<Integer, ArrayList<Integer>> getTotalVisitsByEnterTime() {
@@ -79,7 +79,7 @@ public class VisitsReport extends Report implements Serializable {
 	/**
 	 * Retrieves the total idle time by gap.
 	 * 
-	 * @return HashMap<Integer, ArrayList<Integer>> containing total idle time by
+	 * @return HashMap&lt;Integer, ArrayList&lt;Integer&gt;&gt; containing total idle time by
 	 *         gap.
 	 */
 	public HashMap<Integer, ArrayList<Integer>> getTotalIdleTimeByGap() {
@@ -99,19 +99,19 @@ public class VisitsReport extends Report implements Serializable {
 	 * Retrieves the idle time data for a specific index.
 	 * 
 	 * @param index The index for which to retrieve the idle time data.
-	 * @return ArrayList<Integer> representing the idle time data.
+	 * @return ArrayList&lt;Integer&gt; representing the idle time data.
 	 */
 	public ArrayList<Integer> getIdleTimeData(int index) {
-		return totalIdleTimeByGap.get(index);
+	    return totalIdleTimeByGap.get(index);
 	}
 
 	/**
 	 * Retrieves the enter time data for a specific index.
 	 * 
 	 * @param index The index for which to retrieve the enter time data.
-	 * @return ArrayList<Integer> representing the enter time data.
+	 * @return ArrayList&lt;Integer&gt; representing the enter time data.
 	 */
 	public ArrayList<Integer> getEnterTimeData(int index) {
-		return totalVisitsByEnterTime.get(index);
+	    return totalVisitsByEnterTime.get(index);
 	}
 }

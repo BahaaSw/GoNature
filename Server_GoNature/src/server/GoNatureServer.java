@@ -61,7 +61,6 @@ public class GoNatureServer extends AbstractServer {
 	 * @param port             - The port number to connect on
 	 * @param serverController - ServerGuiController to send information to the
 	 *                         server gui view.
-	 * @param dbConn           - The Connection instance to the database.
 	 */
 	@SuppressWarnings("static-access")
 	private GoNatureServer(int port, ServerScreenController serverController) {
@@ -140,7 +139,6 @@ public class GoNatureServer extends AbstractServer {
 	 * This method handle a specific String message from client for now relevant
 	 * only for message when client disconnecting the server.
 	 * 
-	 * @param msg    - The string message the client sent to the server.
 	 * @param client - The ConnectionToClient instance which include the details of
 	 *               the client in order to be able send him back answer.
 	 */

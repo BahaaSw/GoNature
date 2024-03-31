@@ -90,16 +90,6 @@ public class EmployeeScreenController implements Initializable, IScreenControlle
 	/**
 	 * Initializes the screen layout based on the type of employee. Hides or shows
 	 * specific buttons on the UI depending on the employee's role.
-	 * 
-	 * @implNote This method hides buttons according to different employee types: -
-	 *           For Department Managers: hides addNewGuideButton,
-	 *           parkEntranceButton, and parkSettingsButton. - For Park Employees:
-	 *           hides addNewGuideButton, createReportsButton, viewReportsButton,
-	 *           parkSettingsButton, and requestsButton. - For Park Managers: hides
-	 *           addNewGuideButton, parkEntranceButton, and requestsButton. - For
-	 *           Service Employees: hides parkEntranceButton, createReportsButton,
-	 *           viewReportsButton, parkSettingsButton, requestsButton, and
-	 *           parkSpotsButton.
 	 */
 	@SuppressWarnings("incomplete-switch")
 	private void initializeScreenAccordingToEmployeeType() {
